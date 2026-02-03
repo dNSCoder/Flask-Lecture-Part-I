@@ -1,0 +1,15 @@
+# build outputs
+dist/
+*.pdf
+*.pptx
+*.html
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# editors
+.vscode/
+.DS_Store

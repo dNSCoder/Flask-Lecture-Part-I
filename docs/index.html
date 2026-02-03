@@ -4,33 +4,361 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Flask Slides</title>
+  <meta name="description" content="Flask Slides: Outline, Flask Basics, Workshop (Marp-ready / HTML)" />
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:900px;margin:40px auto;padding:0 16px;line-height:1.5}
-    .card{border:1px solid #ddd;border-radius:14px;padding:18px;margin:12px 0}
-    a{display:inline-block;margin-top:10px}
-    h1{margin:0 0 12px}
+    :root{
+      --bg:#0b1020;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --r: 18px;
+      --brand:#7c3aed;
+      --brand2:#22c55e;
+      --warn:#f59e0b;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Sarabun", Arial, sans-serif;
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% 10%, rgba(124,58,237,.30), transparent 55%),
+        radial-gradient(900px 600px at 90% 15%, rgba(34,197,94,.20), transparent 50%),
+        radial-gradient(1000px 800px at 60% 100%, rgba(59,130,246,.18), transparent 55%),
+        var(--bg);
+      line-height:1.65;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    a:hover{ text-decoration: none; }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width: 240px;
+    }
+    .badge{
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.75));
+      box-shadow: 0 14px 30px rgba(124,58,237,.25);
+      display:grid; place-items:center;
+      font-weight:900;
+      letter-spacing:.4px;
+    }
+    .brand h1{
+      font-size: 16px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .brand p{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center;
+    }
+    .btn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor:pointer;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn:hover{ background: rgba(255,255,255,.10); }
+    .btn:active{ transform: translateY(1px); }
+    .kbd{
+      font-family: var(--mono);
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.88);
+    }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(135deg, rgba(124,58,237,.16), rgba(34,197,94,.08)),
+        rgba(255,255,255,.05);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 22px 22px 18px;
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:-60px -120px auto auto;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle at 30% 30%, rgba(124,58,237,.45), transparent 60%);
+      filter: blur(2px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .hero h2{
+      margin:0 0 8px;
+      font-size: 26px;
+      line-height: 1.25;
+    }
+    .hero .sub{
+      margin:0 0 14px;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+    .chips{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .chip{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.86);
+      font-size: 12px;
+    }
+
+    /* Cards grid */
+    .grid{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .card{
+      grid-column: span 6;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      position: relative;
+      min-height: 180px;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.18);
+    }
+    .card .head{
+      padding: 16px 16px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card h3{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .card p{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.6;
+    }
+    .tag{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.86);
+      white-space: nowrap;
+    }
+    .tag.ok{ border-color: rgba(34,197,94,.35); }
+    .tag.purple{ border-color: rgba(124,58,237,.35); }
+    .tag.warn{ border-color: rgba(245,158,11,.35); }
+
+    .card .body{
+      padding: 0 16px 14px;
+    }
+    .list{
+      margin: 10px 0 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .list li{ margin: 6px 0; }
+
+    .card .foot{
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .open{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,.92);
+    }
+    .open:hover{ background: rgba(255,255,255,.10); }
+    .meta{
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center;
+    }
+    .dot{
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(255,255,255,.35);
+      display:inline-block;
+    }
+
+    /* Footer */
+    .footer{
+      margin-top: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      color: rgba(255,255,255,.60);
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 920px){
+      .card{ grid-column: span 12; }
+      .topbar{ position: static; }
+      .hero .sub{ max-width: 100%; }
+    }
+
+    /* Print */
+    @media print{
+      body{ background:#fff; color:#111; overflow: visible; }
+      .topbar, .hero, .card, .footer{ box-shadow:none; backdrop-filter:none; }
+      .topbar{ position: static; }
+      .btn{ display:none; }
+      a{ color:#111; text-decoration: underline; }
+    }
   </style>
 </head>
+
 <body>
-  <h1>Flask Slides</h1>
-  <p>เลือกชุดสไลด์ที่ต้องการเปิดดู</p>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">F</div>
+        <div>
+          <h1>Flask Slides</h1>
+          <p>หน้าเลือกชุดสไลด์สำหรับการสอน (HTML/Marp-ready)</p>
+        </div>
+      </div>
 
-  <div class="card">
-    <h2>00 - Outline</h2>
-    <p>ภาพรวมบทเรียนและเป้าหมายการเรียน</p>
-    <a href="00-outline.html">เปิดสไลด์</a>
-  </div>
+      <div class="actions">
+        <span class="kbd">Tip</span>
+        <span style="color:var(--muted); font-size:13px;">
+          ถ้าเป็นสไลด์แบบหน้า ๆ ให้ใช้ <span class="kbd">→</span> <span class="kbd">Space</span> และ <span class="kbd">F</span>
+        </span>
+        <button class="btn" onclick="window.print()">🖨️ พิมพ์ / PDF</button>
+      </div>
+    </div>
 
-  <div class="card">
-    <h2>01 - Flask Basics</h2>
-    <p>Routing, Request/Response, Jinja2, url_for, Blueprints, 11A JSON → 11B DB mapping</p>
-    <a href="01-flask-basics.html">เปิดสไลด์</a>
-  </div>
+    <section class="hero">
+      <h2>เลือกชุดสไลด์ที่ต้องการเปิดดู</h2>
+      <p class="sub">
+        ชุดนี้แยก “พื้นฐาน” ออกจาก “Workshop” เพื่อให้เด็กเข้าใจแกน Flask ก่อน แล้วค่อยนำไปประกอบเป็นระบบตัวอย่างจริง
+      </p>
+      <div class="chips">
+        <span class="chip">Routing</span>
+        <span class="chip">Request/Response</span>
+        <span class="chip">Jinja2</span>
+        <span class="chip">url_for</span>
+        <span class="chip">Blueprints</span>
+        <span class="chip">11A JSON → 11B DB</span>
+      </div>
+    </section>
 
-  <div class="card">
-    <h2>02 - Workshop</h2>
-    <p>ขั้นตอนประกอบระบบจริง (แยกจากพื้นฐาน)</p>
-    <a href="02-workshop.html">เปิดสไลด์</a>
-  </div>
-</body>
-</html>
+    <section class="grid">
+      <!-- 00 -->
+      <article class="card">
+        <div class="head">
+          <div>
+            <h3>00 — Outline</h3>
+            <p>ภาพรวมบทเรียน + เป้าหมายการเรียน + สิ่งที่ต้องทำให้ได้ก่อนเข้า Workshop</p>
+          </div>
+          <span class="tag ok">เริ่มจากตรงนี้</span>
+        </div>
+        <div class="body">
+          <ul class="list">
+            <li>Learning goals ที่เด็กต้องอธิบายได้</li>
+            <li>ภาพรวมโครงงาน/รูปแบบงานกลุ่ม</li>
+            <li>สิ่งที่ต้องเตรียมก่อนทำระบบจริง</li>
+          </ul>
+        </div>
+        <div class="foot">
+          <a class="open" href="00-outline.html">เปิดสไลด์ →</a>
+          <div class="meta"><span class="dot"></span><span>อ่าน ~3–5 นาที</span></div>
+        </div>
+      </article>
+
+      <!-- 01 -->
+      <article class="card">
+        <div class="head">
+          <div>
+            <h3>01 — Flask Basics</h3>
+            <p>พื้นฐาน Flask แบบ “ทำได้จริง”: ตั้งโปรเจกต์, โฟลว์เว็บ, โครงสร้าง, และแนวคิดสำคัญที่ใช้ในโปรเจกต์ปี 1</p>
+          </div>
+          <span class="tag purple">Lecture หลัก</span>
+        </div>
+        <div class="body">
+          <ul class="list">

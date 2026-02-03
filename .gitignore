@@ -1,8 +1,4 @@
 # build outputs
-dist/
-*.pdf
-*.pptx
-*.html
 
 # python
 .venv/

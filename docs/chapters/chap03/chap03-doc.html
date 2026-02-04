@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>บทที่ 3: Templates (Jinja2) + Static Files - เอกสารประกอบการสอน</title>
+  <title>บทที่ 3: Templates (Jinja2) + Template Inheritance + Static Files - เอกสารประกอบการสอน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/common.css">
   <link rel="stylesheet" href="../../assets/css/documentation.css">
@@ -12,7 +12,6 @@
   <nav class="chapter-nav no-print">
     <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
     <div class="nav-links">
-      <a href="chap03-present.html">🎯 Presentation</a>
       <a href="../chap02/chap02-doc.html">← บทก่อนหน้า</a>
       <a href="../chap04/chap04-doc.html">บทถัดไป →</a>
     </div>
@@ -20,155 +19,184 @@
 
   <div class="container">
     <header class="doc-header">
-      <h1>บทที่ 3: Templates (Jinja2) + Static Files</h1>
-      <p class="doc-subtitle">ทำเว็บให้เป็น “หน้า ๆ” ด้วย templates และจัดไฟล์ CSS/JS ให้เป็นระบบ</p>
+      <h1>บทที่ 3: Templates (Jinja2) + Template Inheritance + Static Files</h1>
+      <p class="doc-subtitle">ทำหน้าเว็บให้เป็นระบบ: render_template → Jinja2 → base.html/extends/block → static (CSS/JS/รูป)</p>
       <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน (Project ปี 1)</p>
     </header>
 
     <section>
-      <h2>1) ทำไมต้อง Templates</h2>
+      <h2>เป้าหมายของบทนี้</h2>
+      <ul>
+        <li>เข้าใจแนวคิด <strong>Template</strong>: แยก HTML ออกจากโค้ด Python</li>
+        <li>ใช้ <code>render_template()</code> ส่งข้อมูลจาก Flask ไปแสดงบนหน้าเว็บ</li>
+        <li>ใช้ <strong>Template Inheritance</strong> (base.html + blocks) เพื่อทำ layout ซ้ำ ๆ แบบเป็นระบบ</li>
+        <li>เสิร์ฟไฟล์ <strong>Static</strong> (CSS/JS/รูป) จากโฟลเดอร์ <code>static/</code></li>
+      </ul>
+      <div class="callout note">
+        <strong>เชื่อมจากบทที่ 2</strong>
+        บทที่ 2 ทำ routing + flow ครบแล้ว → บทนี้ทำให้ “หน้าตาเว็บ” เรียบร้อย และพร้อมไปทำหน้า CRUD ใน workshop
+      </div>
+
+    </section>
+    <section>
+      <h2>render_template(): เริ่มใช้ Jinja2 Template</h2>
       <p>
-        ถ้าเรา return HTML ยาว ๆ ใน Python จะอ่านยากมาก และแก้ UI ทีหลังลำบาก
-        Flask เลยมีระบบ <strong>Templates</strong> (ใช้ <strong>Jinja2</strong>) ให้เราแยก “หน้าตา” ออกจาก “โค้ด”
+        เมื่อเว็บเริ่มมีหลายหน้า เราไม่ควร return string ยาว ๆ ใน Python ให้สร้างไฟล์ HTML ในโฟลเดอร์ <code>templates/</code>
+        แล้วใช้ <code>render_template()</code>
       </p>
-      <div class="tip">
-        <p class="tip-title">คิดแบบทีมปี 1</p>
-        <p>คนหนึ่งทำ backend ได้ อีกคนทำ HTML/CSS ได้ โดยไม่ชนกันเยอะ</p>
-      </div>
-    </section>
+      <pre><code>from flask import Flask, render_template
 
-    <section>
-      <h2>2) โครงสร้างโฟลเดอร์ที่ควรใช้</h2>
-      <div class="example">
-        <pre><code>my-flask-app/
-├─ app.py
-├─ templates/
-│  ├─ base.html
-│  ├─ home.html
-│  └─ repairs/
-│     ├─ list.html
-│     └─ create.html
-└─ static/
-   ├─ css/
-   │  └─ app.css
-   └─ js/
-      └─ app.js</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>3) render_template</h2>
-      <p>แนวคิดคือ: route เรียก <code>render_template()</code> แล้วส่งข้อมูล (ตัวแปร) เข้าไปให้ HTML</p>
-      <div class="example">
-        <p class="example-title">app.py</p>
-        <pre><code>from flask import render_template
+app = Flask(__name__)
 
 @app.route("/")
 def home():
-    title = "หน้าแรก"
-    return render_template("home.html", title=title)</code></pre>
-      </div>
+    return render_template("home.html", title="หน้าแรก")</code></pre>
 
-      <div class="example">
-        <p class="example-title">templates/home.html</p>
-        <pre><code>&lt;h1&gt;{{ title }}&lt;/h1&gt;</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>4) Jinja2 Syntax ที่ต้องรู้</h2>
-      <ul>
-        <li><code>{{ ... }}</code> แสดงค่า (variables)</li>
-        <li><code>{% if ... %}</code> เงื่อนไข</li>
-        <li><code>{% for ... %}</code> วนลูป</li>
-      </ul>
-      <div class="example">
-        <pre><code>{% for r in repairs %}
-  &lt;li&gt;{{ r.title }} - {{ r.status }}&lt;/li&gt;
-{% endfor %}</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>5) Template Inheritance (ทำ layout กลาง)</h2>
-      <p>ใช้ layout กลางเพื่อให้ทุกหน้ามี navbar/footer เหมือนกัน และแก้ทีเดียวจบ</p>
-
-      <div class="example">
-        <p class="example-title">templates/base.html</p>
-        <pre><code>&lt;!doctype html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;nav&gt;...&lt;/nav&gt;
-    {% block content %}{% endblock %}
-  &lt;/body&gt;
+      <p>สร้างไฟล์ <code>templates/home.html</code>:</p>
+      <pre><code>&lt;!doctype html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;{{ title }}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;{{ title }}&lt;/h1&gt;
+  &lt;p&gt;ยินดีต้อนรับสู่เว็บ Flask&lt;/p&gt;
+&lt;/body&gt;
 &lt;/html&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>จำ 2 อย่างนี้ให้แม่น</strong>
+        1) ไฟล์ HTML อยู่ใน <code>templates/</code> • 2) ส่งข้อมูลด้วย <code>render_template("x.html", key=value)</code> แล้วใช้ <code>{{ key }}</code> ในหน้าเว็บ
       </div>
 
-      <div class="example">
-        <p class="example-title">templates/home.html</p>
-        <pre><code>{% extends "base.html" %}
+    </section>
+    <section>
+      <h2>Jinja2 พื้นฐาน: ตัวแปร, if, for</h2>
+      <p>Jinja2 ช่วยทำหน้า HTML “มีข้อมูลจริง” โดยใช้ syntax ง่าย ๆ</p>
+      <pre><code>&lt;!-- แสดงตัวแปร --&gt;
+&lt;h2&gt;สวัสดี {{ user_name }}&lt;/h2&gt;
+
+&lt;!-- เงื่อนไข --&gt;
+{% if is_admin %}
+  &lt;p&gt;คุณคือแอดมิน&lt;/p&gt;
+{% else %}
+  &lt;p&gt;คุณคือสมาชิก&lt;/p&gt;
+{% endif %}
+
+&lt;!-- วนลูป --&gt;
+&lt;ul&gt;
+{% for item in items %}
+  &lt;li&gt;{{ item }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+      <div class="callout note">
+        <strong>เชื่อมไป Template Inheritance</strong>
+        พอหน้าเว็บเริ่มหลายหน้า → เราจะไม่อยาก copy/paste โค้ด HTML ซ้ำ ๆ (navbar/footer) จึงต้องใช้ base.html
+      </div>
+
+    </section>
+    <section>
+      <h2>Template Inheritance: base.html + extends + block</h2>
+      <p>
+        แนวคิดคือทำ “โครงหน้า” ไว้ที่ <code>base.html</code> แล้วให้หน้าลูก (child) เติมส่วน <code>block</code>
+        เพื่อให้ทุกหน้ามี layout สม่ำเสมอ
+      </p>
+      <p><strong>1) templates/base.html</strong></p>
+      <pre><code>&lt;!doctype html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;{% block title %}My App{% endblock %}&lt;/title&gt;
+  &lt;link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav&gt;เมนูหลักของเว็บ&lt;/nav&gt;
+  &lt;main&gt;
+    {% block content %}{% endblock %}
+  &lt;/main&gt;
+  &lt;footer&gt;© 2026&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p><strong>2) templates/home.html</strong></p>
+      <pre><code>{% extends "base.html" %}
+
+{% block title %}หน้าแรก{% endblock %}
 
 {% block content %}
-  &lt;h1&gt;Home&lt;/h1&gt;
+  &lt;h1&gt;หน้าแรก&lt;/h1&gt;
+  &lt;p&gt;เนื้อหาของหน้าแรกอยู่ตรงนี้&lt;/p&gt;
 {% endblock %}</code></pre>
+
+      <div class="callout tip">
+        <strong>ประโยชน์ที่เห็นทันที</strong>
+        เปลี่ยน navbar/footer ครั้งเดียวที่ <code>base.html</code> → ทุกหน้าปรับตามอัตโนมัติ
       </div>
+
     </section>
-
     <section>
-      <h2>6) Static Files (CSS / JS / Images)</h2>
-      <p>เก็บไฟล์ที่ไม่เปลี่ยนตามข้อมูล เช่น CSS/JS ไว้ในโฟลเดอร์ <code>static/</code></p>
-      <div class="example">
-        <pre><code>&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"&gt;
-&lt;script src="{{ url_for('static', filename='js/app.js') }}" defer&gt;&lt;/script&gt;</code></pre>
+      <h2>Static Files: เสิร์ฟ CSS/JS/รูปจากโฟลเดอร์ static</h2>
+      <p>
+        Flask จะเสิร์ฟไฟล์ในโฟลเดอร์ <code>static/</code> อัตโนมัติ (เช่น <code>static/style.css</code>)
+        แนะนำให้เรียกผ่าน <code>url_for('static', filename='...')</code> เพื่อความถูกต้องของ path
+      </p>
+      <pre><code>my-flask-app/
+├─ app.py
+├─ templates/
+│  ├─ base.html
+│  └─ home.html
+└─ static/
+   ├─ style.css
+   └─ app.js</code></pre>
+
+      <p><strong>ตัวอย่าง static/style.css</strong></p>
+      <pre><code>body { font-family: system-ui; margin: 0; }
+nav { padding: 12px 16px; background: #111827; color: white; }
+main { padding: 16px; }</code></pre>
+
+      <div class="callout note">
+        <strong>จุดเชื่อมกับโปรเจกต์ปี 1</strong>
+        เมื่อทำ base.html + static.css แล้ว หน้า CRUD/Workshop จะออกมาดู “เป็นระบบเดียวกัน” ทั้งเว็บ
       </div>
-      <div class="note">
-        <p class="note-title">ทำไมต้อง url_for('static', ...)</p>
-        <p>เพื่อให้ path ถูกต้องแม้ย้ายโครงสร้างหรือ deploy ขึ้น server</p>
-      </div>
+
     </section>
-
     <section>
-      <h2>7) ฟอร์มแบบง่าย (ยังไม่ใช้ Flask-WTF)</h2>
-      <p>หลักการคือ: HTML form ส่ง POST → Flask อ่านค่าจาก <code>request.form</code></p>
-      <div class="example">
-        <p class="example-title">templates/repairs/create.html</p>
-        <pre><code>&lt;form method="post"&gt;
-  &lt;input name="title" placeholder="อาการเสีย"&gt;
-  &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
-&lt;/form&gt;</code></pre>
-      </div>
-
-      <div class="example">
-        <p class="example-title">app.py</p>
-        <pre><code>from flask import request
-
-@app.route("/repairs/create", methods=["GET","POST"])
-def repairs_create():
-    if request.method == "POST":
-        title = request.form.get("title")
-        return f"บันทึกแล้ว: {title}"
-    return render_template("repairs/create.html")</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>8) แบบฝึกหัด</h2>
+      <h2>แบบฝึกหัดสั้น ๆ (ให้ทำหลังเรียน)</h2>
       <ol>
-        <li>ทำ <code>base.html</code> ที่มี navbar link ไปหน้า Home และ Repairs</li>
-        <li>ทำหน้า list แสดงรายการ repairs (ใช้ list จำลองเป็น array ใน Python ก่อน)</li>
-        <li>ใส่ CSS ง่าย ๆ ใน <code>static/css/app.css</code> ให้หน้าอ่านง่ายขึ้น</li>
+        <li>สร้าง <code>base.html</code> ที่มี navbar + footer</li>
+        <li>สร้างหน้า <code>home.html</code> และ <code>about.html</code> ที่ extends base</li>
+        <li>สร้างไฟล์ <code>static/style.css</code> ให้ navbar มีพื้นหลังสีเข้ม</li>
+        <li>ทำ route <code>/</code> และ <code>/about</code> ให้ render_template</li>
+        <li>ส่งตัวแปร <code>title</code> เข้า template แล้วแสดงบนหน้าเว็บ</li>
       </ol>
+
+    </section>
+    <section>
+      <h2>สรุป</h2>
+      <ul>
+        <li>render_template ช่วยแยก HTML ออกจาก Python</li>
+        <li>Jinja2 ทำให้หน้าเว็บแสดงข้อมูลจริงด้วยตัวแปร/if/for</li>
+        <li>Template inheritance ทำให้เว็บ “ดูเป็นระบบ” และแก้ง่าย</li>
+        <li>Static files ทำให้เว็บมี CSS/JS พร้อมสำหรับหน้า CRUD</li>
+      </ul>
+      <div class="callout note">
+        <strong>เชื่อมไปบทที่ 4</strong>
+        เมื่อหน้าตาเว็บพร้อมแล้ว → บทที่ 4 จะเริ่ม “นิยามข้อมูลระบบ” (JSON Schema → DB Mapping) เพื่อทำ CRUD จริง
+      </div>
+
     </section>
 
+
     <section>
-      <h2>อ้างอิง</h2>
+      <h2>อ้างอิง (อ่านเพิ่ม)</h2>
       <ul>
-        <li>GeeksforGeeks: Flask Rendering Templates, Template Inheritance, Static Files</li>
+<li><a href="https://www.geeksforgeeks.org/python/flask-rendering-templates/">https://www.geeksforgeeks.org/python/flask-rendering-templates/</a></li>
+<li><a href="https://www.geeksforgeeks.org/python/template-inheritance-in-flask/">https://www.geeksforgeeks.org/python/template-inheritance-in-flask/</a></li>
+<li><a href="https://www.geeksforgeeks.org/python/how-to-serve-static-files-in-flask/">https://www.geeksforgeeks.org/python/how-to-serve-static-files-in-flask/</a></li>
       </ul>
     </section>
+
     <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
       <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
     </div>

@@ -438,3 +438,42 @@ figcaption {
         page-break-inside: avoid;
     }
 }
+
+
+
+/* ==================== Code Blocks ==================== */
+pre, code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+pre {
+  background: #0b1220;
+  color: #e6edf3;
+  padding: 14px 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(2,6,23,.08);
+  line-height: 1.5;
+}
+code {
+  background: rgba(2,6,23,.06);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* ==================== Callouts ==================== */
+.callout {
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  border: 1px solid rgba(15, 23, 42, .12);
+  background: rgba(15, 23, 42, .03);
+}
+.callout strong { display:block; margin-bottom: 6px; }
+.callout.tip { border-left: 6px solid #10b981; }
+.callout.note { border-left: 6px solid #3b82f6; }
+.callout.warn { border-left: 6px solid #f59e0b; }

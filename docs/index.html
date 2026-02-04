@@ -3,156 +3,252 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flask Lecture (Web Slides)</title>
-  <meta name="description" content="บทเรียน Flask สำหรับ Project ปี 1: เอกสาร + สไลด์ (เปิดดูได้บน GitHub Pages)" />
+  <title>Flask Lecture — เอกสารประกอบ (เปิดบนเว็บได้)</title>
   <link rel="stylesheet" href="assets/css/common.css">
   <style>
     :root{
-      --bg1:#0b1020; --bg2:#0c1736; --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.10); --border: rgba(255,255,255,.14);
-      --text: rgba(255,255,255,.92); --muted: rgba(255,255,255,.72);
-      --brand:#7c3aed; --brand2:#22c55e; --warn:#f59e0b; --r:18px;
-      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --bg1:#050b1a; --bg2:#072a2a;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.96);
+      --muted:rgba(255,255,255,.78);
+      --muted2:rgba(255,255,255,.62);
+      --glow:rgba(56,189,248,.30);
+      --accent:#7c3aed;
+      --accent2:#10b981;
     }
+    *{box-sizing:border-box}
     body{
-      margin:0; min-height:100vh; color:var(--text);
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Sarabun",sans-serif;
+      color:var(--text);
       background:
-        radial-gradient(1200px 600px at 18% -10%, rgba(124,58,237,.35), transparent 55%),
-        radial-gradient(1000px 520px at 88% 8%, rgba(34,197,94,.28), transparent 55%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+        radial-gradient(1200px 600px at 18% 12%, rgba(124,58,237,.35), transparent 60%),
+        radial-gradient(900px 500px at 78% 18%, rgba(16,185,129,.22), transparent 55%),
+        radial-gradient(900px 600px at 55% 78%, rgba(56,189,248,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:44px 18px 60px;}
-    header{
-      display:flex; gap:18px; align-items:flex-start; justify-content:space-between;
-      margin-bottom:22px;
+    a{color:inherit}
+    .wrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding:40px 18px 56px;
     }
-    .title h1{margin:0 0 8px;font-size: clamp(1.6rem, 2.3vw + 1rem, 2.6rem);letter-spacing:-.02em;}
-    .title p{margin:0;color:var(--muted);max-width:72ch}
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:10px 14px; border:1px solid var(--border);
-      border-radius:999px; background:rgba(255,255,255,.04);
-      box-shadow: var(--shadow);
-      color:var(--muted); font-size:.95rem;
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:26px;
     }
-    .grid{display:grid;grid-template-columns: repeat(12,1fr);gap:16px;margin-top:18px;}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      border-radius:999px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:14px;
+      white-space:nowrap;
+    }
+    .hero{
+      padding:26px 0 18px;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:44px;
+      line-height:1.1;
+      letter-spacing:-.02em;
+      color:rgba(255,255,255,.98);
+      text-shadow: 0 14px 45px rgba(0,0,0,.35);
+    }
+    .subtitle{
+      margin:0;
+      font-size:16px;
+      color:var(--muted);
+      max-width:72ch;
+    }
+    .hint{
+      margin-top:12px;
+      color:var(--muted2);
+      font-size:14px;
+    }
+
+    .grid{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+    @media (max-width: 860px){
+      h1{font-size:34px}
+      .grid{grid-template-columns: 1fr}
+    }
     .card{
-      grid-column: span 6;
-      border:1px solid var(--border);
-      background: linear-gradient(180deg,var(--card), rgba(255,255,255,.03));
-      border-radius: var(--r);
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border-radius:18px;
       padding:18px 18px 16px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 24px 60px rgba(0,0,0,.22);
+      backdrop-filter: blur(12px);
       position:relative;
       overflow:hidden;
     }
     .card:before{
-      content:""; position:absolute; inset:-2px;
-      background: radial-gradient(360px 180px at 18% 0%, rgba(124,58,237,.18), transparent 55%),
-                  radial-gradient(360px 180px at 88% 10%, rgba(34,197,94,.14), transparent 60%);
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background: radial-gradient(600px 140px at 12% 0%, rgba(124,58,237,.22), transparent 60%),
+                  radial-gradient(520px 140px at 78% 0%, rgba(16,185,129,.18), transparent 60%);
+      opacity:.9;
       pointer-events:none;
     }
     .card > *{position:relative}
-    .card h2{margin:0 0 8px;font-size:1.15rem}
-    .card p{margin:0 0 12px;color:var(--muted);line-height:1.55}
-    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-    .tag{
-      font-size:.86rem; color:rgba(255,255,255,.78);
-      padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
+    .kicker{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+      color:var(--muted2);
+      font-size:13px;
     }
-    .links{display:flex;flex-wrap:wrap;gap:10px}
-    .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:12px;
+    h2{
+      margin:0 0 8px;
+      font-size:20px;
+      color:rgba(255,255,255,.98);
+    }
+    p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:12px 0 14px;
+    }
+    .chip{
+      padding:6px 10px;
+      border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text); text-decoration:none; font-weight:600;
-      transition: transform .15s ease, background .15s ease;
+      background: rgba(0,0,0,.18);
+      color:rgba(255,255,255,.86);
+      font-size:12px;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.10);}
-    .btn.primary{border-color: rgba(124,58,237,.35); background: rgba(124,58,237,.18);}
-    .btn.green{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.16);}
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      text-decoration:none;
+      font-weight:600;
+      color:rgba(255,255,255,.92);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(0,0,0,.26); border-color: rgba(255,255,255,.22)}
+    .btn.primary{
+      border-color: rgba(124,58,237,.45);
+      background: linear-gradient(135deg, rgba(124,58,237,.55), rgba(56,189,248,.18));
+      box-shadow: 0 18px 40px rgba(124,58,237,.18);
+    }
     .footer{
-      margin-top:26px; color:var(--muted); font-size:.95rem;
-      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
-      border-top:1px solid rgba(255,255,255,.10); padding-top:18px;
+      margin-top:26px;
+      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      color:var(--muted2);
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .footer code{background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.86)}
-    @media (max-width: 880px){ .card{grid-column: span 12;} header{flex-direction:column;align-items:flex-start} }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <div class="title">
-        <h1>Flask Lecture — เอกสาร + สไลด์ (เปิดดูบนเว็บได้)</h1>
-        <p>
-          ชุดสไลด์นี้ออกแบบสำหรับนักศึกษาปี 1: เน้น “พื้นฐานที่ต้องใช้ทำโปรเจกต์จริง”
-          (Routing, Request/Response, Jinja2, Static, JSON Schema, DB Mapping, Blueprints)
-        </p>
-      </div>
-      <div class="pill" title="แนะนำ: เปิดผ่าน GitHub Pages">
-        ✅ GitHub Pages-ready • 📄 Doc • 🎯 Slides • ⌨️ กดลูกศรเลื่อนสไลด์
-      </div>
-    </header>
+    <div class="topbar">
+      <div class="badge">✅ GitHub Pages-ready • 📄 เอกสารอย่างเดียว</div>
+      <div class="badge">กดเข้า “บท” เพื่ออ่าน • พิมพ์/เซฟเป็น PDF ได้จากเบราว์เซอร์</div>
+    </div>
+
+    <div class="hero">
+      <h1>Flask Lecture — เอกสารประกอบ</h1>
+      <p class="subtitle">
+        ชุดเอกสารสำหรับนักศึกษาปี 1: เน้น “พื้นฐานที่ต้องใช้ทำโปรเจกต์จริง” (Routing, Request/Response, Jinja2, Static, JSON Schema → DB Mapping, Blueprints)
+      </p>
+      <p class="hint">แนะนำ: เปิดอ่านบทที่ 1 → 2 → 3 แล้วค่อยไปบทที่ 4 (Project-ready)</p>
+    </div>
 
     <div class="grid">
+      <div class="card">
+        <div class="kicker"><span>บทที่ 1</span><span>Setup & Hello World</span></div>
+        <h2>รู้จัก Flask + การติดตั้ง + Hello World</h2>
+        <p>ทำความเข้าใจ Flask คืออะไร วงจร Request→Response และตั้งค่าโปรเจกต์ให้พร้อมรัน (Windows/venv/debug/port)</p>
+        <div class="chips">
+          <span class="chip">micro-framework</span><span class="chip">venv</span><span class="chip">debug</span><span class="chip">run / port</span>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="chapters/chap01/chap01-doc.html">📄 เปิดเอกสาร</a>
+        </div>
+      </div>
 
-      <section class="card">
-        <h2>บทที่ 1: รู้จัก Flask + การติดตั้ง + Hello World</h2>
-        <div class="tags">
-          <span class="tag">micro-framework</span><span class="tag">venv</span><span class="tag">debug</span><span class="tag">โครงสร้างโปรเจกต์</span>
+      <div class="card">
+        <div class="kicker"><span>บทที่ 2</span><span>Routing</span></div>
+        <h2>Routing + URL Building + Redirect + Errors + HTTP Methods</h2>
+        <p>ออกแบบเส้นทาง URL, ใช้ตัวแปรใน URL, url_for, redirect, abort/errorhandler และพื้นฐาน GET/POST</p>
+        <div class="chips">
+          <span class="chip">@app.route</span><span class="chip">Dynamic URL</span><span class="chip">url_for</span><span class="chip">GET/POST</span>
         </div>
-        <p>ทำความเข้าใจ Flask คืออะไร, วงจร Request→Response และตั้งค่าโปรเจกต์ให้พร้อมทำงาน</p>
-        <div class="links">
-          <a class="btn primary" href="chapters/chap01/chap01-present.html">🎯 เปิดสไลด์</a>
-          <a class="btn" href="chapters/chap01/chap01-doc.html">📄 เปิดเอกสาร</a>
+        <div class="actions">
+          <a class="btn primary" href="chapters/chap02/chap02-doc.html">📄 เปิดเอกสาร</a>
         </div>
-      </section>
+      </div>
 
-      <section class="card">
-        <h2>บทที่ 2: Routing + URL Building + HTTP Methods</h2>
-        <div class="tags">
-          <span class="tag">@app.route</span><span class="tag">Dynamic URL</span><span class="tag">GET/POST</span><span class="tag">redirect</span>
+      <div class="card">
+        <div class="kicker"><span>บทที่ 3</span><span>Jinja2 & Static</span></div>
+        <h2>Templates (Jinja2) + Template Inheritance + Static Files</h2>
+        <p>ทำหน้าเว็บให้ “เป็นระบบ” ด้วย render_template, ส่งตัวแปรเข้า template, extends/block และเสิร์ฟ CSS/JS จาก static</p>
+        <div class="chips">
+          <span class="chip">render_template</span><span class="chip">base.html</span><span class="chip">extends/block</span><span class="chip">static</span>
         </div>
-        <p>ออกแบบเส้นทาง URL, รับพารามิเตอร์, ใช้ url_for ให้ link ไม่พัง, และแยก GET/POST ให้ถูกต้อง</p>
-        <div class="links">
-          <a class="btn primary" href="chapters/chap02/chap02-present.html">🎯 เปิดสไลด์</a>
-          <a class="btn" href="chapters/chap02/chap02-doc.html">📄 เปิดเอกสาร</a>
+        <div class="actions">
+          <a class="btn primary" href="chapters/chap03/chap03-doc.html">📄 เปิดเอกสาร</a>
         </div>
-      </section>
+      </div>
 
-      <section class="card">
-        <h2>บทที่ 3: Templates (Jinja2) + Static Files</h2>
-        <div class="tags">
-          <span class="tag">render_template</span><span class="tag">layout/base</span><span class="tag">static</span><span class="tag">ฟอร์มพื้นฐาน</span>
+      <div class="card">
+        <div class="kicker"><span>บทที่ 4</span><span>Project-ready</span></div>
+        <h2>11A JSON Schema → 11B DB Mapping (พร้อมทำโปรเจกต์)</h2>
+        <p>กำหนด “ข้อมูลของระบบ” ให้ชัดด้วย JSON แล้วแปลงเป็นตารางฐานข้อมูล + โมเดล (แนวคิดก่อนทำ CRUD/Workshop)</p>
+        <div class="chips">
+          <span class="chip">JSON</span><span class="chip">SQLAlchemy</span><span class="chip">CRUD</span><span class="chip">Blueprints</span>
         </div>
-        <p>ทำเว็บที่ “ดูเป็นระบบ” ด้วย template inheritance, layout, และจัด CSS/JS แบบถูกที่ถูกทาง</p>
-        <div class="links">
-          <a class="btn primary" href="chapters/chap03/chap03-present.html">🎯 เปิดสไลด์</a>
-          <a class="btn" href="chapters/chap03/chap03-doc.html">📄 เปิดเอกสาร</a>
+        <div class="actions">
+          <a class="btn primary" href="chapters/chap04/chap04-doc.html">📄 เปิดเอกสาร</a>
         </div>
-      </section>
-
-      <section class="card">
-        <h2>บทที่ 4: 11A JSON Schema → 11B DB Mapping (Project-ready)</h2>
-        <div class="tags">
-          <span class="tag">JSON</span><span class="tag">SQLAlchemy</span><span class="tag">CRUD</span><span class="tag">Blueprints</span>
-        </div>
-        <p>กำหนด “ข้อมูลของระบบ” ให้ชัดด้วย JSON, แล้วแมปเป็นตารางฐานข้อมูล + โมเดล (พื้นฐานพอสำหรับโปรเจกต์ปี 1)</p>
-        <div class="links">
-          <a class="btn green" href="chapters/chap04/chap04-present.html">🎯 เปิดสไลด์</a>
-          <a class="btn" href="chapters/chap04/chap04-doc.html">📄 เปิดเอกสาร</a>
-        </div>
-      </section>
-
+      </div>
     </div>
 
     <div class="footer">
-      <div>💡 แนะนำ: เปิดสไลด์แล้วกด <code>←</code> <code>→</code> เพื่อเลื่อน • กด <code>F</code> เพื่อ fullscreen</div>
-      <div>© Flask Lecture (Year 1)</div>
+      <span>© Flask Lecture (Year 1) • เอกสารเพื่อการเรียนการสอน</span>
+      <span>Tip: ใน Chrome/Edge ใช้ “Print → Save as PDF” เพื่อแจกนักศึกษา</span>
     </div>
   </div>
 </body>

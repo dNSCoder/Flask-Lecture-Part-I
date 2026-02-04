@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chap 01 - รู้จัก Flask + การติดตั้ง + Hello World (Slides)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/presentation.css">
+</head>
+<body class="presentation">
+  <div id="progressBar" class="progress-bar" style="width:0%"></div>
+
+  <div class="back-links">
+    <a href="chap01-doc.html">📄 เอกสาร</a>
+    <a href="../../index.html">🏠 หน้าหลัก</a>
+  </div>
+
+  <div class="slide-container">
+<div class="slide title-slide">
+      <h1>บทที่ 1</h1>
+      <h2>รู้จัก Flask + การติดตั้ง + Hello World</h2>
+      <p class="subtitle">Project ปี 1: เน้นพื้นฐานที่ต้องใช้จริง</p>
+      <div class="meta">← → เลื่อนสไลด์ • กด F เพื่อ fullscreen</div>
+    </div>
+<div class="slide section-slide">
+      <h1>Flask คืออะไร</h1>
+      <div class="content">
+        <ul>
+          <li><strong>Micro-framework</strong>: ให้แกนหลัก แล้วเติม extension ตามต้องการ</li>
+          <li>เด่นเรื่อง <strong>Routing</strong> + <strong>Request/Response</strong> + <strong>Jinja2</strong></li>
+          <li>เหมาะกับปี 1 เพราะ “เห็นโฟลว์ชัด” และควบคุมโครงสร้างเอง</li>
+        </ul>
+        <div class="key-point">เป้าหมายบทนี้: ตั้งเครื่องมือ + รันเว็บได้ + เข้าใจวงจร Request→Response</div>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>ภาพรวม Request → Response</h1>
+      <div class="content">
+        <pre><code>Browser → HTTP Request → Flask Router → View Function → Response → Browser</code></pre>
+        <ul>
+          <li><strong>Route</strong> = URL ที่ผูกกับฟังก์ชัน</li>
+          <li><strong>View</strong> = ฟังก์ชันที่ประมวลผล</li>
+          <li><strong>Response</strong> = HTML/JSON/Redirect</li>
+        </ul>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>เตรียมโปรเจกต์ (venv)</h1>
+      <div class="content">
+        <div class="two-column">
+          <div>
+            <h3>Windows</h3>
+            <pre><code>python -m venv venv
+venv\Scripts\activate
+pip install Flask</code></pre>
+          </div>
+          <div>
+            <h3>macOS / Linux</h3>
+            <pre><code>python3 -m venv venv
+source venv/bin/activate
+pip install Flask</code></pre>
+          </div>
+        </div>
+        <p class="muted">แล้วค่อยสร้าง requirements.txt: <code>pip freeze &gt; requirements.txt</code></p>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Hello World</h1>
+      <div class="content">
+        <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask!"
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>ทำไมต้อง debug=True (เฉพาะตอนพัฒนา)</h1>
+      <div class="content">
+        <ul>
+          <li>Auto-reload เมื่อแก้ไฟล์</li>
+          <li>แสดง error detail ช่วย debug เร็ว</li>
+          <li><strong>ห้ามใช้ใน production</strong> (เสี่ยงด้านความปลอดภัย)</li>
+        </ul>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>โครงสร้างโปรเจกต์เริ่มต้น</h1>
+      <div class="content">
+        <pre><code>my-flask-app/
+├─ app.py
+├─ requirements.txt
+└─ .gitignore</code></pre>
+        <div class="key-point">พอโปรเจกต์โต → แยก templates/ และ static/ (บทที่ 3)</div>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Checklist ก่อนเริ่ม Workshop</h1>
+      <div class="content">
+        <ul>
+          <li>เปิดเว็บได้ที่ <code>127.0.0.1:5000</code></li>
+          <li>มี route อย่างน้อย 2 หน้า (<code>/</code>, <code>/about</code>)</li>
+          <li>เริ่มใช้ Git: <code>git init</code> → commit แรก</li>
+        </ul>
+        <p class="muted">บทถัดไป: Routing, Dynamic URL, GET/POST, redirect, url_for</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-counter" id="slideCounter">1 / 8</div>
+
+  <div class="navigation">
+    <button id="prevBtn" class="nav-button" aria-label="previous">←</button>
+    <button id="nextBtn" class="nav-button" aria-label="next">→</button>
+    <button id="fullscreenBtn" class="nav-button" aria-label="fullscreen">⛶</button>
+  </div>
+
+  <script src="../../assets/js/presentation.js"></script>
+</body>
+</html>

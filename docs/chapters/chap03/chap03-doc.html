@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 3: Templates (Jinja2) + Static Files - เอกสารประกอบการสอน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/documentation.css">
+</head>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
+    <div class="nav-links">
+      <a href="chap03-present.html">🎯 Presentation</a>
+      <a href="../chap02/chap02-doc.html">← บทก่อนหน้า</a>
+      <a href="../chap04/chap04-doc.html">บทถัดไป →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 3: Templates (Jinja2) + Static Files</h1>
+      <p class="doc-subtitle">ทำเว็บให้เป็น “หน้า ๆ” ด้วย templates และจัดไฟล์ CSS/JS ให้เป็นระบบ</p>
+      <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน (Project ปี 1)</p>
+    </header>
+
+    <section>
+      <h2>1) ทำไมต้อง Templates</h2>
+      <p>
+        ถ้าเรา return HTML ยาว ๆ ใน Python จะอ่านยากมาก และแก้ UI ทีหลังลำบาก
+        Flask เลยมีระบบ <strong>Templates</strong> (ใช้ <strong>Jinja2</strong>) ให้เราแยก “หน้าตา” ออกจาก “โค้ด”
+      </p>
+      <div class="tip">
+        <p class="tip-title">คิดแบบทีมปี 1</p>
+        <p>คนหนึ่งทำ backend ได้ อีกคนทำ HTML/CSS ได้ โดยไม่ชนกันเยอะ</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>2) โครงสร้างโฟลเดอร์ที่ควรใช้</h2>
+      <div class="example">
+        <pre><code>my-flask-app/
+├─ app.py
+├─ templates/
+│  ├─ base.html
+│  ├─ home.html
+│  └─ repairs/
+│     ├─ list.html
+│     └─ create.html
+└─ static/
+   ├─ css/
+   │  └─ app.css
+   └─ js/
+      └─ app.js</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) render_template</h2>
+      <p>แนวคิดคือ: route เรียก <code>render_template()</code> แล้วส่งข้อมูล (ตัวแปร) เข้าไปให้ HTML</p>
+      <div class="example">
+        <p class="example-title">app.py</p>
+        <pre><code>from flask import render_template
+
+@app.route("/")
+def home():
+    title = "หน้าแรก"
+    return render_template("home.html", title=title)</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">templates/home.html</p>
+        <pre><code>&lt;h1&gt;{{ title }}&lt;/h1&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) Jinja2 Syntax ที่ต้องรู้</h2>
+      <ul>
+        <li><code>{{ ... }}</code> แสดงค่า (variables)</li>
+        <li><code>{% if ... %}</code> เงื่อนไข</li>
+        <li><code>{% for ... %}</code> วนลูป</li>
+      </ul>
+      <div class="example">
+        <pre><code>{% for r in repairs %}
+  &lt;li&gt;{{ r.title }} - {{ r.status }}&lt;/li&gt;
+{% endfor %}</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) Template Inheritance (ทำ layout กลาง)</h2>
+      <p>ใช้ layout กลางเพื่อให้ทุกหน้ามี navbar/footer เหมือนกัน และแก้ทีเดียวจบ</p>
+
+      <div class="example">
+        <p class="example-title">templates/base.html</p>
+        <pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;nav&gt;...&lt;/nav&gt;
+    {% block content %}{% endblock %}
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">templates/home.html</p>
+        <pre><code>{% extends "base.html" %}
+
+{% block content %}
+  &lt;h1&gt;Home&lt;/h1&gt;
+{% endblock %}</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) Static Files (CSS / JS / Images)</h2>
+      <p>เก็บไฟล์ที่ไม่เปลี่ยนตามข้อมูล เช่น CSS/JS ไว้ในโฟลเดอร์ <code>static/</code></p>
+      <div class="example">
+        <pre><code>&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"&gt;
+&lt;script src="{{ url_for('static', filename='js/app.js') }}" defer&gt;&lt;/script&gt;</code></pre>
+      </div>
+      <div class="note">
+        <p class="note-title">ทำไมต้อง url_for('static', ...)</p>
+        <p>เพื่อให้ path ถูกต้องแม้ย้ายโครงสร้างหรือ deploy ขึ้น server</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>7) ฟอร์มแบบง่าย (ยังไม่ใช้ Flask-WTF)</h2>
+      <p>หลักการคือ: HTML form ส่ง POST → Flask อ่านค่าจาก <code>request.form</code></p>
+      <div class="example">
+        <p class="example-title">templates/repairs/create.html</p>
+        <pre><code>&lt;form method="post"&gt;
+  &lt;input name="title" placeholder="อาการเสีย"&gt;
+  &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">app.py</p>
+        <pre><code>from flask import request
+
+@app.route("/repairs/create", methods=["GET","POST"])
+def repairs_create():
+    if request.method == "POST":
+        title = request.form.get("title")
+        return f"บันทึกแล้ว: {title}"
+    return render_template("repairs/create.html")</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>8) แบบฝึกหัด</h2>
+      <ol>
+        <li>ทำ <code>base.html</code> ที่มี navbar link ไปหน้า Home และ Repairs</li>
+        <li>ทำหน้า list แสดงรายการ repairs (ใช้ list จำลองเป็น array ใน Python ก่อน)</li>
+        <li>ใส่ CSS ง่าย ๆ ใน <code>static/css/app.css</code> ให้หน้าอ่านง่ายขึ้น</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>อ้างอิง</h2>
+      <ul>
+        <li>GeeksforGeeks: Flask Rendering Templates, Template Inheritance, Static Files</li>
+      </ul>
+    </section>
+    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    </div>
+  </div>
+</body>
+</html>

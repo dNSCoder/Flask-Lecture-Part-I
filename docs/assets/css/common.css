@@ -1,0 +1,423 @@
+/*
+ * Common CSS - ใช้ร่วมกันทั้งเอกสารและ Presentation
+ * สำหรับเอกสารประกอบการสอน: การวิเคราะห์ความต้องการของระบบ
+ */
+
+/* ==================== CSS Variables ==================== */
+:root {
+    /* สี */
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #ffc107;
+    --info-color: #2196f3;
+    --text-color: #333;
+    --bg-light: #f5f5f5;
+    --bg-white: #ffffff;
+    --border-color: #ddd;
+
+    /* Typography */
+    --font-main: 'Sarabun', sans-serif;
+    --font-code: 'Courier New', Consolas, monospace;
+    --font-size-base: 16px;
+    --line-height-base: 1.8;
+
+    /* Spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 15px;
+    --spacing-md: 20px;
+    --spacing-lg: 30px;
+    --spacing-xl: 40px;
+
+    /* Layout */
+    --container-width: 900px;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    --transition-speed: 0.3s;
+}
+
+/* ==================== Reset & Base Styles ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--text-color);
+    background-color: var(--bg-light);
+}
+
+/* ==================== Typography ==================== */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 2.2em;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+h2 {
+    font-size: 1.8em;
+    border-left: 5px solid var(--primary-color);
+    padding-left: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+}
+
+h3 {
+    font-size: 1.4em;
+    margin-top: var(--spacing-lg);
+}
+
+h4 {
+    font-size: 1.2em;
+    margin-top: var(--spacing-md);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    text-align: justify;
+}
+
+/* ==================== Links ==================== */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* ==================== Lists ==================== */
+ul, ol {
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+li {
+    margin-bottom: var(--spacing-xs);
+}
+
+ul.no-bullets {
+    list-style: none;
+    margin-left: 0;
+}
+
+/* ==================== Code Blocks ==================== */
+.code-block {
+    background-color: #f4f4f4;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    font-family: var(--font-code);
+    font-size: 0.9em;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+code {
+    font-family: var(--font-code);
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* ==================== Example Boxes ==================== */
+.example {
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.example-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.good-example {
+    background-color: #e8f5e9;
+    border-left: 4px solid var(--success-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.bad-example {
+    background-color: #ffebee;
+    border-left: 4px solid var(--danger-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.checkmark::before {
+    content: "✓ ";
+    color: var(--success-color);
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.crossmark::before {
+    content: "✗ ";
+    color: var(--danger-color);
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* ==================== Info Boxes ==================== */
+.tip-box {
+    background-color: #e3f2fd;
+    border-left: 4px solid var(--info-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.tip-box::before {
+    content: "💡 เคล็ดลับ: ";
+    font-weight: 600;
+    color: var(--info-color);
+}
+
+.highlight-box {
+    background-color: #fff9c4;
+    border-left: 4px solid var(--warning-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.highlight-box::before {
+    content: "⚠️ สำคัญ: ";
+    font-weight: 600;
+    color: #f57c00;
+}
+
+.note-box {
+    background-color: #f3e5f5;
+    border-left: 4px solid #9c27b0;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.note-box::before {
+    content: "📝 หมายเหตุ: ";
+    font-weight: 600;
+    color: #9c27b0;
+}
+
+/* ==================== Tables ==================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+    background-color: var(--bg-white);
+    box-shadow: var(--box-shadow);
+}
+
+th {
+    background-color: var(--primary-color);
+    color: white;
+    padding: var(--spacing-sm);
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* ==================== Dividers ==================== */
+.section-divider {
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), transparent);
+    border: none;
+    margin: var(--spacing-xl) 0;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: var(--spacing-lg) 0;
+}
+
+/* ==================== Buttons ==================== */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1em;
+    transition: all var(--transition-speed);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #34495e;
+    text-decoration: none;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ==================== Utility Classes ==================== */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
+
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
+.p-5 { padding: var(--spacing-xl); }
+
+/* ==================== Responsive Images ==================== */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--spacing-md) auto;
+}
+
+.diagram {
+    text-align: center;
+    margin: var(--spacing-lg) 0;
+}
+
+.diagram img {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    background-color: var(--bg-white);
+}
+
+.diagram-caption {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: var(--spacing-sm);
+    font-style: italic;
+}
+
+/* ==================== Two Column Layout ==================== */
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 14px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== Print Styles ==================== */
+@media print {
+    body {
+        background-color: white;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    a {
+        color: var(--text-color);
+        text-decoration: none;
+    }
+
+    a[href^="http"]:after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+}

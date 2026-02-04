@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 2: Routing + URL Building + HTTP Methods - เอกสารประกอบการสอน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/documentation.css">
+</head>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
+    <div class="nav-links">
+      <a href="chap02-present.html">🎯 Presentation</a>
+      <a href="../chap01/chap01-doc.html">← บทก่อนหน้า</a>
+      <a href="../chap03/chap03-doc.html">บทถัดไป →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 2: Routing + URL Building + HTTP Methods</h1>
+      <p class="doc-subtitle">ออกแบบเส้นทาง URL, รับพารามิเตอร์, แยก GET/POST และหลีกเลี่ยงการ hardcode link</p>
+      <p class="doc-meta">บทที่ 2 • เอกสารประกอบการสอน (Project ปี 1)</p>
+    </header>
+
+    <section>
+      <h2>1) Routing คืออะไร</h2>
+      <p>
+        Routing คือการ “แมป URL → ฟังก์ชัน” เพื่อให้ Flask รู้ว่าถ้ามีคนเข้าหน้าไหน
+        ต้องเรียกโค้ดส่วนไหนมาจัดการ
+      </p>
+      <div class="example">
+        <p class="example-title">ตัวอย่าง route พื้นฐาน</p>
+        <pre><code>@app.route("/")
+def home():
+    return "Home"
+
+@app.route("/hello")
+def hello():
+    return "Hello"</code></pre>
+      </div>
+      <p class="muted">แนวคิดนี้คือหัวใจของเว็บแอป—เพราะทุกหน้าคือ URL ที่ชี้ไปยัง “งาน” บางอย่าง</p>
+    </section>
+
+    <section>
+      <h2>2) Dynamic URL (รับค่าจาก path)</h2>
+      <p>เราสามารถรับค่าจาก URL เช่น <code>/user/wanarase</code> แล้วนำไปใช้ในฟังก์ชันได้</p>
+      <div class="example">
+        <pre><code>@app.route("/user/&lt;username&gt;")
+def profile(username):
+    return f"Hello {username}!"</code></pre>
+      </div>
+
+      <h3>Converters (กำหนดชนิดข้อมูล)</h3>
+      <p>Flask รองรับตัวแปลงชนิดข้อมูล เช่น <code>int</code>, <code>float</code>, <code>path</code>, <code>uuid</code></p>
+      <div class="example">
+        <pre><code>@app.route("/post/&lt;int:post_id&gt;")
+def post_detail(post_id):
+    return f"Post id = {post_id}"</code></pre>
+      </div>
+      <div class="tip">
+        <p class="tip-title">ข้อดีของ converter</p>
+        <p>ช่วยให้ URL ชัดว่า “คาดหวังข้อมูลแบบไหน” และลด bug เรื่อง type ตอนรับค่า</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) HTTP Methods: GET vs POST</h2>
+      <p>เวลาออกแบบหน้าเว็บ “ต้องแยกให้ถูก” ว่าอะไรคืออ่านข้อมูล (GET) และอะไรคือส่งข้อมูล (POST)</p>
+
+      <table>
+        <thead>
+          <tr><th>Method</th><th>ใช้เมื่อไหร่</th><th>ตัวอย่าง</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GET</td><td>ขอข้อมูล/เปิดหน้า</td><td>เปิดรายการแจ้งซ่อม</td></tr>
+          <tr><td>POST</td><td>ส่งข้อมูล/สร้างข้อมูลใหม่</td><td>กดส่งฟอร์มแจ้งซ่อม</td></tr>
+        </tbody>
+      </table>
+
+      <div class="example">
+        <p class="example-title">กำหนด methods ใน route</p>
+        <pre><code>from flask import request
+
+@app.route("/create", methods=["GET", "POST"])
+def create():
+    if request.method == "POST":
+        # TODO: รับค่าจากฟอร์ม แล้วบันทึก
+        return "saved"
+    return "show form"</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) url_for: ลิงก์แบบไม่ hardcode</h2>
+      <p>
+        ถ้าเราเขียนลิงก์เป็น <code>&lt;a href="/hello"&gt;</code> แล้ววันหนึ่งเปลี่ยน URL เป็น <code>/hi</code>
+        ทุกไฟล์จะต้องไปแก้หมด → เสี่ยงพังมาก
+      </p>
+
+      <div class="example">
+        <p class="example-title">ใช้ url_for แทน</p>
+        <pre><code>from flask import url_for
+
+@app.route("/hello")
+def hello():
+    return "Hello"
+
+@app.route("/")
+def home():
+    link = url_for("hello")   # อ้างอิงด้วยชื่อฟังก์ชัน
+    return f'&lt;a href="{link}"&gt;ไปหน้า hello&lt;/a&gt;'</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">คิดแบบโปรเจกต์</p>
+        <p>เราจะเปลี่ยน URL ได้โดยไม่ต้องแก้ลิงก์ทุกที่ เพราะอ้างอิงด้วย endpoint (ชื่อฟังก์ชัน) แทน</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) Redirect (หลังทำงานเสร็จให้กลับหน้าเดิม)</h2>
+      <p>แพทเทิร์นคลาสสิก: ส่งฟอร์ม (POST) → บันทึกข้อมูล → redirect ไปหน้า list เพื่อกันการกด refresh แล้วส่งซ้ำ</p>
+      <div class="example">
+        <pre><code>from flask import redirect, url_for
+
+@app.route("/save", methods=["POST"])
+def save():
+    # TODO: save to DB
+    return redirect(url_for("home"))</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) Error Handling แบบพื้นฐาน</h2>
+      <p>อย่างน้อยควรรู้จักทำหน้า 404 เพื่อให้ระบบดู “สมบูรณ์” ขึ้น</p>
+      <div class="example">
+        <pre><code>@app.errorhandler(404)
+def not_found(e):
+    return "ไม่พบหน้านี้", 404</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>7) แบบฝึกหัด (Project ปี 1)</h2>
+      <ol>
+        <li>สร้างหน้า <code>/repairs</code> (GET) ให้แสดงข้อความ “รายการแจ้งซ่อม”</li>
+        <li>สร้างหน้า <code>/repairs/create</code> รองรับ GET/POST (GET แสดงฟอร์ม, POST แสดงข้อความ “บันทึกแล้ว”)</li>
+        <li>สร้างหน้า <code>/repairs/&lt;int:id&gt;</code> เพื่อจำลองหน้า detail</li>
+        <li>ทุกลิงก์ในหน้าให้ใช้ <code>url_for</code></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>อ้างอิง</h2>
+      <ul>
+        <li>GeeksforGeeks: Flask App Routing, Variable Rules, HTTP Method, Redirects &amp; Errors</li>
+      </ul>
+    </section>
+    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    </div>
+  </div>
+</body>
+</html>

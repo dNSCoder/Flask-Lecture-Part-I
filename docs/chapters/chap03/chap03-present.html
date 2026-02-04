@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chap 03 - Templates (Jinja2) + Static Files (Slides)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/presentation.css">
+</head>
+<body class="presentation">
+  <div id="progressBar" class="progress-bar" style="width:0%"></div>
+
+  <div class="back-links">
+    <a href="chap03-doc.html">📄 เอกสาร</a>
+    <a href="../../index.html">🏠 หน้าหลัก</a>
+  </div>
+
+  <div class="slide-container">
+<div class="slide title-slide">
+      <h1>บทที่ 3</h1>
+      <h2>Templates (Jinja2) + Static Files</h2>
+      <p class="subtitle">ทำเว็บให้ “ดูเป็นระบบ” ด้วย layout และไฟล์ CSS/JS</p>
+    </div>
+<div class="slide section-slide">
+      <h1>ทำไมต้อง Templates</h1>
+      <div class="content">
+        <ul>
+          <li>แยก “หน้าตา (HTML)” ออกจาก “ตรรกะ (Python)”</li>
+          <li>ทำงานเป็นทีมง่ายขึ้น</li>
+          <li>ทำ layout กลาง แก้ครั้งเดียวจบ</li>
+        </ul>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>โครงสร้างโฟลเดอร์</h1>
+      <div class="content">
+        <pre><code>templates/   # HTML
+static/      # CSS/JS/Images</code></pre>
+        <pre><code>templates/
+  base.html
+  home.html
+  repairs/list.html</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>render_template</h1>
+      <div class="content">
+        <pre><code>@app.route("/")
+def home():
+    return render_template("home.html", title="หน้าแรก")</code></pre>
+        <pre><code>&lt;h1&gt;{{ title }}&lt;/h1&gt;</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Jinja2 ที่ต้องรู้</h1>
+      <div class="content">
+        <ul>
+          <li><code>{{ var }}</code> แสดงค่า</li>
+          <li><code>{% if %}</code> เงื่อนไข</li>
+          <li><code>{% for %}</code> วนลูป</li>
+        </ul>
+        <pre><code>{% for r in repairs %}
+  &lt;li&gt;{{ r.title }}&lt;/li&gt;
+{% endfor %}</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Template Inheritance</h1>
+      <div class="content">
+        <pre><code>{% extends "base.html" %}
+{% block content %}
+  ...
+{% endblock %}</code></pre>
+        <div class="key-point">ทำ navbar/footer ให้ทุกหน้าเหมือนกัน</div>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Static Files</h1>
+      <div class="content">
+        <pre><code>&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"&gt;</code></pre>
+        <pre><code>&lt;script src="{{ url_for('static', filename='js/app.js') }}" defer&gt;&lt;/script&gt;</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Mini Task</h1>
+      <div class="content">
+        <ol>
+          <li>ทำ base.html + navbar</li>
+          <li>ทำหน้า list ด้วยข้อมูลจำลอง</li>
+          <li>ใส่ CSS ง่าย ๆ ให้เว็บอ่านง่าย</li>
+        </ol>
+        <p class="muted">บทถัดไป: JSON Schema → DB Mapping + SQLAlchemy + Blueprints</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-counter" id="slideCounter">1 / 8</div>
+
+  <div class="navigation">
+    <button id="prevBtn" class="nav-button" aria-label="previous">←</button>
+    <button id="nextBtn" class="nav-button" aria-label="next">→</button>
+    <button id="fullscreenBtn" class="nav-button" aria-label="fullscreen">⛶</button>
+  </div>
+
+  <script src="../../assets/js/presentation.js"></script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chap 04 - JSON Schema → DB Mapping (SQLAlchemy) + Blueprints (Slides)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/presentation.css">
+</head>
+<body class="presentation">
+  <div id="progressBar" class="progress-bar" style="width:0%"></div>
+
+  <div class="back-links">
+    <a href="chap04-doc.html">📄 เอกสาร</a>
+    <a href="../../index.html">🏠 หน้าหลัก</a>
+  </div>
+
+  <div class="slide-container">
+<div class="slide title-slide">
+      <h1>บทที่ 4</h1>
+      <h2>11A JSON Schema → 11B DB Mapping</h2>
+      <p class="subtitle">Project-ready: กำหนดข้อมูล → ทำ DB → ทำ CRUD</p>
+    </div>
+<div class="slide section-slide">
+      <h1>เริ่มจาก “ข้อมูล” ก่อน</h1>
+      <div class="content">
+        <ul>
+          <li>ข้อมูลชัด → UI ชัด → Route ชัด → DB ชัด</li>
+          <li>ลดการแก้ย้อนหลายรอบ</li>
+        </ul>
+        <div class="key-point">วันนี้เราทำ 2 อย่าง: 11A JSON และ 11B DB mapping</div>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>11A: JSON Schema (ย่อ)</h1>
+      <div class="content">
+        <pre><code>{
+  "required": ["title","reporter_name","location","status"],
+  "properties": {
+    "id": {"type":"integer"},
+    "title": {"type":"string"},
+    "status": {"enum":["new","in_progress","done"]}
+  }
+}</code></pre>
+        <p class="muted">ใช้เป็น “สัญญา” ของข้อมูลในทีม</p>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>ติดตั้ง SQLAlchemy</h1>
+      <div class="content">
+        <pre><code>pip install flask flask-sqlalchemy</code></pre>
+        <pre><code>app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"</code></pre>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Model (DB Mapping)</h1>
+      <div class="content">
+        <pre><code>class RepairTicket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.String(30), nullable=False, default="new")</code></pre>
+        <div class="key-point">required → nullable=False</div>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>สร้างตารางครั้งแรก</h1>
+      <div class="content">
+        <pre><code>with app.app_context():
+    db.create_all()</code></pre>
+        <p class="muted">สร้างไฟล์ SQLite app.db และตาราง</p>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>CRUD ขั้นต่ำ (Create + List)</h1>
+      <div class="content">
+        <pre><code>db.session.add(ticket)
+db.session.commit()</code></pre>
+        <pre><code>tickets = RepairTicket.query.all()</code></pre>
+      </div>
+    </div>
+
+    <div class="slide content-slide">
+      <h1>JSON API เบื้องต้น</h1>
+      <div class="content">
+        <pre><code>return jsonify({"status":"ok"})</code></pre>
+        <pre><code>payload = request.get_json()</code></pre>
+        <p class="muted">HTML route และ API route อยู่ร่วมกันได้ใน Flask</p>
+      </div>
+    </div>
+
+
+    <div class="slide content-slide">
+      <h1>Blueprints (จัดโค้ด)</h1>
+      <div class="content">
+        <pre><code>repairs_bp = Blueprint("repairs", __name__,
+                       url_prefix="/repairs")</code></pre>
+        <pre><code>app.register_blueprint(repairs_bp)</code></pre>
+        <p class="muted">ระบบโตเมื่อไหร่ → แยกเป็นโมดูลได้ทันที</p>
+      </div>
+    </div>
+<div class="slide content-slide">
+      <h1>Checklist</h1>
+      <div class="content">
+        <ul>
+          <li>มี schema + model ตรงกัน</li>
+          <li>ทำ create/list ได้</li>
+          <li>พร้อมต่อ workshop ระบบแจ้งซ่อม</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-counter" id="slideCounter">1 / 9</div>
+
+  <div class="navigation">
+    <button id="prevBtn" class="nav-button" aria-label="previous">←</button>
+    <button id="nextBtn" class="nav-button" aria-label="next">→</button>
+    <button id="fullscreenBtn" class="nav-button" aria-label="fullscreen">⛶</button>
+  </div>
+
+  <script src="../../assets/js/presentation.js"></script>
+</body>
+</html>

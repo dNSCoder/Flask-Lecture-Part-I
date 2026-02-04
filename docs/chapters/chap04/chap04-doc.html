@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 4: 11A JSON Schema → 11B DB Mapping (SQLAlchemy) + Blueprints - เอกสารประกอบการสอน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/documentation.css">
+</head>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
+    <div class="nav-links">
+      <a href="chap04-present.html">🎯 Presentation</a>
+      <a href="../chap03/chap03-doc.html">← บทก่อนหน้า</a>
+      <a href="#" style="opacity: 0.5; cursor: not-allowed;">บทถัดไป →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 4: 11A JSON Schema → 11B DB Mapping (SQLAlchemy) + Blueprints</h1>
+      <p class="doc-subtitle">กำหนดข้อมูลของระบบให้ชัด แล้วแปลงเป็นตาราง/โมเดล เพื่อทำ CRUD ได้จริง</p>
+      <p class="doc-meta">บทที่ 4 • เอกสารประกอบการสอน (Project ปี 1)</p>
+    </header>
+
+    <section>
+      <h2>1) ทำไมต้องเริ่มจาก “ข้อมูล” ก่อน</h2>
+      <p>
+        โปรเจกต์ปี 1 มักเริ่มจาก “ทำหน้าเว็บก่อน” แล้วค่อยคิดว่าเก็บข้อมูลยังไง → สุดท้ายแก้หลายรอบ
+        วิธีที่ง่ายและเป็นระบบกว่า คือเริ่มจาก <strong>กำหนดข้อมูล (Data Model)</strong> ก่อน
+      </p>
+      <div class="key-point">
+        ถ้า “ข้อมูลชัด” → UI, Routing, DB จะต่อกันได้ง่ายขึ้น
+      </div>
+    </section>
+
+    <section>
+      <h2>2) 11A: JSON Schema (ตัวอย่างสำหรับระบบแจ้งซ่อม)</h2>
+      <p>เราใช้ JSON เพื่ออธิบายว่า “หนึ่งรายการแจ้งซ่อม” ต้องมี field อะไรบ้าง</p>
+      <div class="example">
+        <p class="example-title">repair.schema.json (ตัวอย่างแบบย่อ)</p>
+        <pre><code>{
+  "title": "RepairTicket",
+  "type": "object",
+  "required": ["title", "reporter_name", "location", "status"],
+  "properties": {
+    "id": {"type":"integer"},
+    "title": {"type":"string", "minLength": 3},
+    "description": {"type":"string"},
+    "reporter_name": {"type":"string"},
+    "location": {"type":"string"},
+    "status": {"type":"string", "enum":["new","in_progress","done"]},
+    "created_at": {"type":"string", "format":"date-time"}
+  }
+}</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">สิ่งที่ได้จาก JSON Schema</p>
+        <ul>
+          <li>ทีมเห็นตรงกันว่าข้อมูลหน้าตาเป็นแบบไหน</li>
+          <li>นำไปทำฟอร์ม/validation ได้ง่าย</li>
+          <li>นำไปแมปเป็น DB ได้ตรง ๆ</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) 11B: DB Mapping (SQLAlchemy)</h2>
+      <p>
+        Flask ไม่มี ORM ติดมาให้ แต่เรานิยมใช้ <strong>Flask-SQLAlchemy</strong> เพื่อสร้างตารางและทำ CRUD ได้ง่ายขึ้น
+      </p>
+
+      <div class="example">
+        <p class="example-title">ติดตั้ง</p>
+        <pre><code>pip install flask flask-sqlalchemy</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">ตั้งค่า SQLite + สร้าง db instance</p>
+        <pre><code>from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)</code></pre>
+      </div>
+
+      <h3>แมป JSON → ตาราง</h3>
+      <p>จาก schema เราจะแปลงเป็น model class เช่น <code>RepairTicket</code></p>
+      <div class="example">
+        <pre><code>from datetime import datetime
+
+class RepairTicket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    reporter_name = db.Column(db.String(120), nullable=False)
+    location = db.Column(db.String(120), nullable=False)
+    status = db.Column(db.String(30), nullable=False, default="new")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">คิดแบบ mapping</p>
+        <p><code>required</code> ใน JSON → <code>nullable=False</code> ใน DB • <code>enum</code> → จำกัดค่าในแอป/ฟอร์ม (ปี 1 ทำเช็คง่าย ๆ ก็พอ)</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) สร้างตาราง (ครั้งแรก)</h2>
+      <div class="example">
+        <pre><code>if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)</code></pre>
+      </div>
+      <p class="muted">ใช้ SQLite เพื่อเรียนรู้และ demo ได้เร็ว (โปรเจกต์จริงค่อยขยับไป MySQL/PostgreSQL ได้)</p>
+    </section>
+
+    <section>
+      <h2>5) CRUD แบบพื้นฐาน (แนวทางปี 1)</h2>
+      <p>ตัวอย่าง “สร้างข้อมูล (Create)” จากฟอร์ม</p>
+      <div class="example">
+        <pre><code>from flask import request, redirect, url_for, render_template
+
+@app.route("/repairs/create", methods=["GET","POST"])
+def repairs_create():
+    if request.method == "POST":
+        ticket = RepairTicket(
+            title=request.form.get("title"),
+            description=request.form.get("description"),
+            reporter_name=request.form.get("reporter_name"),
+            location=request.form.get("location"),
+            status="new",
+        )
+        db.session.add(ticket)
+        db.session.commit()
+        return redirect(url_for("repairs_list"))
+    return render_template("repairs/create.html")</code></pre>
+      </div>
+
+      <p>ตัวอย่าง “อ่านข้อมูล (Read)” เพื่อแสดง list</p>
+      <div class="example">
+        <pre><code>@app.route("/repairs")
+def repairs_list():
+    tickets = RepairTicket.query.order_by(RepairTicket.id.desc()).all()
+    return render_template("repairs/list.html", tickets=tickets)</code></pre>
+      </div>
+    </section>
+
+    <section>
+      
+    <section>
+      <h2>6) JSON API แบบเบื้องต้น (สำหรับเชื่อมต่อ Frontend)</h2>
+      <p>
+        นอกจากส่ง HTML แล้ว Flask สามารถส่ง/รับ JSON ได้ เพื่อทำเป็น API สำหรับหน้าเว็บแบบแยก frontend/backend
+        (หรือใช้ htmx/axios fetch ก็ได้)
+      </p>
+      <div class="example">
+        <p class="example-title">ส่ง JSON</p>
+        <pre><code>from flask import jsonify
+
+@app.route("/api/repairs")
+def api_repairs():
+    tickets = RepairTicket.query.all()
+    data = [
+        {"id": t.id, "title": t.title, "status": t.status}
+        for t in tickets
+    ]
+    return jsonify(data)</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">รับ JSON (POST)</p>
+        <pre><code>from flask import request
+
+@app.route("/api/repairs", methods=["POST"])
+def api_create_repair():
+    payload = request.get_json()  # {"title": "...", "reporter_name": "...", ...}
+    ticket = RepairTicket(
+        title=payload.get("title"),
+        reporter_name=payload.get("reporter_name"),
+        location=payload.get("location"),
+        status="new",
+    )
+    db.session.add(ticket)
+    db.session.commit()
+    return jsonify({"id": ticket.id}), 201</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">ปี 1 เอาแค่แนวคิดก่อน</p>
+        <p>ยังไม่ต้องทำ auth/permission ซับซ้อน แต่ควรรู้ว่า HTML route กับ API route อยู่ร่วมกันได้</p>
+      </div>
+    </section>
+
+      <h2>7) Blueprints (จัดระเบียบโค้ดเมื่อระบบโต)</h2>
+      <p>
+        ถ้าแอปมีหลายเมนู การเขียนทุก route ในไฟล์เดียวจะรกมาก
+        Flask มี <strong>Blueprints</strong> เพื่อแยกโมดูล เช่น repairs, auth, admin
+      </p>
+
+      <div class="example">
+        <p class="example-title">โครงสร้างแนะนำ</p>
+        <pre><code>app/
+  __init__.py
+  repairs/
+    routes.py
+    models.py
+  templates/
+  static/
+run.py</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">สร้าง blueprint</p>
+        <pre><code># app/repairs/routes.py
+from flask import Blueprint
+repairs_bp = Blueprint("repairs", __name__, url_prefix="/repairs")
+
+@repairs_bp.route("/")
+def list():
+    return "repairs list"</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">register blueprint</p>
+        <pre><code># app/__init__.py
+from flask import Flask
+from .repairs.routes import repairs_bp
+
+def create_app():
+    app = Flask(__name__)
+    app.register_blueprint(repairs_bp)
+    return app</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">สำหรับปี 1</p>
+        <p>ถ้าโปรเจกต์ยังเล็ก เริ่มแบบไฟล์เดียวก่อนก็ได้ แต่ “ต้องรู้แนวคิด” เพราะตอนท้ายเทอมระบบจะโต</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>8) Checklist: พร้อมไปทำ Workshop ระบบแจ้งซ่อม</h2>
+      <ul>
+        <li>มี JSON schema กำหนด field หลักครบ</li>
+        <li>มี model SQLAlchemy อย่างน้อย 1 ตาราง</li>
+        <li>ทำ Create + List ได้ (CRUD ขั้นต่ำ)</li>
+        <li>เข้าใจว่าถ้าระบบโต จะย้ายไป Blueprints ได้</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>อ้างอิง</h2>
+      <ul>
+        <li>GeeksforGeeks: Flask Tutorial (ภาพรวม), Flask-SQLAlchemy, Blueprints</li>
+      </ul>
+    </section>
+    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    </div>
+  </div>
+</body>
+</html>

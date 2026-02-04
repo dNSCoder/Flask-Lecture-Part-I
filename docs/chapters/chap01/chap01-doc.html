@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 1: รู้จัก Flask + การติดตั้ง + Hello World - เอกสารประกอบการสอน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/documentation.css">
+</head>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
+    <div class="nav-links">
+      <a href="chap01-present.html">🎯 Presentation</a>
+      <a href="#" style="opacity: 0.5; cursor: not-allowed;">← บทก่อนหน้า</a>
+      <a href="../chap02/chap02-doc.html">บทถัดไป →</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 1: รู้จัก Flask + การติดตั้ง + Hello World</h1>
+      <p class="doc-subtitle">ภาพรวม Flask, วงจร Request→Response และการตั้งค่าโปรเจกต์ให้พร้อมทำงาน</p>
+      <p class="doc-meta">บทที่ 1 • เอกสารประกอบการสอน (Project ปี 1)</p>
+    </header>
+
+    <section>
+      <h2>1) Flask คืออะไร</h2>
+      <p>
+        <strong>Flask</strong> คือเฟรมเวิร์กสำหรับสร้างเว็บด้วยภาษา Python ที่เน้น “แกนหลักเรียบง่าย”
+        แล้วให้เราเลือกต่อเติมสิ่งที่ต้องใช้เอง จึงถูกเรียกว่า <em>micro-framework</em>
+        (ไม่ได้แปลว่า “ทำอะไรได้น้อย” แต่แปลว่า “ไม่ยัดของมาให้หมดตั้งแต่ต้น”). 
+      </p>
+      <div class="note">
+        <p class="note-title">จำให้ขึ้นใจ</p>
+        <p>Flask ให้ของจำเป็น: Routing + Request/Response + Template (Jinja2) + Dev server แล้วค่อยต่อ DB, Login, Forms ด้วย extension ตามที่โปรเจกต์ต้องใช้</p>
+      </div>
+      <p>
+        ในงาน <strong>Project ปี 1</strong> Flask เหมาะมาก เพราะทำให้ “เห็นภาพการไหลของข้อมูล” ชัด:
+        URL → ฟังก์ชัน → ดึงข้อมูล/ประมวลผล → ส่ง HTML/JSON กลับไป
+      </p>
+    </section>
+
+    <section>
+      <h2>2) Flask ทำงานยังไง (Request → Response)</h2>
+      <p>ทุกครั้งที่ผู้ใช้เปิดหน้าเว็บหรือกดส่งฟอร์ม จะเกิด HTTP Request วิ่งมาที่เซิร์ฟเวอร์ แล้ว Flask จะจับคู่ URL กับ route ที่เรากำหนดไว้</p>
+
+      <div class="example">
+        <p class="example-title">ภาพรวมแบบสั้น</p>
+        <pre><code>Browser → HTTP Request → Flask Router → View Function → Response (HTML/JSON/Redirect) → Browser</code></pre>
+      </div>
+
+      <ul>
+        <li><strong>Route</strong>: กติกาว่า URL ไหนให้เรียกฟังก์ชันไหน</li>
+        <li><strong>View Function</strong>: ฟังก์ชัน Python ที่รับ request และส่ง response</li>
+        <li><strong>Response</strong>: อาจเป็นข้อความ, HTML, JSON หรือ redirect ไปหน้าอื่น</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3) เตรียมเครื่องมือ (สิ่งที่ต้องมี)</h2>
+      <ul>
+        <li>Python 3.8+ (แนะนำ 3.10+)</li>
+        <li>VS Code หรือ IDE ที่ถนัด</li>
+        <li>Terminal (PowerShell / Command Prompt / zsh / bash)</li>
+        <li>Git (ถ้าจะอัปขึ้น GitHub)</li>
+      </ul>
+      <div class="tip">
+        <p class="tip-title">ทำไมต้อง venv</p>
+        <p>เพราะโปรเจกต์ A อาจใช้ Flask 2.x แต่โปรเจกต์ B ใช้ Flask 3.x ถ้าไม่แยกสภาพแวดล้อมจะปนกันและพังง่าย</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) สร้างโปรเจกต์ + virtual environment (venv)</h2>
+      <div class="example">
+        <p class="example-title">โครงสร้างโปรเจกต์เริ่มต้น</p>
+<pre><code>my-flask-app/
+├─ app.py
+├─ requirements.txt
+└─ .gitignore</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">คำสั่ง (Windows)</p>
+        <pre><code>mkdir my-flask-app
+cd my-flask-app
+python -m venv venv
+venv\Scripts\activate
+pip install Flask
+pip freeze &gt; requirements.txt</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">คำสั่ง (macOS / Linux)</p>
+        <pre><code>mkdir my-flask-app
+cd my-flask-app
+python3 -m venv venv
+source venv/bin/activate
+pip install Flask
+pip freeze &gt; requirements.txt</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) Hello World แบบ Flask</h2>
+      <p>ไฟล์ <code>app.py</code> ที่เล็กที่สุด (แต่ “ครบวงจร”)</p>
+      <div class="example">
+        <p class="example-title">app.py</p>
+        <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask!"
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+      </div>
+
+      <h3>อธิบายทีละบรรทัด (ภาษาโปรเจกต์ปี 1)</h3>
+      <ul>
+        <li><code>app = Flask(__name__)</code>: สร้าง “ตัวแอป” (เหมือนศูนย์กลางของเว็บเรา)</li>
+        <li><code>@app.route("/")</code>: บอกว่า URL <code>/</code> ให้เรียกฟังก์ชัน <code>home()</code></li>
+        <li><code>return ...</code>: นี่คือ response ที่ส่งกลับไปให้ browser</li>
+        <li><code>debug=True</code>: ช่วย auto-reload และแสดง error detail (ใช้เฉพาะตอนพัฒนา)</li>
+      </ul>
+
+      <div class="warning">
+        <p class="warning-title">ข้อควรระวัง</p>
+        <p>อย่าเปิด <code>debug=True</code> ใน production เพราะเป็นความเสี่ยงด้านความปลอดภัย</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) รันแอป</h2>
+      <div class="example">
+        <p class="example-title">รันด้วย python</p>
+        <pre><code>python app.py</code></pre>
+      </div>
+      <p>จากนั้นเปิด <code>http://127.0.0.1:5000</code> ใน browser</p>
+
+      <h3>ถ้าอยากเปลี่ยนพอร์ต</h3>
+      <div class="example">
+        <pre><code>app.run(debug=True, port=8000)</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>7) Best Practices (ที่ควรทำตั้งแต่วันแรก)</h2>
+      <ol>
+        <li><strong>เริ่มด้วย venv ทุกครั้ง</strong> และ commit <code>requirements.txt</code></li>
+        <li><strong>แยกโฟลเดอร์</strong> เมื่อโปรเจกต์เริ่มโต: <code>templates/</code>, <code>static/</code></li>
+        <li><strong>ใช้ url_for แทนการ hardcode URL</strong> (จะเรียนในบท 2)</li>
+        <li><strong>แบ่งโค้ดด้วย Blueprints</strong> เมื่อมีหลายหน้า/หลายโมดูล (จะเรียนในบท 4)</li>
+        <li><strong>ใช้ Git ตั้งแต่ต้น</strong>: commit สั้น ๆ แต่บ่อย ๆ</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>8) แบบฝึกหัด (สั้น ๆ)</h2>
+      <ul>
+        <li>เพิ่ม route <code>/about</code> ให้แสดงข้อมูล “ชื่อทีม/หัวข้อโปรเจกต์”</li>
+        <li>เพิ่ม route <code>/health</code> ให้ return JSON: <code>{"status":"ok"}</code></li>
+        <li>ทำให้หน้า <code>/</code> แสดง “เวลาปัจจุบัน” (ใช้ <code>datetime</code>)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>อ้างอิง</h2>
+      <ul>
+        <li>GeeksforGeeks: Flask Tutorial, Routing, Templates, Static, SQLAlchemy</li>
+      </ul>
+    </section>
+    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    </div>
+  </div>
+</body>
+</html>

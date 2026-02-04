@@ -3,267 +3,681 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>บทที่ 4: 11A JSON Schema → 11B DB Mapping (SQLAlchemy) + Blueprints - เอกสารประกอบการสอน</title>
+  <title>บทที่ 4: JSON Schema → Database Mapping + Blueprints | Flask Workshop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../assets/css/common.css">
-  <link rel="stylesheet" href="../../assets/css/documentation.css">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; }
+  </style>
 </head>
-<body>
-  <nav class="chapter-nav no-print">
-    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
-    <div class="nav-links">
-<a href="../chap03/chap03-doc.html">← บทก่อนหน้า</a>
-      <a href="#" style="opacity: 0.5; cursor: not-allowed;">บทถัดไป →</a>
+<body class="bg-gray-50">
+  
+  <!-- Navigation -->
+  <nav class="bg-white shadow-sm border-b border-gray-200 print:hidden">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <a href="../../index.html" class="text-blue-600 hover:text-blue-800 font-medium">
+          🏠 หน้าหลัก
+        </a>
+        <div class="flex gap-4">
+          <a href="../chap03/chap03-doc.html" class="text-gray-600 hover:text-gray-800">
+            ← บทที่ 3
+          </a>
+          <span class="text-gray-300">บทที่ 5 →</span>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <div class="container">
-    <header class="doc-header">
-      <h1>บทที่ 4: 11A JSON Schema → 11B DB Mapping (SQLAlchemy) + Blueprints</h1>
-      <p class="doc-subtitle">กำหนดข้อมูลของระบบให้ชัด แล้วแปลงเป็นตาราง/โมเดล เพื่อทำ CRUD ได้จริง</p>
-      <p class="doc-meta">บทที่ 4 • เอกสารประกอบการสอน (Project ปี 1)</p>
-    </header>
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">บทที่ 4</span>
+        <span class="text-blue-100">Workshop Ready</span>
+      </div>
+      <h1 class="text-4xl font-bold mb-3">JSON Schema → Database Mapping + Blueprints</h1>
+      <p class="text-xl text-blue-100 mb-2">กำหนดข้อมูลให้ชัด แปลงเป็น Database แล้วสร้างระบบจริง</p>
+      <p class="text-blue-200">เหมาะสำหรับโปรเจกต์ปี 1 และ Workshop ระบบแจ้งซ่อม</p>
+    </div>
+  </header>
 
-    <section>
-      <h2>1) ทำไมต้องเริ่มจาก “ข้อมูล” ก่อน</h2>
-      <p>
-        โปรเจกต์ปี 1 มักเริ่มจาก “ทำหน้าเว็บก่อน” แล้วค่อยคิดว่าเก็บข้อมูลยังไง → สุดท้ายแก้หลายรอบ
-        วิธีที่ง่ายและเป็นระบบกว่า คือเริ่มจาก <strong>กำหนดข้อมูล (Data Model)</strong> ก่อน
-      </p>
-      <div class="key-point">
-        ถ้า “ข้อมูลชัด” → UI, Routing, DB จะต่อกันได้ง่ายขึ้น
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    
+    <!-- Overview -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 ภาพรวมบทเรียน</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <div class="text-blue-600 font-semibold mb-2">🎯 เป้าหมาย</div>
+          <p class="text-sm text-gray-700">เริ่มจากข้อมูล ไม่ใช่หน้าเว็บ เพื่อให้ระบบมีโครงสร้างชัดเจน</p>
+        </div>
+        <div class="bg-green-50 p-4 rounded-lg">
+          <div class="text-green-600 font-semibold mb-2">🛠️ เครื่องมือ</div>
+          <p class="text-sm text-gray-700">JSON Schema, SQLAlchemy, Blueprints</p>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <div class="text-purple-600 font-semibold mb-2">💡 ผลลัพธ์</div>
+          <p class="text-sm text-gray-700">สร้างระบบ CRUD ที่มีโครงสร้างดี ขยายง่าย</p>
+        </div>
       </div>
     </section>
 
-    <section>
-      <h2>2) 11A: JSON Schema (ตัวอย่างสำหรับระบบแจ้งซ่อม)</h2>
-      <p>เราใช้ JSON เพื่ออธิบายว่า “หนึ่งรายการแจ้งซ่อม” ต้องมี field อะไรบ้าง</p>
-      <div class="example">
-        <p class="example-title">repair.schema.json (ตัวอย่างแบบย่อ)</p>
-        <pre><code>{
+    <!-- Section 1: Why Start with Data -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">1️⃣ ทำไมต้องเริ่มจาก "ข้อมูล" ก่อน</h2>
+      
+      <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+        <p class="font-semibold text-red-800 mb-2">❌ ปัญหาที่พบบ่อย</p>
+        <p class="text-gray-700">โปรเจกต์ปี 1 มักเริ่มจาก "ทำหน้าเว็บก่อน" แล้วค่อยคิดว่าเก็บข้อมูลยังไง → สุดท้ายต้องแก้หลายรอบ</p>
+      </div>
+
+      <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+        <p class="font-semibold text-green-800 mb-2">✅ วิธีที่ดีกว่า</p>
+        <p class="text-gray-700">เริ่มจาก <strong>กำหนดข้อมูล (Data Model)</strong> ก่อน → UI, Routing, DB จะต่อกันได้ง่ายขึ้น</p>
+      </div>
+
+      <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-lg">
+        <p class="text-xl font-bold mb-2">💎 หลักคิดสำคัญ</p>
+        <p class="text-lg">ข้อมูลชัด → ทุกอย่างชัด → ทีมทำงานร่วมกันได้ดี</p>
+      </div>
+    </section>
+
+    <!-- Section 2: JSON Schema -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">2️⃣ JSON Schema (ระบบแจ้งซ่อม)</h2>
+      
+      <p class="text-gray-700 mb-4">
+        ใช้ JSON เพื่ออธิบายว่า "หนึ่งรายการแจ้งซ่อม" มี field อะไรบ้าง ชนิดข้อมูลคืออะไร บังคับหรือไม่
+      </p>
+
+      <div class="bg-gray-50 rounded-lg p-6 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-semibold text-gray-600">repair.schema.json</span>
+          <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">JSON Schema</span>
+        </div>
+        <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{
   "title": "RepairTicket",
   "type": "object",
   "required": ["title", "reporter_name", "location", "status"],
   "properties": {
-    "id": {"type":"integer"},
-    "title": {"type":"string", "minLength": 3},
-    "description": {"type":"string"},
-    "reporter_name": {"type":"string"},
-    "location": {"type":"string"},
-    "status": {"type":"string", "enum":["new","in_progress","done"]},
-    "created_at": {"type":"string", "format":"date-time"}
+    "id": {
+      "type": "integer",
+      "description": "รหัสอัตโนมัติ"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "หัวข้อการแจ้งซ่อม"
+    },
+    "description": {
+      "type": "string",
+      "description": "รายละเอียด (ไม่บังคับ)"
+    },
+    "reporter_name": {
+      "type": "string",
+      "description": "ชื่อผู้แจ้ง"
+    },
+    "location": {
+      "type": "string",
+      "description": "สถานที่"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "in_progress", "done"],
+      "default": "new",
+      "description": "สถานะ"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "วันที่สร้าง"
+    }
   }
 }</code></pre>
       </div>
 
-      <div class="note">
-        <p class="note-title">สิ่งที่ได้จาก JSON Schema</p>
-        <ul>
-          <li>ทีมเห็นตรงกันว่าข้อมูลหน้าตาเป็นแบบไหน</li>
-          <li>นำไปทำฟอร์ม/validation ได้ง่าย</li>
-          <li>นำไปแมปเป็น DB ได้ตรง ๆ</li>
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+        <p class="font-semibold text-blue-800 mb-2">📝 ประโยชน์ของ JSON Schema</p>
+        <ul class="space-y-2 text-gray-700">
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span>ทีมเห็นตรงกันว่าข้อมูลหน้าตาเป็นแบบไหน</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span>นำไปทำฟอร์ม/validation ได้ง่าย</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span>นำไปแมปเป็น Database ได้ตรงไปตรงมา</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-blue-500 mr-2">✓</span>
+            <span>เป็นเอกสารให้ developer คนอื่นเข้าใจได้เร็ว</span>
+          </li>
         </ul>
       </div>
     </section>
 
-    <section>
-      <h2>3) 11B: DB Mapping (SQLAlchemy)</h2>
-      <p>
-        Flask ไม่มี ORM ติดมาให้ แต่เรานิยมใช้ <strong>Flask-SQLAlchemy</strong> เพื่อสร้างตารางและทำ CRUD ได้ง่ายขึ้น
+    <!-- Section 3: Database Mapping -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">3️⃣ Database Mapping ด้วย SQLAlchemy</h2>
+      
+      <p class="text-gray-700 mb-4">
+        Flask ไม่มี ORM ติดมาให้ แต่เรานิยมใช้ <strong>Flask-SQLAlchemy</strong> 
+        เพราะสร้างตารางและทำ CRUD ได้ง่ายกว่าเขียน SQL เอง
       </p>
 
-      <div class="example">
-        <p class="example-title">ติดตั้ง</p>
-        <pre><code>pip install flask flask-sqlalchemy</code></pre>
+      <!-- Installation -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">📦 ติดตั้ง</h3>
+        <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
+          <code>pip install flask flask-sqlalchemy</code>
+        </div>
       </div>
 
-      <div class="example">
-        <p class="example-title">ตั้งค่า SQLite + สร้าง db instance</p>
-        <pre><code>from flask import Flask
+      <!-- Configuration -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">⚙️ ตั้งค่าเริ่มต้น</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-600">app.py</span>
+          </div>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+
+# กำหนด Database URI (ใช้ SQLite สำหรับเรียนรู้)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///repairs.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# สร้าง database instance
 db = SQLAlchemy(app)</code></pre>
+        </div>
       </div>
 
-      <h3>แมป JSON → ตาราง</h3>
-      <p>จาก schema เราจะแปลงเป็น model class เช่น <code>RepairTicket</code></p>
-      <div class="example">
-        <pre><code>from datetime import datetime
+      <!-- Model Mapping -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">🗺️ แมป JSON → ตาราง (Model)</h3>
+        
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+          <p class="font-semibold text-yellow-800 mb-2">💡 กฎการแปลง</p>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">required</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">nullable=False</code></li>
+            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">type: "string"</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">db.String()</code></li>
+            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">type: "integer"</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">db.Integer</code></li>
+            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">enum</code> → เช็คใน validation หรือใช้ db.Enum</li>
+          </ul>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-600">models.py</span>
+          </div>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from datetime import datetime
+from app import db
 
 class RepairTicket(db.Model):
+    """โมเดลสำหรับเก็บข้อมูลการแจ้งซ่อม"""
+    
+    __tablename__ = 'repair_tickets'
+    
+    # Primary Key
     id = db.Column(db.Integer, primary_key=True)
+    
+    # Required Fields
     title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)
     reporter_name = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(120), nullable=False)
     status = db.Column(db.String(30), nullable=False, default="new")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)</code></pre>
+    
+    # Optional Fields
+    description = db.Column(db.Text)
+    
+    # Auto Timestamp
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'&lt;RepairTicket {self.id}: {self.title}&gt;'
+    
+    def to_dict(self):
+        """แปลงเป็น dict สำหรับส่ง JSON"""
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'reporter_name': self.reporter_name,
+            'location': self.location,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }</code></pre>
+        </div>
       </div>
 
-      <div class="tip">
-        <p class="tip-title">คิดแบบ mapping</p>
-        <p><code>required</code> ใน JSON → <code>nullable=False</code> ใน DB • <code>enum</code> → จำกัดค่าในแอป/ฟอร์ม (ปี 1 ทำเช็คง่าย ๆ ก็พอ)</p>
-      </div>
-    </section>
-
-    <section>
-      <h2>4) สร้างตาราง (ครั้งแรก)</h2>
-      <div class="example">
-        <pre><code>if __name__ == "__main__":
+      <!-- Create Tables -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">🏗️ สร้างตาราง</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>if __name__ == "__main__":
+    # สร้างตารางทั้งหมด (ครั้งแรก)
     with app.app_context():
         db.create_all()
+        print("✅ Database tables created!")
+    
     app.run(debug=True)</code></pre>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">
+          💾 ไฟล์ <code class="bg-gray-200 px-2 py-0.5 rounded">repairs.db</code> จะถูกสร้างในโฟลเดอร์โปรเจกต์
+        </p>
       </div>
-      <p class="muted">ใช้ SQLite เพื่อเรียนรู้และ demo ได้เร็ว (โปรเจกต์จริงค่อยขยับไป MySQL/PostgreSQL ได้)</p>
     </section>
 
-    <section>
-      <h2>5) CRUD แบบพื้นฐาน (แนวทางปี 1)</h2>
-      <p>ตัวอย่าง “สร้างข้อมูล (Create)” จากฟอร์ม</p>
-      <div class="example">
-        <pre><code>from flask import request, redirect, url_for, render_template
+    <!-- Section 4: CRUD Operations -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">4️⃣ CRUD Operations (พื้นฐาน)</h2>
+      
+      <!-- Create -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">Create</span>
+          สร้างข้อมูล
+        </h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import request, redirect, url_for, render_template, flash
 
-@app.route("/repairs/create", methods=["GET","POST"])
+@app.route("/repairs/create", methods=["GET", "POST"])
 def repairs_create():
     if request.method == "POST":
+        # รับข้อมูลจากฟอร์ม
         ticket = RepairTicket(
             title=request.form.get("title"),
             description=request.form.get("description"),
             reporter_name=request.form.get("reporter_name"),
             location=request.form.get("location"),
-            status="new",
+            status="new"
         )
+        
+        # บันทึกลง database
         db.session.add(ticket)
         db.session.commit()
+        
+        flash("✅ สร้างรายการแจ้งซ่อมสำเร็จ!", "success")
         return redirect(url_for("repairs_list"))
+    
+    # แสดงฟอร์ม
     return render_template("repairs/create.html")</code></pre>
+        </div>
       </div>
 
-      <p>ตัวอย่าง “อ่านข้อมูล (Read)” เพื่อแสดง list</p>
-      <div class="example">
-        <pre><code>@app.route("/repairs")
+      <!-- Read -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">Read</span>
+          อ่านข้อมูล
+        </h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code># แสดงรายการทั้งหมด
+@app.route("/repairs")
 def repairs_list():
-    tickets = RepairTicket.query.order_by(RepairTicket.id.desc()).all()
-    return render_template("repairs/list.html", tickets=tickets)</code></pre>
+    tickets = RepairTicket.query.order_by(
+        RepairTicket.created_at.desc()
+    ).all()
+    return render_template("repairs/list.html", tickets=tickets)
+
+# แสดงรายละเอียด 1 รายการ
+@app.route("/repairs/&lt;int:id&gt;")
+def repairs_detail(id):
+    ticket = RepairTicket.query.get_or_404(id)
+    return render_template("repairs/detail.html", ticket=ticket)</code></pre>
+        </div>
+      </div>
+
+      <!-- Update -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mr-2">Update</span>
+          แก้ไขข้อมูล
+        </h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/repairs/&lt;int:id&gt;/edit", methods=["GET", "POST"])
+def repairs_edit(id):
+    ticket = RepairTicket.query.get_or_404(id)
+    
+    if request.method == "POST":
+        # อัปเดตข้อมูล
+        ticket.title = request.form.get("title")
+        ticket.description = request.form.get("description")
+        ticket.location = request.form.get("location")
+        ticket.status = request.form.get("status")
+        
+        db.session.commit()
+        flash("✅ อัปเดตข้อมูลสำเร็จ!", "success")
+        return redirect(url_for("repairs_detail", id=id))
+    
+    return render_template("repairs/edit.html", ticket=ticket)</code></pre>
+        </div>
+      </div>
+
+      <!-- Delete -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm mr-2">Delete</span>
+          ลบข้อมูล
+        </h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/repairs/&lt;int:id&gt;/delete", methods=["POST"])
+def repairs_delete(id):
+    ticket = RepairTicket.query.get_or_404(id)
+    
+    db.session.delete(ticket)
+    db.session.commit()
+    
+    flash("✅ ลบรายการสำเร็จ!", "success")
+    return redirect(url_for("repairs_list"))</code></pre>
+        </div>
       </div>
     </section>
 
-    <section>
+    <!-- Section 5: JSON API -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">5️⃣ JSON API (เบื้องต้น)</h2>
       
-    <section>
-      <h2>6) JSON API แบบเบื้องต้น (สำหรับเชื่อมต่อ Frontend)</h2>
-      <p>
-        นอกจากส่ง HTML แล้ว Flask สามารถส่ง/รับ JSON ได้ เพื่อทำเป็น API สำหรับหน้าเว็บแบบแยก frontend/backend
-        (หรือใช้ htmx/axios fetch ก็ได้)
+      <p class="text-gray-700 mb-4">
+        นอกจากส่ง HTML แล้ว Flask ยังส่ง/รับ JSON ได้ เพื่อทำเป็น API สำหรับ Frontend แยกต่างหาก
       </p>
-      <div class="example">
-        <p class="example-title">ส่ง JSON</p>
-        <pre><code>from flask import jsonify
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- GET JSON -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-md font-semibold text-gray-800 mb-3">📤 ส่ง JSON (GET)</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import jsonify
 
 @app.route("/api/repairs")
 def api_repairs():
     tickets = RepairTicket.query.all()
-    data = [
-        {"id": t.id, "title": t.title, "status": t.status}
-        for t in tickets
-    ]
+    
+    data = [ticket.to_dict() 
+            for ticket in tickets]
+    
     return jsonify(data)</code></pre>
-      </div>
+        </div>
 
-      <div class="example">
-        <p class="example-title">รับ JSON (POST)</p>
-        <pre><code>from flask import request
-
-@app.route("/api/repairs", methods=["POST"])
+        <!-- POST JSON -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-md font-semibold text-gray-800 mb-3">📥 รับ JSON (POST)</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/api/repairs", 
+           methods=["POST"])
 def api_create_repair():
-    payload = request.get_json()  # {"title": "...", "reporter_name": "...", ...}
+    data = request.get_json()
+    
     ticket = RepairTicket(
-        title=payload.get("title"),
-        reporter_name=payload.get("reporter_name"),
-        location=payload.get("location"),
-        status="new",
+        title=data.get("title"),
+        reporter_name=data.get("reporter_name"),
+        location=data.get("location"),
+        status="new"
     )
     db.session.add(ticket)
     db.session.commit()
-    return jsonify({"id": ticket.id}), 201</code></pre>
+    
+    return jsonify(ticket.to_dict()), 201</code></pre>
+        </div>
       </div>
 
-      <div class="note">
-        <p class="note-title">ปี 1 เอาแค่แนวคิดก่อน</p>
-        <p>ยังไม่ต้องทำ auth/permission ซับซ้อน แต่ควรรู้ว่า HTML route กับ API route อยู่ร่วมกันได้</p>
+      <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mt-4">
+        <p class="font-semibold text-purple-800 mb-2">💡 สำหรับปี 1</p>
+        <p class="text-gray-700">ยังไม่ต้องทำ authentication/authorization ซับซ้อน แต่ควรรู้ว่า HTML routes กับ API routes อยู่ร่วมกันได้</p>
       </div>
     </section>
 
-      <h2>7) Blueprints (จัดระเบียบโค้ดเมื่อระบบโต)</h2>
-      <p>
-        ถ้าแอปมีหลายเมนู การเขียนทุก route ในไฟล์เดียวจะรกมาก
-        Flask มี <strong>Blueprints</strong> เพื่อแยกโมดูล เช่น repairs, auth, admin
+    <!-- Section 6: Blueprints -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">6️⃣ Blueprints (จัดระเบียบโค้ด)</h2>
+      
+      <p class="text-gray-700 mb-6">
+        เมื่อแอปมีหลายโมดูล การเขียนทุก route ในไฟล์เดียวจะรกมาก 
+        <strong>Blueprints</strong> ช่วยแยกโค้ดเป็นโมดูล เช่น repairs, auth, admin
       </p>
 
-      <div class="example">
-        <p class="example-title">โครงสร้างแนะนำ</p>
-        <pre><code>app/
-  __init__.py
-  repairs/
-    routes.py
-    models.py
-  templates/
-  static/
-run.py</code></pre>
+      <!-- Project Structure -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">📁 โครงสร้างแนะนำ</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <pre class="text-sm text-gray-800"><code>my-repair-system/
+├── app/
+│   ├── __init__.py          # Application factory
+│   ├── repairs/
+│   │   ├── __init__.py
+│   │   ├── routes.py        # Repair routes
+│   │   └── models.py        # Repair models
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   └── routes.py        # Auth routes
+│   ├── templates/
+│   │   ├── base.html
+│   │   └── repairs/
+│   │       ├── list.html
+│   │       ├── create.html
+│   │       └── detail.html
+│   └── static/
+│       └── css/
+├── config.py
+└── run.py                   # Entry point</code></pre>
+        </div>
       </div>
 
-      <div class="example">
-        <p class="example-title">สร้าง blueprint</p>
-        <pre><code># app/repairs/routes.py
-from flask import Blueprint
-repairs_bp = Blueprint("repairs", __name__, url_prefix="/repairs")
+      <!-- Create Blueprint -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">🔷 สร้าง Blueprint</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-600">app/repairs/routes.py</span>
+          </div>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Blueprint, render_template
+from app.repairs.models import RepairTicket
 
-@repairs_bp.route("/")
+# สร้าง Blueprint
+repairs_bp = Blueprint(
+    'repairs',
+    __name__,
+    url_prefix='/repairs'
+)
+
+@repairs_bp.route('/')
 def list():
-    return "repairs list"</code></pre>
+    """แสดงรายการแจ้งซ่อมทั้งหมด"""
+    tickets = RepairTicket.query.all()
+    return render_template('repairs/list.html', tickets=tickets)
+
+@repairs_bp.route('/create', methods=['GET', 'POST'])
+def create():
+    """สร้างรายการแจ้งซ่อมใหม่"""
+    # ... code here
+    pass</code></pre>
+        </div>
       </div>
 
-      <div class="example">
-        <p class="example-title">register blueprint</p>
-        <pre><code># app/__init__.py
-from flask import Flask
-from .repairs.routes import repairs_bp
+      <!-- Register Blueprint -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">📝 Register Blueprint</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-600">app/__init__.py</span>
+          </div>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    
+    # Config
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///repairs.db'
+    app.config['SECRET_KEY'] = 'your-secret-key'
+    
+    # Initialize extensions
+    db.init_app(app)
+    
+    # Register blueprints
+    from app.repairs.routes import repairs_bp
     app.register_blueprint(repairs_bp)
+    
+    # เพิ่ม blueprint อื่นๆ
+    # from app.auth.routes import auth_bp
+    # app.register_blueprint(auth_bp)
+    
     return app</code></pre>
+        </div>
       </div>
 
-      <div class="note">
-        <p class="note-title">สำหรับปี 1</p>
-        <p>ถ้าโปรเจกต์ยังเล็ก เริ่มแบบไฟล์เดียวก่อนก็ได้ แต่ “ต้องรู้แนวคิด” เพราะตอนท้ายเทอมระบบจะโต</p>
+      <!-- Run App -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">▶️ รันแอพพลิเคชัน</h3>
+        <div class="bg-gray-50 rounded-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-600">run.py</span>
+          </div>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from app import create_app, db
+
+app = create_app()
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)</code></pre>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mt-6">
+        <p class="font-semibold text-yellow-800 mb-2">⚠️ สำหรับโปรเจกต์ปี 1</p>
+        <p class="text-gray-700">ถ้าโปรเจกต์ยังเล็ก เริ่มแบบไฟล์เดียวก่อนก็ได้ แต่<strong>ต้องรู้แนวคิด</strong> เพราะตอนท้ายเทอมระบบจะโต ต้องแยกเป็นโมดูล</p>
       </div>
     </section>
 
-    <section>
-      <h2>8) Checklist: พร้อมไปทำ Workshop ระบบแจ้งซ่อม</h2>
-      <ul>
-        <li>มี JSON schema กำหนด field หลักครบ</li>
-        <li>มี model SQLAlchemy อย่างน้อย 1 ตาราง</li>
-        <li>ทำ Create + List ได้ (CRUD ขั้นต่ำ)</li>
-        <li>เข้าใจว่าถ้าระบบโต จะย้ายไป Blueprints ได้</li>
-      </ul>
+    <!-- Workshop Checklist -->
+    <section class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold mb-4">✅ Checklist: พร้อมทำ Workshop</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>มี JSON schema กำหนด field หลักครบ</span>
+          </label>
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>มี SQLAlchemy model อย่างน้อย 1 ตาราง</span>
+          </label>
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>ทำ Create + List ได้</span>
+          </label>
+        </div>
+        <div class="space-y-2">
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>ทำ Update + Delete ได้</span>
+          </label>
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>เข้าใจการใช้ Blueprints</span>
+          </label>
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded">
+            <span>ทดสอบ app ในเครื่องตัวเองได้แล้ว</span>
+          </label>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>อ้างอิง</h2>
-      <ul>
-        <li>GeeksforGeeks: Flask Tutorial (ภาพรวม), Flask-SQLAlchemy, Blueprints</li>
-      </ul>
+    <!-- Workshop Activity -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">🎯 กิจกรรม Workshop</h2>
+      
+      <div class="space-y-4">
+        <div class="border-l-4 border-blue-500 pl-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Phase 1: ออกแบบข้อมูล (30 นาที)</h3>
+          <ul class="text-gray-700 space-y-1 text-sm">
+            <li>• ทำ JSON schema สำหรับระบบแจ้งซ่อมของทีม</li>
+            <li>• กำหนด required fields, data types</li>
+            <li>• ตกลงกันในทีมว่าจะมี field อะไรบ้าง</li>
+          </ul>
+        </div>
+
+        <div class="border-l-4 border-green-500 pl-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Phase 2: สร้าง Database (45 นาที)</h3>
+          <ul class="text-gray-700 space-y-1 text-sm">
+            <li>• แปลง JSON schema เป็น SQLAlchemy model</li>
+            <li>• สร้างตาราง (db.create_all)</li>
+            <li>• ทดสอบเพิ่มข้อมูลด้วย Python shell</li>
+          </ul>
+        </div>
+
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Phase 3: CRUD Routes (60 นาที)</h3>
+          <ul class="text-gray-700 space-y-1 text-sm">
+            <li>• สร้าง route สำหรับ Create (ฟอร์ม + บันทึก)</li>
+            <li>• สร้าง route สำหรับ List (แสดงรายการ)</li>
+            <li>• สร้าง route สำหรับ Detail</li>
+            <li>• (ถ้ามีเวลา) Update + Delete</li>
+          </ul>
+        </div>
+
+        <div class="border-l-4 border-orange-500 pl-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Phase 4: Blueprints (30 นาที)</h3>
+          <ul class="text-gray-700 space-y-1 text-sm">
+            <li>• แยก routes ไปอยู่ใน blueprint</li>
+            <li>• จัดโครงสร้างโปรเจกต์ใหม่</li>
+            <li>• ทดสอบว่ายังทำงานได้ปกติ</li>
+          </ul>
+        </div>
+      </div>
     </section>
-    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+
+    <!-- Resources -->
+    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">📚 แหล่งข้อมูลเพิ่มเติม</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <h3 class="font-semibold text-gray-800 mb-2">Official Docs</h3>
+          <ul class="space-y-1 text-sm">
+            <li><a href="https://flask-sqlalchemy.palletsprojects.com/" class="text-blue-600 hover:underline">Flask-SQLAlchemy Documentation</a></li>
+            <li><a href="https://flask.palletsprojects.com/en/latest/blueprints/" class="text-blue-600 hover:underline">Flask Blueprints</a></li>
+            <li><a href="https://json-schema.org/" class="text-blue-600 hover:underline">JSON Schema</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-800 mb-2">Tutorials</h3>
+          <ul class="space-y-1 text-sm">
+            <li><a href="https://www.geeksforgeeks.org/python/flask-tutorial/" class="text-blue-600 hover:underline">GeeksforGeeks Flask Tutorial</a></li>
+            <li><a href="https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database" class="text-blue-600 hover:underline">Flask Mega Tutorial - Database</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation -->
+    <div class="flex justify-between items-center print:hidden">
+      <a href="../../index.html" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+        🏠 กลับหน้าหลัก
+      </a>
+      <a href="../chap03/chap03-doc.html" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition">
+        ← บทที่ 3
+      </a>
     </div>
-  </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-300 py-8 mt-12 print:hidden">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="mb-2">Flask Workshop - Year 1 Project Series</p>
+      <p class="text-sm text-gray-400">Created for educational purposes</p>
+    </div>
+  </footer>
+
 </body>
 </html>

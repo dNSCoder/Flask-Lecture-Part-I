@@ -20,13 +20,13 @@
     <header class="doc-header">
       <h1>บทที่ 1: รู้จัก Flask + การติดตั้ง + Hello World</h1>
       <p class="doc-subtitle">เริ่มจากภาพรวมเว็บ → เข้าใจ Flask → ติดตั้งบน Windows → รันแอปแรกให้ได้ (พร้อม debug/port)</p>
-      <p class="doc-meta">บทที่ 1 • เอกสารประกอบการสอน (Project ปี 1)</p>
+      <p class="doc-meta">บทที่ 1 • เอกสารประกอบการสอน</p>
     </header>
 
     <section>
       <h2>เป้าหมายของบทนี้</h2>
       <ul>
-        <li>เข้าใจว่า Flask คืออะไร และทำไมเหมาะกับงาน <strong>Project ปี 1</strong> (โฟกัส “ทำให้รันได้ก่อน แล้วค่อยเพิ่มฟีเจอร์”).</li>
+        <li>เข้าใจว่า Flask คืออะไร และเหมาะกับงานแบบไหน (โฟกัส “ทำให้รันได้ก่อน แล้วค่อยเพิ่มฟีเจอร์”).</li>
         <li>เห็นภาพวงจร <strong>Browser → Request → Route → Function → Response</strong> แบบครบ ๆ</li>
         <li>ติดตั้ง Flask บน Windows ด้วย <code>venv</code> และรันแอปได้ 1 หน้า (Hello World)</li>
         <li>รู้วิธีรันแบบ <code>python app.py</code> และแบบ Flask CLI รวมถึงการเปิด <code>debug</code> และเปลี่ยนพอร์ต</li>
@@ -50,21 +50,21 @@
         <li><strong>Response</strong>: ผลลัพธ์ เช่น HTML, JSON, หรือ redirect ไปหน้าอื่น</li>
       </ul>
       <div class="callout tip">
-        <strong>จำง่าย ๆ สำหรับปี 1</strong>
+        <strong>จำง่าย ๆ</strong>
         ถ้าเป็น “เปิดหน้า/ดูข้อมูล” มักเป็น <code>GET</code> • ถ้าเป็น “กดปุ่มส่งฟอร์ม/บันทึกข้อมูล” มักเป็น <code>POST</code>
       </div>
 
     </section>
     <section>
-      <h2>Flask คืออะไร และทำไมเหมาะกับ Project ปี 1</h2>
+      <h2>Flask คืออะไร และเหมาะกับงานแบบไหน</h2>
       <p>
         <strong>Flask</strong> เป็นเว็บเฟรมเวิร์กของ Python ที่ “แกนกลางเล็ก” (micro-framework) เน้นเริ่มต้นเร็ว และเลือกต่อส่วนเสริมเท่าที่ต้องใช้
-        เช่น ฐานข้อมูล, Login, Admin ฯลฯ จึงเหมาะกับการสอนให้เห็นโฟลว์ Request/Response ชัด ๆ
+        เช่น ฐานข้อมูล, Login, Admin ฯลฯ จึงเหมาะกับการเริ่มต้นและงานที่ต้องการความยืดหยุ่น
       </p>
       <ul>
         <li>เบา เริ่มง่าย โค้ดน้อย แต่ทำงานครบพื้นฐานเว็บ</li>
         <li>ยืดหยุ่น: เลือกใช้เครื่องมือเพิ่มเองได้ (เช่น SQLAlchemy สำหรับ DB)</li>
-        <li>เหมาะกับงานขนาดเล็ก–กลาง และโปรเจกต์ปี 1 ที่ต้อง “ทำให้เสร็จเป็นระบบ”</li>
+        <li>เหมาะกับงานขนาดเล็ก–กลาง และโปรเจกต์ที่ต้อง “ทำให้เสร็จเป็นระบบ”</li>
       </ul>
       <div class="callout note">
         <strong>จุดเชื่อมสำคัญ</strong>
@@ -87,8 +87,8 @@
         </tbody>
       </table>
       <div class="callout tip">
-        <strong>สำหรับ Project ปี 1</strong>
-        ถ้าอยากให้เด็ก “เห็นทุกขั้นตอน” และคุมความซับซ้อน → Flask มักเหมาะกว่าในช่วงเริ่มต้น
+        <strong>แนวทางเลือกเฟรมเวิร์ก</strong>
+        ถ้าอยากให้ผู้เรียน “เห็นทุกขั้นตอน” และคุมความซับซ้อน → Flask มักเหมาะกว่าในช่วงเริ่มต้น
       </div>
 
     </section>
@@ -137,7 +137,39 @@ if __name__ == "__main__":
     <section>
       <h2>รันแอป 2 วิธี (Python script vs Flask CLI) + เปลี่ยนพอร์ต</h2>
       <p>เมื่อมี <code>app.py</code> แล้ว รันได้ 2 แนวทางหลัก:</p>
-      <h3>วิธี A) รันด้วย Python (ง่ายสุดสำหรับปี 1)</h3>
+
+      <div class="callout note">
+        <strong>สรุปแบบเร็ว</strong>
+        ใช้ <code>python app.py</code> เมื่ออยากรันตรง ๆ จากไฟล์ • ใช้ <code>flask run</code> เมื่ออยากรันแบบมาตรฐานและตั้งค่าด้วยพารามิเตอร์/ตัวแปรแวดล้อมได้
+      </div>
+
+      <h3>ตั้งค่า Flask CLI (กรณีใช้คำสั่ง flask run)</h3>
+      <p>ถ้าไฟล์ชื่อ <code>app.py</code> และมีตัวแปร <code>app</code> อยู่ข้างใน ปกติใช้ <code>flask --app app run</code> ได้ทันที แต่ถ้าต้องตั้งค่าแบบ environment variable สามารถทำได้ดังนี้:</p>
+
+      <h4>Windows (PowerShell)</h4>
+      <pre><code>$env:FLASK_APP = "app"
+$env:FLASK_DEBUG = "1"
+flask run</code></pre>
+
+      <h4>Windows (Command Prompt)</h4>
+      <pre><code>set FLASK_APP=app
+set FLASK_DEBUG=1
+flask run</code></pre>
+
+      <div class="callout tip">
+        <strong>ทำไมต้องตั้ง FLASK_APP?</strong>
+        เพื่อบอก Flask CLI ว่าจะ “นำเข้าแอปจากโมดูลไหน” (เช่น <code>app</code> = app.py) โดยมีตัวแปรชื่อ <code>app</code> อยู่ในไฟล์นั้น
+      </div>
+
+      <h3>เปิดให้เครื่องอื่นในวง LAN เข้าได้ (ถ้าจำเป็น)</h3>
+      <p>ค่าปกติจะรันบน <code>127.0.0.1</code> (เข้าจากเครื่องตัวเองเท่านั้น) ถ้าต้องการให้เครื่องอื่นในเครือข่ายเข้าถึง ให้ระบุ host:</p>
+      <pre><code>flask --app app run --host 0.0.0.0 -p 8001</code></pre>
+      <div class="callout warn">
+        <strong>ข้อควรระวัง</strong>
+        การเปิด <code>--host 0.0.0.0</code> ทำให้คนอื่นในเครือข่ายเข้าถึงได้ อย่าเปิดในเครือข่ายสาธารณะ และอย่าใช้ debug ในงานจริง
+      </div>
+
+      <h3>วิธี A) รันด้วย Python (เริ่มต้นง่าย)</h3>
       <pre><code>python app.py</code></pre>
 
       <h3>วิธี B) รันด้วย Flask CLI (มาตรฐานและยืดหยุ่น)</h3>
@@ -161,13 +193,13 @@ app.run(debug=True, port=8001)
 flask --app app run -p 8001</code></pre>
 
       <div class="callout tip">
-        <strong>แนะนำการสอน</strong>
-        เริ่มด้วย <code>python app.py</code> ให้เด็กเห็นโครงสร้างชัด ๆ แล้วค่อยแนะนำ CLI เพื่อรองรับโปรเจกต์ที่โครงสร้างใหญ่ขึ้น
+        <strong>แนวทางแนะนำ</strong>
+        เริ่มด้วย <code>python app.py</code> ให้เห็นโครงสร้างชัด ๆ แล้วค่อยแนะนำ CLI เพื่อรองรับโปรเจกต์ที่โครงสร้างใหญ่ขึ้นหรือทำงานร่วมกันหลายคน
       </div>
 
     </section>
     <section>
-      <h2>โครงสร้างโปรเจกต์ขั้นต่ำ (ปี 1 แนะนำ)</h2>
+      <h2>โครงสร้างโปรเจกต์ขั้นต่ำ (แนะนำ)</h2>
       <pre><code>my-flask-app/
 ├─ app.py
 ├─ requirements.txt
@@ -187,7 +219,7 @@ flask --app app run -p 8001</code></pre>
     <section>
       <h2>สรุป</h2>
       <ul>
-        <li>Flask เป็น micro-framework ที่เหมาะมากกับการเริ่มโปรเจกต์ปี 1</li>
+        <li>Flask เป็น micro-framework ที่เหมาะมากกับการเริ่มโปรเจกต์</li>
         <li>วันนี้ต้องทำให้ได้: <strong>ติดตั้ง → สร้าง app.py → รันได้ → เปลี่ยนพอร์ตได้</strong></li>
         <li>บทถัดไปจะพาไปออกแบบ URL หลายหน้า + รับพารามิเตอร์ + redirect/error ที่เว็บจริงต้องมี</li>
       </ul>

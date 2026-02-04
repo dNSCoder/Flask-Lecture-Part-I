@@ -20,8 +20,8 @@
   <div class="container">
     <header class="doc-header">
       <h1>บทที่ 2: Routing + URL Building + Redirect + Errors + HTTP Methods</h1>
-      <p class="doc-subtitle">ทำให้เว็บมีหลายหน้าแบบเป็นระบบ: route → dynamic URL → url_for → redirect → abort/errorhandler → GET/POST</p>
-      <p class="doc-meta">บทที่ 2 • เอกสารประกอบการสอน (Project ปี 1)</p>
+      <p class="doc-subtitle">ออกแบบเส้นทาง URL ให้เป็นระบบ: route → dynamic URL → query string → url_for → GET/POST → redirect(PRG) → abort/errorhandler</p>
+      <p class="doc-meta">บทที่ 2 • เอกสารประกอบการสอน</p>
     </header>
 
     <section>
@@ -29,21 +29,21 @@
       <ul>
         <li>เข้าใจ <strong>Routing</strong>: ผูก URL ↔ ฟังก์ชันด้วย <code>@app.route</code></li>
         <li>ทำ URL แบบมีตัวแปร (<strong>Variable rules</strong>) เช่น <code>/tickets/&lt;int:id&gt;</code></li>
-        <li>สร้าง URL อย่างถูกวิธีด้วย <code>url_for()</code> (ไม่ hardcode link)</li>
+        <li>สร้าง URL อย่างถูกวิธีด้วย <code>url_for()</code> (ลดปัญหา link พัง)</li>
         <li>ใช้ <code>redirect()</code> และจัดการ error ด้วย <code>abort()</code> / <code>@app.errorhandler</code></li>
-        <li>รู้พื้นฐาน HTTP methods ที่ต้องใช้ทำเว็บปี 1: <strong>GET/POST</strong> (+ แนวคิด PUT/DELETE ไว้ต่อยอด)</li>
+        <li>ใช้ HTTP methods อย่างถูกต้อง: <strong>GET/POST</strong> และรู้จัก 405 (Method Not Allowed)</li>
       </ul>
       <div class="callout note">
-        <strong>เชื่อมจากบทที่ 1</strong>
-        บทที่ 1 ทำให้ “รันได้” แล้ว → บทนี้ทำให้ “มีหลายหน้าและไหลลื่นเหมือนเว็บจริง” (มีเส้นทาง, มีการส่งข้อมูล, มี error handling)
+        <strong>จุดเชื่อมจากบทที่ 1</strong>
+        ตอนนี้แอปรันได้แล้ว → บทนี้ทำให้เว็บ “มีหลายหน้า” และมี flow ที่เหมือนเว็บจริง (ลิงก์ถูกต้อง, ส่งฟอร์มได้, redirect ได้, error ได้)
       </div>
 
     </section>
     <section>
       <h2>Routing คืออะไร (ผูก URL กับฟังก์ชัน)</h2>
       <p>
-        Routing คือการบอก Flask ว่า “ถ้า user เปิด URL นี้ ให้เรียกฟังก์ชันไหน”
-        ซึ่งทำผ่าน decorator <code>@app.route()</code>
+        Routing คือการกำหนดว่า “ถ้ามี request เข้ามาที่ URL นี้ ให้เรียกฟังก์ชันไหน”
+        โดยใช้ decorator <code>@app.route()</code> และชื่อฟังก์ชันจะกลายเป็น <strong>endpoint</strong> (ใช้กับ <code>url_for</code>)
       </p>
       <pre><code>@app.route("/")
 def home():
@@ -53,20 +53,44 @@ def home():
 def about():
     return "About"</code></pre>
       <ul>
-        <li>เวลาเปิด <code>/</code> → เรียก <code>home()</code></li>
-        <li>เวลาเปิด <code>/about</code> → เรียก <code>about()</code></li>
+        <li><strong>URL pattern</strong>: เช่น <code>/about</code></li>
+        <li><strong>View function</strong>: เช่น <code>about()</code></li>
+        <li><strong>Endpoint</strong>: โดยปกติคือชื่อฟังก์ชัน (<code>"about"</code>)</li>
       </ul>
       <div class="callout tip">
-        <strong>แนวออกแบบ URL สำหรับโปรเจกต์ปี 1</strong>
-        ให้คิดเป็น “ทรัพยากร” (resource) เช่น <code>/tickets</code>, <code>/rooms</code>, <code>/courses</code> แล้วค่อยต่อท้ายด้วย <code>/new</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/edit</code>
+        <strong>แนวออกแบบ URL ให้เป็นระบบ</strong>
+        คิดเป็น “ทรัพยากร” (resource) ก่อน เช่น <code>/tickets</code>, <code>/users</code> แล้วค่อยเพิ่ม action เช่น <code>/new</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/edit</code>
+      </div>
+
+    </section>
+    <section>
+      <h2>กฎของเส้นทาง (Trailing Slash) ที่ทำให้ 404/308 บ่อย</h2>
+      <p>
+        ใน Flask เส้นทาง <code>/tickets</code> กับ <code>/tickets/</code> อาจเป็นคนละ route ถ้ากำหนดไว้ไม่ตรงกัน
+        และบางกรณี Flask จะ redirect อัตโนมัติ (เช่น 308) เพื่อให้ URL ถูกต้อง
+      </p>
+      <pre><code>@app.route("/tickets")
+def tickets():
+    return "list"
+
+@app.route("/tickets/")
+def tickets_slash():
+    return "list (slash)"</code></pre>
+      <ul>
+        <li>ถ้ากำหนด <code>/tickets</code> แล้วไปเปิด <code>/tickets/</code> อาจโดน redirect หรือ 404 ขึ้นกับการตั้งค่า</li>
+        <li>แนวทางง่าย: “ตกลงทีมให้ชัด” ว่าจะใช้มี slash หรือไม่มี slash สำหรับ collection</li>
+      </ul>
+      <div class="callout note">
+        <strong>ทิป</strong>
+        ถ้าเจอ route แปลก ๆ ให้ดู URL ที่ browser สุดท้าย (หลัง redirect) ว่ามี <code>/</code> ท้ายหรือไม่
       </div>
 
     </section>
     <section>
       <h2>Variable Rules (Dynamic URL) + Converters</h2>
       <p>
-        ถ้า URL ต้องมีค่าเปลี่ยนไปตามข้อมูล เช่น ticket id, username เราใส่ “ตัวแปรใน URL” ได้
-        และกำหนดชนิดข้อมูลด้วย converters เช่น <code>int</code>, <code>float</code>, <code>path</code>
+        เมื่อ URL ต้องมีค่าเปลี่ยนไปตามข้อมูล (เช่น id, username) ให้ใส่ตัวแปรใน URL ได้
+        และกำหนดชนิดด้วย converters เพื่อกันข้อมูลผิดรูปแบบ
       </p>
       <pre><code>@app.route("/hello/&lt;name&gt;")
 def hello(name):
@@ -75,22 +99,57 @@ def hello(name):
 @app.route("/tickets/&lt;int:ticket_id&gt;")
 def ticket_detail(ticket_id):
     return f"Ticket #{ticket_id}"</code></pre>
+
+      <p><strong>Converters ที่ใช้บ่อย</strong></p>
       <ul>
-        <li><code>&lt;name&gt;</code> เป็น string (ค่าเริ่มต้น)</li>
-        <li><code>&lt;int:ticket_id&gt;</code> บังคับให้เป็นตัวเลข ไม่งั้นจะไม่ match route นี้</li>
-        <li><code>&lt;path:filepath&gt;</code> ใช้กรณีต้องมี <code>/</code> อยู่ในตัวแปร (ต่อยอด)</li>
+        <li><code>&lt;string:x&gt;</code> (ค่าเริ่มต้น) รับตัวอักษรทั่วไป (ไม่รวม <code>/</code>)</li>
+        <li><code>&lt;int:x&gt;</code> รับเลขจำนวนเต็ม</li>
+        <li><code>&lt;float:x&gt;</code> รับเลขทศนิยม</li>
+        <li><code>&lt;path:x&gt;</code> รับข้อความที่มี <code>/</code> ได้ (ต่อยอด)</li>
       </ul>
-      <div class="callout note">
-        <strong>จุดเชื่อมสำคัญ</strong>
-        เมื่อมี Dynamic URL แล้ว → เราต้องสร้าง link แบบไม่พังด้วย <code>url_for()</code> (หัวข้อถัดไป)
+
+      <h3>ตัวอย่าง: ใช้ path converter</h3>
+      <pre><code>@app.route("/files/&lt;path:filepath&gt;")
+def files(filepath):
+    return f"open: {filepath}"</code></pre>
+
+      <div class="callout warn">
+        <strong>ระวัง</strong>
+        ถ้า route กว้างมาก (เช่น <code>&lt;path:...&gt;</code>) อาจทับกับ route อื่นได้ ควรวาง route ที่ “เฉพาะเจาะจงกว่า” ไว้ก่อน
+      </div>
+
+    </section>
+    <section>
+      <h2>Query String vs Path Variable (คนละแบบ ใช้ต่างกัน)</h2>
+      <p>
+        Flask รับค่าได้ทั้งจาก <strong>Path variable</strong> (อยู่ใน URL) และ <strong>Query string</strong> (อยู่หลัง <code>?</code>)
+      </p>
+
+      <h3>1) Path variable</h3>
+      <pre><code>@app.route("/users/&lt;int:user_id&gt;")
+def user_detail(user_id):
+    return f"user_id={user_id}"</code></pre>
+
+      <h3>2) Query string</h3>
+      <pre><code>from flask import request
+
+@app.route("/search")
+def search():
+    q = request.args.get("q", "")
+    page = request.args.get("page", 1, type=int)
+    return f"q={q}, page={page}"</code></pre>
+
+      <div class="callout tip">
+        <strong>เลือกใช้แบบไหนดี?</strong>
+        ถ้าเป็น “ตัวตนของทรัพยากร” เช่น id → ใช้ path variable • ถ้าเป็น “ตัวเลือกการค้นหา/การกรอง” → ใช้ query string
       </div>
 
     </section>
     <section>
       <h2>url_for(): สร้าง URL แบบไม่ hardcode</h2>
       <p>
-        ในเว็บจริง ชื่อ URL อาจเปลี่ยนภายหลัง ถ้าเราเขียนลิงก์เป็น <code>"/tickets/1"</code> กระจายทั่วโปรเจกต์
-        จะตามแก้ลำบากมาก วิธีที่ถูกคือใช้ <code>url_for("ชื่อฟังก์ชัน")</code>
+        <code>url_for()</code> สร้าง URL จาก endpoint ช่วยให้แก้ชื่อ route แล้วลิงก์ไม่พัง
+        (ดีกว่าเขียน <code>"/tickets/1"</code> กระจายทั่วโค้ด)
       </p>
       <pre><code>from flask import url_for
 
@@ -100,27 +159,38 @@ def ticket_detail(ticket_id):
 
 @app.route("/go-first-ticket")
 def go_first_ticket():
-    return url_for("ticket_detail", ticket_id=1)  # สร้างเป็น /tickets/1</code></pre>
-      <div class="callout tip">
-        <strong>ใช้กับ template (บทที่ 3)</strong>
-        ในไฟล์ HTML เราจะเขียน <code>{{ url_for('ticket_detail', ticket_id=1) }}</code> เพื่อสร้างลิงก์แบบปลอดภัย
+    return url_for("ticket_detail", ticket_id=1)  # /tickets/1</code></pre>
+
+      <h3>ใส่ query string ผ่าน url_for</h3>
+      <pre><code>@app.route("/go-search")
+def go_search():
+    return url_for("search", q="flask", page=2)  # /search?q=flask&page=2</code></pre>
+
+      <h3>สร้างลิงก์แบบ absolute (เช่นใส่ในอีเมล)</h3>
+      <pre><code>url_for("ticket_detail", ticket_id=10, _external=True)</code></pre>
+
+      <div class="callout note">
+        <strong>ใช้กับ Template (บทถัดไป)</strong>
+        ใน Jinja2 จะเขียนลิงก์แบบนี้: <code>{{ url_for('ticket_detail', ticket_id=1) }}</code>
       </div>
 
     </section>
     <section>
-      <h2>HTTP Methods ที่ต้องใช้ตอนทำเว็บ: GET vs POST</h2>
+      <h2>HTTP Methods: GET/POST + อ่านข้อมูลจาก request</h2>
       <p>
-        โดยพื้นฐาน <strong>GET</strong> ใช้ “ขอดูหน้า/ข้อมูล” และ <strong>POST</strong> ใช้ “ส่งข้อมูลให้เซิร์ฟเวอร์ประมวลผล”
+        HTTP method บอก “เจตนาของ request”:
+        <strong>GET</strong> มักใช้ดูหน้า/ข้อมูล • <strong>POST</strong> มักใช้ส่งข้อมูล (ฟอร์ม/สร้างรายการ)
       </p>
+
+      <h3>อ่าน query string (GET)</h3>
       <pre><code>from flask import request
 
 @app.route("/search")
 def search():
-    q = request.args.get("q")  # มาจาก query string ?q=...
+    q = request.args.get("q", "")
     return f"Search: {q}"</code></pre>
-      <p>
-        ถ้าต้องรับฟอร์ม (POST) ให้ระบุ methods และอ่านจาก <code>request.form</code>
-      </p>
+
+      <h3>รับฟอร์ม (POST)</h3>
       <pre><code>from flask import request
 
 @app.route("/login", methods=["GET", "POST"])
@@ -128,65 +198,185 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         return f"Hello {username}"
-    return "แสดงฟอร์ม login ที่นี่"</code></pre>
-      <div class="callout note">
-        <strong>ควรสอนลึกแค่ไหน?</strong>
-        สำหรับปี 1: แนะนำให้ <strong>ชัวร์ GET/POST ก่อน</strong> แล้วค่อยไป PUT/PATCH/DELETE ใน “Part API” ภายหลัง
+    return "แสดงฟอร์ม login"</code></pre>
+
+      <h3>รับ JSON (เช่น API แบบง่าย)</h3>
+      <pre><code>from flask import request, jsonify
+
+@app.route("/api/echo", methods=["POST"])
+def api_echo():
+    data = request.get_json(silent=True) or {}
+    return jsonify(data)</code></pre>
+
+      <div class="callout warn">
+        <strong>405 Method Not Allowed</strong>
+        ถ้า route ไม่ได้ระบุ <code>methods=["POST"]</code> แล้วส่ง POST มา จะเจอ 405 ทันที (เป็น error ที่เจอบ่อยมาก)
       </div>
 
     </section>
     <section>
-      <h2>Redirect: ส่งผู้ใช้ไปหน้าอื่นอย่างถูกวิธี</h2>
+      <h2>รูปแบบ Response ที่ควรรู้ (HTML/JSON/Status/Headers)</h2>
+      <p>Flask อนุญาตให้ return ได้หลายรูปแบบ:</p>
+      <ul>
+        <li><strong>ข้อความ/HTML</strong>: <code>return "OK"</code></li>
+        <li><strong>กำหนด status code</strong>: <code>return "Created", 201</code></li>
+        <li><strong>กำหนด headers</strong>: <code>return "OK", 200, {"X-Mode": "demo"}</code></li>
+        <li><strong>JSON</strong>: ใช้ <code>jsonify()</code></li>
+      </ul>
+
+      <pre><code>from flask import jsonify
+
+@app.route("/api/status")
+def api_status():
+    return jsonify({"status": "ok"})</code></pre>
+
+      <div class="callout tip">
+        <strong>ทิป</strong>
+        ถ้าเป็น JSON ให้ใช้ <code>jsonify</code> จะตั้งค่า <code>Content-Type</code> ให้ถูกต้องอัตโนมัติ
+      </div>
+
+    </section>
+    <section>
+      <h2>Redirect: ส่งผู้ใช้ไปหน้าอื่นอย่างถูกวิธี (PRG pattern)</h2>
       <p>
-        Redirect ใช้บ่อยมากหลังทำงานเสร็จ เช่น “บันทึกฟอร์มแล้วกลับไปหน้ารายการ”
+        Redirect ใช้บ่อยหลัง “ทำงานเสร็จ” เช่น บันทึกฟอร์มแล้วกลับหน้ารายการ
         โดยใช้ <code>redirect()</code> คู่กับ <code>url_for()</code>
       </p>
       <pre><code>from flask import redirect, url_for
 
 @app.route("/save", methods=["POST"])
 def save():
-    # ... ทำงานบันทึกข้อมูล ...
+    # ... บันทึกข้อมูล ...
     return redirect(url_for("home"))</code></pre>
-      <div class="callout tip">
-        <strong>แนวคิดสำคัญ: Post/Redirect/Get (PRG)</strong>
-        หลัง POST เสร็จให้ redirect ไปหน้า GET เพื่อกันปัญหา refresh แล้วส่งซ้ำ
+
+      <h3>เลือก status code ของ redirect</h3>
+      <pre><code># 302 (ค่าเริ่มต้น) ใช้ทั่วไป
+return redirect(url_for("home"), code=302)
+
+# 301 (permanent) ใช้เมื่อย้าย URL ถาวร (ระวัง browser cache)
+return redirect(url_for("home"), code=301)</code></pre>
+
+      <div class="callout note">
+        <strong>Post/Redirect/Get (PRG)</strong>
+        หลัง POST เสร็จให้ redirect ไปหน้า GET เพื่อกัน refresh แล้วส่งซ้ำ
       </div>
 
     </section>
     <section>
-      <h2>Errors: abort() + errorhandler (เว็บจริงต้องมี)</h2>
+      <h2>Errors: abort() + errorhandler (ทำให้เว็บ “เป็นมิตร” เวลาเกิดปัญหา)</h2>
       <p>
-        ถ้า URL ผิด / ข้อมูลไม่พบ เราควรส่งสถานะ error ที่เหมาะสม เช่น 404
+        เวลา “ข้อมูลไม่พบ / สิทธิ์ไม่พอ / request ผิด” ควรตอบสถานะให้ถูกต้อง เช่น 404, 403, 400
         Flask มี <code>abort(code)</code> ให้จบ request พร้อม error code
       </p>
       <pre><code>from flask import abort
 
 @app.route("/tickets/&lt;int:ticket_id&gt;")
 def ticket_detail(ticket_id):
-    ticket = None  # สมมติว่าค้นหาแล้วไม่เจอ
+    ticket = None  # สมมติค้นหาแล้วไม่เจอ
     if ticket is None:
         abort(404)
     return "OK"</code></pre>
 
-      <p>และทำหน้า error สวย ๆ ได้ด้วย <code>@app.errorhandler</code>:</p>
+      <h3>ทำหน้า error สวย ๆ</h3>
       <pre><code>@app.errorhandler(404)
 def page_not_found(e):
-    return "ไม่พบหน้าที่ต้องการ (404)", 404</code></pre>
+    return "ไม่พบหน้าที่ต้องการ (404)", 404
 
-      <div class="callout warn">
-        <strong>ข้อควรระวัง</strong>
-        อย่าใช้ <code>abort()</code> จนกลายเป็น “ควบคุม flow หลัก” ให้ใช้เฉพาะกรณี error จริง ๆ และมีข้อความ/หน้า error ที่สื่อสารได้
+@app.errorhandler(500)
+def server_error(e):
+    return "เกิดข้อผิดพลาดภายในระบบ (500)", 500</code></pre>
+
+      <div class="callout tip">
+        <strong>แนวปฏิบัติ</strong>
+        ใช้ <code>abort</code> เฉพาะ “กรณีผิดจริง ๆ” และมีข้อความ/หน้า error ที่สื่อสารได้ (แทนการปล่อยให้พังเป็น traceback)
       </div>
 
     </section>
     <section>
-      <h2>แบบฝึกหัดสั้น ๆ (ให้ทำหลังเรียน)</h2>
+      <h2>ตัวอย่างรวม (ไฟล์เดียว) ที่เห็นภาพทั้ง Routing + url_for + GET/POST + Redirect + Errors</h2>
+      <p>ตัวอย่างนี้ตั้งใจให้ “อ่านแล้วเห็น flow ครบ” ในไฟล์เดียว:</p>
+      <pre><code>from flask import Flask, request, redirect, url_for, abort, jsonify
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Home"
+
+# query string: /search?q=flask&page=2
+@app.route("/search")
+def search():
+    q = request.args.get("q", "")
+    page = request.args.get("page", 1, type=int)
+    return f"q={q}, page={page}"
+
+# dynamic url: /tickets/12
+@app.route("/tickets/&lt;int:ticket_id&gt;")
+def ticket_detail(ticket_id):
+    if ticket_id &lt;= 0:
+        abort(404)
+    return f"Ticket #{ticket_id}"
+
+# GET shows form, POST processes form
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        if not username:
+            abort(400)
+        return redirect(url_for("hello", name=username))  # PRG
+    return '''
+      &lt;form method="post"&gt;
+        &lt;input name="username" placeholder="username"&gt;
+        &lt;button&gt;Login&lt;/button&gt;
+      &lt;/form&gt;
+    '''
+
+@app.route("/hello/&lt;name&gt;")
+def hello(name):
+    return f"Hello {name}!"
+
+# JSON example
+@app.route("/api/echo", methods=["POST"])
+def api_echo():
+    data = request.get_json(silent=True) or {}
+    return jsonify({"received": data})
+
+@app.errorhandler(400)
+def bad_request(e):
+    return "คำขอไม่ถูกต้อง (400)", 400
+
+@app.errorhandler(404)
+def not_found(e):
+    return "ไม่พบหน้าที่ต้องการ (404)", 404
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    </section>
+    <section>
+      <h2>Debugging ที่เจอบ่อย (เช็คให้ไว)</h2>
+      <ul>
+        <li><strong>404 Not Found</strong>: พิมพ์ URL ไม่ตรง route หรือเรื่อง trailing slash (<code>/x</code> vs <code>/x/</code>)</li>
+        <li><strong>405 Method Not Allowed</strong>: ส่ง POST มา แต่ route ไม่ได้ใส่ <code>methods=["POST"]</code></li>
+        <li><strong>url_for หาไม่เจอ</strong>: พิมพ์ชื่อ endpoint ผิด (โดยปกติคือชื่อฟังก์ชัน)</li>
+        <li><strong>Redirect วนลูป</strong>: route A redirect ไป B แต่ B redirect กลับ A</li>
+      </ul>
+      <div class="callout tip">
+        <strong>ทิป</strong>
+        ถ้าหาไม่เจอว่า endpoint ชื่ออะไร ให้ print <code>app.url_map</code> ในช่วง debug เพื่อดูรายการ route ทั้งหมด
+      </div>
+
+    </section>
+    <section>
+      <h2>แบบฝึกหัด</h2>
       <ol>
         <li>ทำ route <code>/</code>, <code>/about</code>, <code>/contact</code></li>
-        <li>ทำ dynamic route <code>/users/&lt;name&gt;</code> แล้วแสดงข้อความต้อนรับ</li>
-        <li>ทำ route <code>/tickets/&lt;int:id&gt;</code> ถ้า id &lt;= 0 ให้ <code>abort(404)</code></li>
-        <li>ทำฟอร์มง่าย ๆ ที่ <code>/login</code> (GET แสดงฟอร์ม, POST แสดงข้อความ)</li>
-        <li>หลัง POST ให้ redirect กลับ <code>/</code> (ใช้ PRG)</li>
+        <li>ทำ dynamic route <code>/users/&lt;name&gt;</code> และ <code>/users/&lt;int:id&gt;</code> (ลอง converter)</li>
+        <li>ทำ <code>/search</code> รับ <code>q</code> และ <code>page</code> ผ่าน query string</li>
+        <li>ทำฟอร์ม <code>/login</code> (GET แสดงฟอร์ม, POST ตรวจค่าว่างแล้ว redirect ไป <code>/hello/&lt;name&gt;</code>)</li>
+        <li>ทำ <code>/api/echo</code> รับ JSON แล้ว jsonify กลับ</li>
+        <li>ทำ errorhandler สำหรับ 404 และ 400</li>
       </ol>
 
     </section>
@@ -194,13 +384,13 @@ def page_not_found(e):
       <h2>สรุป</h2>
       <ul>
         <li>Routing คือแกนของเว็บ: URL → ฟังก์ชัน</li>
-        <li>Dynamic URL + url_for ทำให้เว็บ “ยืดหยุ่นและดูเป็นระบบ”</li>
-        <li>Redirect และ error handling ทำให้เว็บใช้งานจริงได้</li>
-        <li>GET/POST คือพื้นฐานสำคัญ ก่อนต่อยอดเป็น API methods อื่น</li>
+        <li>Dynamic URL + url_for ทำให้เว็บยืดหยุ่นและแก้ง่าย</li>
+        <li>GET/POST เป็นพื้นฐานที่ต้องใช้จริง พร้อมระวัง 405</li>
+        <li>Redirect (PRG) และ Error handling ทำให้เว็บมี flow ที่ถูกต้อง</li>
       </ul>
       <div class="callout note">
         <strong>เชื่อมไปบทที่ 3</strong>
-        ตอนนี้เราคืนค่าเป็นข้อความง่าย ๆ → บทที่ 3 จะทำให้คืนค่าเป็น “หน้าเว็บจริง” ด้วย Jinja2 + CSS/JS
+        ตอนนี้ route และ flow พร้อมแล้ว → บทที่ 3 จะทำให้คืนค่าเป็น “หน้าเว็บจริง” ด้วย Jinja2 + base layout + static CSS/JS
       </div>
 
     </section>

@@ -5,15 +5,295 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>บทที่ 3: Templates (Jinja2) + Template Inheritance + Static Files - เอกสารประกอบการสอน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../assets/css/common.css">
-  <link rel="stylesheet" href="../../assets/css/documentation.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #7c3aed;
+      --accent-color: #059669;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      color: var(--text-dark);
+      background-color: #fff;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .chapter-nav {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .chapter-nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    
+    .chapter-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    
+    .chapter-nav a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .doc-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .doc-header h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .doc-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .doc-meta {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    h3 {
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+    }
+    
+    h4 {
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      margin: 1.5rem 0 1rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      color: #e11d48;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    
+    .note {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .tip {
+      background: #d1fae5;
+      border-left: 4px solid #059669;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .tip-title {
+      font-weight: 600;
+      color: #065f46;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .warning-title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .key-point {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .example {
+      background: var(--bg-light);
+      border-left: 4px solid var(--primary-color);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .example-title {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+    
+    th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+      background: var(--bg-light);
+    }
+    
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    
+    .highlight {
+      background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 40%;
+      background-position: 0 80%;
+      padding: 0.1rem 0.3rem;
+      font-weight: 500;
+    }
+    
+    .muted {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    
+    .folder-structure {
+      background: #1e293b;
+      color: #10b981;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      font-family: 'Courier New', monospace;
+      margin: 1.5rem 0;
+    }
+    
+    @media print {
+      .no-print { display: none; }
+      .chapter-nav { display: none; }
+      pre { page-break-inside: avoid; }
+    }
+  </style>
 </head>
 <body>
   <nav class="chapter-nav no-print">
-    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
-    <div class="nav-links">
-      <a href="../chap02/chap02-doc.html">← บทก่อนหน้า</a>
-      <a href="../chap04/chap04-doc.html">บทถัดไป →</a>
+    <div class="container">
+      <div><a href="../../index.html">🏠 หน้าหลัก</a></div>
+      <div>
+        <a href="../chap02/chap02-doc.html">← บทก่อนหน้า</a>
+        <a href="../chap04/chap04-doc.html">บทถัดไป →</a>
+      </div>
     </div>
   </nav>
 
@@ -21,39 +301,90 @@
     <header class="doc-header">
       <h1>บทที่ 3: Templates (Jinja2) + Template Inheritance + Static Files</h1>
       <p class="doc-subtitle">ทำหน้าเว็บให้เป็นระบบ: render_template → Jinja2 → base.html/extends/block → static (CSS/JS/รูป)</p>
-      <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน</p>
+      <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน (Project ปี 1)</p>
     </header>
 
     <section>
-      <h2>เป้าหมายของบทนี้</h2>
-      <ul>
-        <li>เข้าใจแนวคิด <strong>Template</strong>: แยก HTML ออกจากโค้ด Python</li>
-        <li>ใช้ <code>render_template()</code> ส่งข้อมูลจาก Flask ไปแสดงบนหน้าเว็บ</li>
-        <li>ใช้ <strong>Template Inheritance</strong> (base.html + blocks) เพื่อทำ layout ซ้ำ ๆ แบบเป็นระบบ</li>
-        <li>เสิร์ฟไฟล์ <strong>Static</strong> (CSS/JS/รูป) จากโฟลเดอร์ <code>static/</code></li>
-      </ul>
-      <div class="callout note">
-        <strong>เชื่อมจากบทที่ 2</strong>
-        บทที่ 2 ทำ routing + flow ครบแล้ว → บทนี้ทำให้ “หน้าตาเว็บ” เรียบร้อย และพร้อมไปทำหน้า CRUD ใน workshop
+      <h2>บทนำ</h2>
+      <p>
+        หลังจากบทที่ 2 เราสามารถสร้าง routing ได้แล้ว แต่ยังส่ง HTML แบบ hardcode ในโค้ด Python 
+        ซึ่ง<span class="highlight">ไม่เป็นระบบ</span>และแก้ยาก
+      </p>
+      <p>
+        บทนี้จะทำให้เว็บของเรา "มีหน้าตา" อย่างเป็นระบบด้วย <strong>Templates</strong> 
+        และจัดการไฟล์ CSS/JS/รูปภาพด้วย <strong>Static Files</strong>
+      </p>
+      
+      <div class="note">
+        <p class="note-title">🎯 เป้าหมายของบทนี้</p>
+        <ul>
+          <li>เข้าใจแนวคิด <strong>Template</strong>: แยก HTML ออกจากโค้ด Python</li>
+          <li>ใช้ <code>render_template()</code> ส่งข้อมูลจาก Flask ไปแสดงบนหน้าเว็บ</li>
+          <li>ใช้ <strong>Jinja2</strong> syntax: ตัวแปร, เงื่อนไข, loop</li>
+          <li>ใช้ <strong>Template Inheritance</strong> (base.html + blocks) เพื่อลดการ copy-paste</li>
+          <li>เสิร์ฟไฟล์ <strong>Static</strong> (CSS/JS/รูป) จากโฟลเดอร์ <code>static/</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>1) Templates คืออะไร</h2>
+      <p>
+        <strong>Template</strong> คือไฟล์ HTML ที่สามารถใส่ข้อมูลจาก Python ได้ 
+        ทำให้เราแยก "ส่วนแสดงผล (View)" ออกจาก "ตรรกะ (Logic)"
+      </p>
+
+      <div class="key-point">
+        แยก HTML ออกจาก Python = Code สะอาด แก้ง่าย ทำงานร่วมกับ Designer ได้
       </div>
 
+      <h3>โครงสร้างโฟลเดอร์</h3>
+      <div class="folder-structure">my-flask-app/
+├── app.py
+├── templates/          ← ไฟล์ HTML อยู่ที่นี่
+│   ├── home.html
+│   ├── about.html
+│   └── base.html
+└── static/             ← CSS, JS, รูปภาพ
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   └── main.js
+    └── images/
+        └── logo.png</div>
+
+      <div class="warning">
+        <p class="warning-title">⚠️ สำคัญ!</p>
+        <ul>
+          <li>โฟลเดอร์ต้องชื่อ <code>templates</code> และ <code>static</code> เท่านั้น</li>
+          <li>Flask จะหาไฟล์ template และ static จากโฟลเดอร์เหล่านี้โดยอัตโนมัติ</li>
+        </ul>
+      </div>
     </section>
+
     <section>
-      <h2>render_template(): เริ่มใช้ Jinja2 Template</h2>
+      <h2>2) render_template(): เริ่มใช้ Templates</h2>
       <p>
-        เมื่อเว็บเริ่มมีหลายหน้า เราไม่ควร return string ยาว ๆ ใน Python ให้สร้างไฟล์ HTML ในโฟลเดอร์ <code>templates/</code>
-        แล้วใช้ <code>render_template()</code>
+        ใช้ <code>render_template()</code> เพื่อส่งไฟล์ HTML จากโฟลเดอร์ templates กลับไป
       </p>
-      <pre><code>from flask import Flask, render_template
+
+      <div class="example">
+        <p class="example-title">ตัวอย่างพื้นฐาน</p>
+        <p><strong>app.py</strong></p>
+        <pre><code>from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template("home.html", title="หน้าแรก")</code></pre>
+    return render_template("home.html", title="หน้าแรก")
 
-      <p>สร้างไฟล์ <code>templates/home.html</code>:</p>
-      <pre><code>&lt;!doctype html&gt;
+@app.route("/about")
+def about():
+    return render_template("about.html", title="เกี่ยวกับเรา")</code></pre>
+
+        <p><strong>templates/home.html</strong></p>
+        <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="th"&gt;
 &lt;head&gt;
   &lt;meta charset="utf-8"&gt;
@@ -64,214 +395,497 @@ def home():
   &lt;p&gt;ยินดีต้อนรับสู่เว็บ Flask&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-
-      <div class="callout tip">
-        <strong>จำ 2 อย่างนี้ให้แม่น</strong>
-        1) ไฟล์ HTML อยู่ใน <code>templates/</code> • 2) ส่งข้อมูลด้วย <code>render_template("x.html", key=value)</code> แล้วใช้ <code>{{ key }}</code> ในหน้าเว็บ
       </div>
 
+      <div class="tip">
+        <p class="tip-title">💡 จำ 2 อย่างนี้</p>
+        <ol>
+          <li>ไฟล์ HTML อยู่ใน <code>templates/</code></li>
+          <li>ส่งข้อมูลด้วย <code>render_template("x.html", key=value)</code></li>
+        </ol>
+      </div>
     </section>
-    <section>
-      <h2>Jinja2 พื้นฐาน: ตัวแปร, if, for</h2>
-      <p>Jinja2 ช่วยทำหน้า HTML “มีข้อมูลจริง” โดยใช้ syntax ง่าย ๆ</p>
-      <pre><code>&lt;!-- แสดงตัวแปร --&gt;
-&lt;h2&gt;สวัสดี {{ user_name }}&lt;/h2&gt;
 
-&lt;!-- เงื่อนไข --&gt;
+    <section>
+      <h2>3) Jinja2 พื้นฐาน</h2>
+      <p>
+        <strong>Jinja2</strong> คือ template engine ที่ Flask ใช้ 
+        มี syntax พิเศษเพื่อแสดงข้อมูลและควบคุม logic ใน HTML
+      </p>
+
+      <h3>3.1 แสดงตัวแปร {{ }}</h3>
+      <div class="example">
+        <pre><code>&lt;!-- ใน Python --&gt;
+render_template("user.html", username="John", age=25)
+
+&lt;!-- ใน Template --&gt;
+&lt;h2&gt;สวัสดี {{ username }}&lt;/h2&gt;
+&lt;p&gt;อายุ {{ age }} ปี&lt;/p&gt;</code></pre>
+      </div>
+
+      <h3>3.2 เงื่อนไข {% if %}</h3>
+      <div class="example">
+        <pre><code>&lt;!-- ใน Python --&gt;
+render_template("dashboard.html", is_admin=True)
+
+&lt;!-- ใน Template --&gt;
 {% if is_admin %}
   &lt;p&gt;คุณคือแอดมิน&lt;/p&gt;
+  &lt;a href="/admin"&gt;ไปหน้าจัดการ&lt;/a&gt;
 {% else %}
-  &lt;p&gt;คุณคือสมาชิก&lt;/p&gt;
-{% endif %}
-
-&lt;!-- วนลูป --&gt;
-&lt;ul&gt;
-{% for item in items %}
-  &lt;li&gt;{{ item }}&lt;/li&gt;
-{% endfor %}
-&lt;/ul&gt;</code></pre>
-      <div class="callout note">
-        <strong>เชื่อมไป Template Inheritance</strong>
-        พอหน้าเว็บเริ่มหลายหน้า → เราจะไม่อยาก copy/paste โค้ด HTML ซ้ำ ๆ (navbar/footer) จึงต้องใช้ base.html
+  &lt;p&gt;คุณคือสมาชิกทั่วไป&lt;/p&gt;
+{% endif %}</code></pre>
       </div>
 
+      <h3>3.3 วนลูป {% for %}</h3>
+      <div class="example">
+        <pre><code>&lt;!-- ใน Python --&gt;
+tickets = [
+    {"id": 1, "title": "แจ้งซ่อมพัดลม"},
+    {"id": 2, "title": "แจ้งซ่อมแอร์"},
+    {"id": 3, "title": "แจ้งซ่อมประตู"}
+]
+render_template("tickets.html", tickets=tickets)
+
+&lt;!-- ใน Template --&gt;
+&lt;ul&gt;
+{% for ticket in tickets %}
+  &lt;li&gt;
+    &lt;strong&gt;#{{ ticket.id }}&lt;/strong&gt;: {{ ticket.title }}
+  &lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+      </div>
+
+      <h3>3.4 ตรวจสอบรายการว่าง</h3>
+      <div class="example">
+        <pre><code>{% if tickets %}
+  &lt;ul&gt;
+  {% for ticket in tickets %}
+    &lt;li&gt;{{ ticket.title }}&lt;/li&gt;
+  {% endfor %}
+  &lt;/ul&gt;
+{% else %}
+  &lt;p&gt;ยังไม่มีรายการแจ้งซ่อม&lt;/p&gt;
+{% endif %}</code></pre>
+      </div>
+
+      <h3>3.5 Loop Variables พิเศษ</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>ความหมาย</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>loop.index</code></td>
+            <td>ลำดับปัจจุบัน (เริ่ม 1)</td>
+          </tr>
+          <tr>
+            <td><code>loop.index0</code></td>
+            <td>ลำดับปัจจุบัน (เริ่ม 0)</td>
+          </tr>
+          <tr>
+            <td><code>loop.first</code></td>
+            <td>True ถ้าเป็นรอบแรก</td>
+          </tr>
+          <tr>
+            <td><code>loop.last</code></td>
+            <td>True ถ้าเป็นรอบสุดท้าย</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="example">
+        <pre><code>&lt;ul&gt;
+{% for item in items %}
+  &lt;li class="{% if loop.first %}first{% endif %}"&gt;
+    {{ loop.index }}. {{ item }}
+  &lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+      </div>
     </section>
+
     <section>
-      <h2>Template Inheritance: base.html + extends + block</h2>
+      <h2>4) Jinja2 Filters (ตัวกรองข้อมูล)</h2>
       <p>
-        แนวคิดคือทำ “โครงหน้า” ไว้ที่ <code>base.html</code> แล้วให้หน้าลูก (child) เติมส่วน <code>block</code>
-        เพื่อให้ทุกหน้ามี layout สม่ำเสมอ
+        Filters ช่วยแปลงข้อมูลก่อนแสดงผล ใช้ด้วย <code>|</code>
       </p>
-      <p><strong>1) templates/base.html</strong></p>
-      <pre><code>&lt;!doctype html&gt;
+
+      <div class="example">
+        <p class="example-title">Filters ที่ใช้บ่อย</p>
+        <pre><code>&lt;!-- แปลงเป็นตัวใหญ่ --&gt;
+{{ title|upper }}
+
+&lt;!-- แปลงเป็นตัวเล็ก --&gt;
+{{ email|lower }}
+
+&lt;!-- ค่า default ถ้าไม่มีข้อมูล --&gt;
+{{ description|default('ไม่มีคำอธิบาย') }}
+
+&lt;!-- ตัดข้อความให้เหลือ 50 ตัวอักษร --&gt;
+{{ long_text|truncate(50) }}
+
+&lt;!-- นับจำนวนรายการ --&gt;
+{{ items|length }}
+
+&lt;!-- เรียงลำดับ --&gt;
+{% for item in items|sort %}
+  {{ item }}
+{% endfor %}</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">🔗 ต่อ Filters ได้</p>
+        <pre><code>{{ name|lower|title }}
+&lt;!-- john doe → john doe → John Doe --&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) Template Inheritance (การสืบทอด Template)</h2>
+      <p>
+        แทนที่จะ copy-paste navbar, footer ในทุกหน้า เราสร้าง <strong>base template</strong> 
+        แล้วให้หน้าอื่นๆ "สืบทอด" จากมัน
+      </p>
+
+      <div class="key-point">
+        สร้างโครง (base.html) → หน้าอื่นเติมเนื้อหา (extends + block)
+      </div>
+
+      <h3>Step 1: สร้าง Base Template</h3>
+      <div class="example">
+        <p class="example-title">templates/base.html</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="th"&gt;
 &lt;head&gt;
   &lt;meta charset="utf-8"&gt;
-  &lt;title&gt;{% block title %}My App{% endblock %}&lt;/title&gt;
-  &lt;link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;{% block title %}ระบบแจ้งซ่อม{% endblock %}&lt;/title&gt;
+  &lt;link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;nav&gt;เมนูหลักของเว็บ&lt;/nav&gt;
+  &lt;nav&gt;
+    &lt;a href="{{ url_for('home') }}"&gt;หน้าแรก&lt;/a&gt;
+    &lt;a href="{{ url_for('tickets_list') }}"&gt;รายการแจ้งซ่อม&lt;/a&gt;
+    &lt;a href="{{ url_for('about') }}"&gt;เกี่ยวกับ&lt;/a&gt;
+  &lt;/nav&gt;
+  
   &lt;main&gt;
-    {% block content %}{% endblock %}
+    {% block content %}
+    &lt;!-- เนื้อหาของแต่ละหน้าจะแทรกตรงนี้ --&gt;
+    {% endblock %}
   &lt;/main&gt;
-  &lt;footer&gt;© 2026&lt;/footer&gt;
+  
+  &lt;footer&gt;
+    &lt;p&gt;&copy; 2024 ระบบแจ้งซ่อม&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <h3>Step 2: สร้าง Child Template</h3>
+      <div class="example">
+        <p class="example-title">templates/home.html</p>
+        <pre><code>{% extends "base.html" %}
+
+{% block title %}หน้าแรก - ระบบแจ้งซ่อม{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;ยินดีต้อนรับ&lt;/h1&gt;
+  &lt;p&gt;ระบบแจ้งซ่อมออนไลน์&lt;/p&gt;
+  &lt;a href="{{ url_for('ticket_create') }}"&gt;สร้างรายการใหม่&lt;/a&gt;
+{% endblock %}</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">templates/tickets/list.html</p>
+        <pre><code>{% extends "base.html" %}
+
+{% block title %}รายการแจ้งซ่อมทั้งหมด{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h1&gt;
+  
+  {% if tickets %}
+    &lt;ul&gt;
+    {% for ticket in tickets %}
+      &lt;li&gt;
+        &lt;a href="{{ url_for('ticket_detail', id=ticket.id) }}"&gt;
+          {{ ticket.title }}
+        &lt;/a&gt;
+      &lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+  {% else %}
+    &lt;p&gt;ยังไม่มีรายการแจ้งซ่อม&lt;/p&gt;
+  {% endif %}
+{% endblock %}</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">✨ ประโยชน์ของ Template Inheritance</p>
+        <ul>
+          <li>แก้ navbar/footer ครั้งเดียวที่ base.html → ทุกหน้าเปลี่ยนตาม</li>
+          <li>ไม่ต้อง copy-paste โค้ด HTML ซ้ำๆ</li>
+          <li>หน้าเว็บมี layout สม่ำเสมอ</li>
+          <li>แก้ไขง่าย บำรุงรักษาง่าย</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) Multiple Blocks</h2>
+      <p>
+        เราสามารถมี block หลายตัวได้ เช่น title, content, scripts
+      </p>
+
+      <div class="example">
+        <p class="example-title">templates/base.html - หลาย blocks</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+  {% block extra_css %}{% endblock %}
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+  
+  {% block content %}{% endblock %}
+  
+  &lt;footer&gt;...&lt;/footer&gt;
+  
+  &lt;script src="{{ url_for('static', filename='js/main.js') }}"&gt;&lt;/script&gt;
+  {% block extra_js %}{% endblock %}
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-      <p><strong>2) templates/home.html</strong></p>
-      <pre><code>{% extends "base.html" %}
+        <p><strong>Child template ใช้หลาย blocks</strong></p>
+        <pre><code>{% extends "base.html" %}
 
-{% block title %}หน้าแรก{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+  &lt;link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"&gt;
+{% endblock %}
 
 {% block content %}
-  &lt;h1&gt;หน้าแรก&lt;/h1&gt;
-  &lt;p&gt;เนื้อหาของหน้าแรกอยู่ตรงนี้&lt;/p&gt;
+  &lt;h1&gt;Dashboard&lt;/h1&gt;
+{% endblock %}
+
+{% block extra_js %}
+  &lt;script src="{{ url_for('static', filename='js/charts.js') }}"&gt;&lt;/script&gt;
 {% endblock %}</code></pre>
+      </div>
+    </section>
 
-      <div class="callout tip">
-        <strong>ประโยชน์ที่เห็นทันที</strong>
-        เปลี่ยน navbar/footer ครั้งเดียวที่ <code>base.html</code> → ทุกหน้าปรับตามอัตโนมัติ
+    <section>
+      <h2>7) Include Templates (แยกส่วนย่อย)</h2>
+      <p>
+        สำหรับส่วนที่ใช้ซ้ำหลายที่ (แต่ไม่ใช่ layout หลัก) ให้ใช้ <code>{% include %}</code>
+      </p>
+
+      <div class="example">
+        <p class="example-title">templates/_flash_messages.html</p>
+        <pre><code>{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      &lt;div class="alert alert-{{ category }}"&gt;
+        {{ message }}
+      &lt;/div&gt;
+    {% endfor %}
+  {% endif %}
+{% endwith %}</code></pre>
+
+        <p><strong>ใช้งานใน template อื่น</strong></p>
+        <pre><code>{% extends "base.html" %}
+
+{% block content %}
+  {% include "_flash_messages.html" %}
+  
+  &lt;h1&gt;สร้างรายการใหม่&lt;/h1&gt;
+  &lt;form&gt;...&lt;/form&gt;
+{% endblock %}</code></pre>
       </div>
 
+      <div class="note">
+        <p class="note-title">📁 แนะนำการตั้งชื่อ</p>
+        <p>ไฟล์ partial/component ขึ้นต้นด้วย <code>_</code> เช่น <code>_navbar.html</code>, <code>_footer.html</code></p>
+      </div>
     </section>
+
     <section>
-      <h2>Static Files: เสิร์ฟ CSS/JS/รูปจากโฟลเดอร์ static</h2>
+      <h2>8) Static Files (CSS, JavaScript, Images)</h2>
       <p>
-        Flask จะเสิร์ฟไฟล์ในโฟลเดอร์ <code>static/</code> อัตโนมัติ (เช่น <code>static/style.css</code>)
-        แนะนำให้เรียกผ่าน <code>url_for('static', filename='...')</code> เพื่อความถูกต้องของ path
-      </p>
-      <pre><code>my-flask-app/
-├─ app.py
-├─ templates/
-│  ├─ base.html
-│  └─ home.html
-└─ static/
-   ├─ style.css
-   └─ app.js</code></pre>
-
-      <p><strong>ตัวอย่าง static/style.css</strong></p>
-      <pre><code>body { font-family: system-ui; margin: 0; }
-nav { padding: 12px 16px; background: #111827; color: white; }
-main { padding: 16px; }</code></pre>
-      <h3>รูปภาพ (Images): จัดเก็บและเรียกใช้อย่างถูกวิธี</h3>
-      <p>
-        นอกจาก CSS/JS แล้ว <strong>รูปภาพ</strong> (เช่น โลโก้, ไอคอน, รูปประกอบหน้า) ก็ควรเก็บไว้ใน <code>static/</code>
-        โดยแนะนำให้แยกโฟลเดอร์ย่อย เช่น <code>static/images/</code> เพื่อให้จัดระเบียบง่าย
+        ไฟล์ที่ไม่ใช่ HTML (CSS, JS, รูปภาพ) เก็บในโฟลเดอร์ <code>static/</code>
       </p>
 
-      <pre><code>my-flask-app/
-├─ app.py
-├─ templates/
-│  ├─ base.html
-│  └─ home.html
-└─ static/
-   ├─ style.css
-   ├─ app.js
-   └─ images/
-      ├─ logo.png
-      ├─ banner.jpg
-      └─ icon.svg</code></pre>
+      <h3>โครงสร้างโฟลเดอร์ Static</h3>
+      <div class="folder-structure">static/
+├── css/
+│   ├── style.css
+│   └── dashboard.css
+├── js/
+│   ├── main.js
+│   └── charts.js
+└── images/
+    ├── logo.png
+    └── banner.jpg</div>
 
-      <h4>1) แสดงรูปใน Template (แนะนำให้ใช้ url_for)</h4>
-      <p>
-        การอ้าง path แบบตรง ๆ เช่น <code>/static/images/logo.png</code> ใช้ได้ แต่แนวทางที่ยืดหยุ่นกว่า
-        คือใช้ <code>url_for('static', filename='...')</code> เพื่อให้ Flask สร้าง URL ให้ถูกต้อง
-      </p>
-      <pre><code>&lt;!-- templates/home.html --&gt;
+      <h3>เรียกใช้ Static Files</h3>
+      <div class="example">
+        <p class="example-title">ใช้ url_for() เสมอ</p>
+        <pre><code>&lt;!-- CSS --&gt;
+&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"&gt;
 
-&lt;img
-  src="{{ url_for('static', filename='images/logo.png') }}"
-  alt="โลโก้ระบบ"
-  width="160"
-  height="160"
-  loading="lazy"
-/&gt;</code></pre>
+&lt;!-- JavaScript --&gt;
+&lt;script src="{{ url_for('static', filename='js/main.js') }}"&gt;&lt;/script&gt;
 
-      <h4>2) ใช้รูปเป็นพื้นหลังใน CSS</h4>
-      <p>
-        ถ้าต้องการทำ banner/hero สามารถใช้รูปเป็น background ได้ โดยอ้าง path แบบ relative จากไฟล์ CSS
-        (เพราะเบราว์เซอร์โหลดไฟล์ CSS แล้วค่อยไปโหลดรูปต่อ)
-      </p>
-      <pre><code>/* static/style.css */
-.hero {
-  background-image: url("./images/banner.jpg");
-  background-size: cover;
-  background-position: center;
-  border-radius: 16px;
-}</code></pre>
+&lt;!-- Images --&gt;
+&lt;img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo"&gt;
 
-      <h4>3) ทำให้รูป responsive และคมชัด</h4>
+&lt;!-- ไฟล์ในโฟลเดอร์ย่อย --&gt;
+&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/admin/dashboard.css') }}"&gt;</code></pre>
+      </div>
+
+      <div class="warning">
+        <p class="warning-title">❌ อย่า Hardcode Path</p>
+        <pre><code>&lt;!-- ❌ ไม่ดี --&gt;
+&lt;link rel="stylesheet" href="/static/css/style.css"&gt;
+
+&lt;!-- ✅ ดี --&gt;
+&lt;link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>9) ตัวอย่างครบวงจร: ระบบแจ้งซ่อม</h2>
+
+      <div class="example">
+        <p class="example-title">โครงสร้างโปรเจกต์</p>
+        <div class="folder-structure">repair-system/
+├── app.py
+├── templates/
+│   ├── base.html
+│   ├── home.html
+│   ├── tickets/
+│   │   ├── list.html
+│   │   ├── detail.html
+│   │   └── new.html
+│   └── _flash_messages.html
+└── static/
+    ├── css/
+    │   └── style.css
+    └── images/
+        └── logo.png</div>
+      </div>
+
+      <div class="example">
+        <p class="example-title">app.py - Routes</p>
+        <pre><code>from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/tickets")
+def tickets_list():
+    tickets = [
+        {"id": 1, "title": "แจ้งซ่อมพัดลม", "status": "รอดำเนินการ"},
+        {"id": 2, "title": "แจ้งซ่อมแอร์", "status": "กำลังดำเนินการ"}
+    ]
+    return render_template("tickets/list.html", tickets=tickets)
+
+@app.route("/tickets/&lt;int:id&gt;")
+def ticket_detail(id):
+    ticket = {"id": id, "title": "แจ้งซ่อมพัดลม", "description": "พัดลมไม่ทำงาน"}
+    return render_template("tickets/detail.html", ticket=ticket)</code></pre>
+      </div>
+
+      <div class="example">
+        <p class="example-title">templates/base.html</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;{% block title %}ระบบแจ้งซ่อม{% endblock %}&lt;/title&gt;
+  &lt;link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo"&gt;
+    &lt;nav&gt;
+      &lt;a href="{{ url_for('home') }}"&gt;หน้าแรก&lt;/a&gt;
+      &lt;a href="{{ url_for('tickets_list') }}"&gt;รายการแจ้งซ่อม&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  
+  &lt;main&gt;
+    {% block content %}{% endblock %}
+  &lt;/main&gt;
+  
+  &lt;footer&gt;
+    &lt;p&gt;&copy; {{ current_year }} ระบบแจ้งซ่อม&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>10) Comments ใน Jinja2</h2>
+      <div class="example">
+        <pre><code>{# นี่คือ comment จะไม่แสดงใน HTML #}
+
+{% block content %}
+  {# TODO: เพิ่มฟีเจอร์การค้นหา #}
+  &lt;h1&gt;รายการ&lt;/h1&gt;
+{% endblock %}</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>11) สรุปและ Checklist</h2>
+      
+      <h3>สิ่งที่เรียนรู้ในบทนี้</h3>
       <ul>
-        <li>ใส่ <code>alt</code> เพื่อการเข้าถึง (accessibility) และ SEO</li>
-        <li>ทำให้รูปไม่ล้นคอนเทนเนอร์ด้วย <code>max-width: 100%</code> และ <code>height: auto</code></li>
-        <li>ใช้ <code>loading="lazy"</code> สำหรับรูปที่ไม่อยู่ส่วนบนของหน้า เพื่อให้โหลดเร็วขึ้น</li>
+        <li>✅ ใช้ <code>render_template()</code> ส่ง HTML</li>
+        <li>✅ ใช้ Jinja2 syntax: <code>{{ }}</code>, <code>{% %}</code>, <code>{# #}</code></li>
+        <li>✅ แสดงตัวแปร, ใช้เงื่อนไข, วนลูป</li>
+        <li>✅ ใช้ Template Inheritance ลดการ copy-paste</li>
+        <li>✅ Include partial templates</li>
+        <li>✅ เสิร์ฟ static files (CSS, JS, รูป)</li>
       </ul>
-      <pre><code>/* static/style.css */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}</code></pre>
 
-      <h4>ตัวอย่างการแสดงผล (ตัวอย่างรูปแบบฝังในเอกสาร)</h4>
-      <p class="doc-subtitle" style="margin-top:6px">
-        ตัวอย่างด้านล่างเป็นรูปแบบฝังเพื่อสาธิตหน้าตา (ในโปรเจกต์จริงให้เก็บไฟล์ไว้ที่ <code>static/images/</code>)
-      </p>
-      <figure style="margin: 14px 0 6px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow:hidden;">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgOTAwIDI2MCI+CjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY0NmU1IiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDZiNmQ0IiBzdG9wLW9wYWNpdHk9IjAuODUiLz4KICA8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjYwIiByeD0iMjIiIGZpbGw9InVybCgjZykiLz4KPGNpcmNsZSBjeD0iMTI1IiBjeT0iMTMwIiByPSI2NCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjE4KSIvPgo8Y2lyY2xlIGN4PSIxODgiIGN5PSIxMTAiIHI9IjE4IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMjIpIi8+CjxjaXJjbGUgY3g9IjIxMCIgY3k9IjE1MCIgcj0iMTAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4yMikiLz4KPHRleHQgeD0iMjcwIiB5PSIxMTgiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMzQiIGZpbGw9IndoaXRlIiBmb250LXdlaWdodD0iNzAwIj7guJXguLHguKfguK3guKLguYjguLLguIfguKPguLnguJvguKDguLLguJ4gKEltYWdlKTwvdGV4dD4KPHRleHQgeD0iMjcwIiB5PSIxNjAiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC45MikiPuC4quC4suC4mOC4tOC4leC4geC4suC4o+C5geC4quC4lOC4h+C4nOC4peC4o+C4ueC4m+C5g+C4meC4q+C4meC5ieC4suC5gOC4p+C5h+C4miArIOC5geC4meC4p+C4l+C4suC4h+C5gOC4geC5h+C4muC5hOC4n+C4peC5jOC5hOC4p+C5ieC5g+C4mSBzdGF0aWMvaW1hZ2VzLzwvdGV4dD4KPHRleHQgeD0iMjcwIiB5PSIxOTgiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC44OCkiPkZsYXNrICsgdXJsX2Zvcignc3RhdGljJywgZmlsZW5hbWU9J2ltYWdlcy8uLi4nKTwvdGV4dD4KPC9zdmc+" alt="ตัวอย่างรูปภาพ" style="width:100%; height:auto;">
-      </figure>
-      <div class="callout tip">
-        <strong>แนวปฏิบัติที่แนะนำ</strong>
-        โครงสร้าง <code>static/images/</code> + การเรียกผ่าน <code>url_for('static', filename='images/...')</code>
-        จะช่วยให้ย้าย/ปรับโครงสร้างโปรเจกต์ได้ง่าย และลดปัญหา path พังในหลายหน้า
-      </div>
-
-
-      <div class="callout note">
-        <strong>จุดเชื่อมกับโปรเจกต์ปี 1</strong>
-        เมื่อทำ base.html + static.css แล้ว หน้า CRUD/Workshop จะออกมาดู “เป็นระบบเดียวกัน” ทั้งเว็บ
-      </div>
-
-    </section>
-    <section>
-      <h2>แบบฝึกหัดสั้น ๆ (ให้ทำหลังเรียน)</h2>
-      <ol>
-        <li>สร้าง <code>base.html</code> ที่มี navbar + footer</li>
-        <li>สร้างหน้า <code>home.html</code> และ <code>about.html</code> ที่ extends base</li>
-        <li>สร้างไฟล์ <code>static/style.css</code> ให้ navbar มีพื้นหลังสีเข้ม</li>
-        <li>ทำ route <code>/</code> และ <code>/about</code> ให้ render_template</li>
-        <li>ส่งตัวแปร <code>title</code> เข้า template แล้วแสดงบนหน้าเว็บ</li>
-      </ol>
-
-    </section>
-    <section>
-      <h2>สรุป</h2>
+      <h3>Checklist ก่อนไปบทถัดไป</h3>
       <ul>
-        <li>render_template ช่วยแยก HTML ออกจาก Python</li>
-        <li>Jinja2 ทำให้หน้าเว็บแสดงข้อมูลจริงด้วยตัวแปร/if/for</li>
-        <li>Template inheritance ทำให้เว็บ “ดูเป็นระบบ” และแก้ง่าย</li>
-        <li>Static files ทำให้เว็บมี CSS/JS พร้อมสำหรับหน้า CRUD</li>
+        <li>☐ สร้าง templates/ และ static/ ได้</li>
+        <li>☐ ใช้ render_template() ส่งข้อมูลได้</li>
+        <li>☐ ใช้ {% if %} และ {% for %} ได้</li>
+        <li>☐ สร้าง base.html และ extends ได้</li>
+        <li>☐ เรียกใช้ static files ด้วย url_for() ได้</li>
+        <li>☐ พร้อมทำ Workshop ระบบแจ้งซ่อม</li>
       </ul>
-      <div class="callout note">
-        <strong>เชื่อมไปบทที่ 4</strong>
-        เมื่อหน้าตาเว็บพร้อมแล้ว → บทที่ 4 จะเริ่ม “นิยามข้อมูลระบบ” (JSON Schema → DB Mapping) เพื่อทำ CRUD จริง
-      </div>
-
     </section>
-
 
     <section>
-      <h2>อ้างอิง (อ่านเพิ่ม)</h2>
+      <h2>12) แหล่งเรียนรู้เพิ่มเติม</h2>
       <ul>
-<li><a href="https://www.geeksforgeeks.org/python/flask-rendering-templates/">https://www.geeksforgeeks.org/python/flask-rendering-templates/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/template-inheritance-in-flask/">https://www.geeksforgeeks.org/python/template-inheritance-in-flask/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/how-to-serve-static-files-in-flask/">https://www.geeksforgeeks.org/python/how-to-serve-static-files-in-flask/</a></li>
+        <li><a href="https://flask.palletsprojects.com/en/latest/tutorial/templates/" target="_blank">Flask Templates Tutorial</a></li>
+        <li><a href="https://jinja.palletsprojects.com/en/latest/templates/" target="_blank">Jinja2 Template Documentation</a></li>
+        <li><a href="https://www.geeksforgeeks.org/python/flask-rendering-templates/" target="_blank">GeeksforGeeks - Flask Templates</a></li>
       </ul>
     </section>
 
-    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    <div class="no-print" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html">🏠 กลับหน้าหลัก</a>
+      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap04/chap04-doc.html">บทถัดไป: HTML + Tailwind CSS →</a>
     </div>
   </div>
 </body>

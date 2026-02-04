@@ -3,412 +3,905 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>บทที่ 2: Routing + URL Building + Redirect + Errors + HTTP Methods - เอกสารประกอบการสอน</title>
+  <title>บทที่ 2: Routing + URL Building + HTTP Methods - เอกสารประกอบการสอน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../assets/css/common.css">
-  <link rel="stylesheet" href="../../assets/css/documentation.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #7c3aed;
+      --accent-color: #059669;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      color: var(--text-dark);
+      background-color: #fff;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .chapter-nav {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .chapter-nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    
+    .chapter-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    
+    .chapter-nav a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .doc-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .doc-header h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .doc-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .doc-meta {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    h3 {
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+    }
+    
+    h4 {
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      margin: 1.5rem 0 1rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      color: #e11d48;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    
+    .note {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .tip {
+      background: #d1fae5;
+      border-left: 4px solid #059669;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .tip-title {
+      font-weight: 600;
+      color: #065f46;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .warning-title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .key-point {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .example {
+      background: var(--bg-light);
+      border-left: 4px solid var(--primary-color);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .example-title {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+    
+    th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+      background: var(--bg-light);
+    }
+    
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    
+    .highlight {
+      background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 40%;
+      background-position: 0 80%;
+      padding: 0.1rem 0.3rem;
+      font-weight: 500;
+    }
+    
+    .muted {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    
+    @media print {
+      .no-print { display: none; }
+      .chapter-nav { display: none; }
+      pre { page-break-inside: avoid; }
+    }
+  </style>
 </head>
 <body>
   <nav class="chapter-nav no-print">
-    <div class="nav-home"><a href="../../index.html">🏠 หน้าหลัก</a></div>
-    <div class="nav-links">
-      <a href="../chap01/chap01-doc.html">← บทก่อนหน้า</a>
-      <a href="../chap03/chap03-doc.html">บทถัดไป →</a>
+    <div class="container">
+      <div><a href="../../index.html">🏠 หน้าหลัก</a></div>
+      <div>
+        <a href="../chap01/chap01-doc.html">← บทก่อนหน้า</a>
+        <a href="../chap03/chap03-doc.html">บทถัดไป →</a>
+      </div>
     </div>
   </nav>
 
   <div class="container">
     <header class="doc-header">
-      <h1>บทที่ 2: Routing + URL Building + Redirect + Errors + HTTP Methods</h1>
-      <p class="doc-subtitle">ออกแบบเส้นทาง URL ให้เป็นระบบ: route → dynamic URL → query string → url_for → GET/POST → redirect(PRG) → abort/errorhandler</p>
-      <p class="doc-meta">บทที่ 2 • เอกสารประกอบการสอน</p>
+      <h1>บทที่ 2: Routing + URL Building + HTTP Methods</h1>
+      <p class="doc-subtitle">ออกแบบเส้นทาง URL ให้เป็นระบบ: route → dynamic URL → url_for → GET/POST → redirect → error handling</p>
+      <p class="doc-meta">บทที่ 2 • เอกสารประกอบการสอน (Project ปี 1)</p>
     </header>
 
     <section>
-      <h2>เป้าหมายของบทนี้</h2>
-      <ul>
-        <li>เข้าใจ <strong>Routing</strong>: ผูก URL ↔ ฟังก์ชันด้วย <code>@app.route</code></li>
-        <li>ทำ URL แบบมีตัวแปร (<strong>Variable rules</strong>) เช่น <code>/tickets/&lt;int:id&gt;</code></li>
-        <li>สร้าง URL อย่างถูกวิธีด้วย <code>url_for()</code> (ลดปัญหา link พัง)</li>
-        <li>ใช้ <code>redirect()</code> และจัดการ error ด้วย <code>abort()</code> / <code>@app.errorhandler</code></li>
-        <li>ใช้ HTTP methods อย่างถูกต้อง: <strong>GET/POST</strong> และรู้จัก 405 (Method Not Allowed)</li>
-      </ul>
-      <div class="callout note">
-        <strong>จุดเชื่อมจากบทที่ 1</strong>
-        ตอนนี้แอปรันได้แล้ว → บทนี้ทำให้เว็บ “มีหลายหน้า” และมี flow ที่เหมือนเว็บจริง (ลิงก์ถูกต้อง, ส่งฟอร์มได้, redirect ได้, error ได้)
-      </div>
-
-    </section>
-    <section>
-      <h2>Routing คืออะไร (ผูก URL กับฟังก์ชัน)</h2>
+      <h2>บทนำ</h2>
       <p>
-        Routing คือการกำหนดว่า “ถ้ามี request เข้ามาที่ URL นี้ ให้เรียกฟังก์ชันไหน”
-        โดยใช้ decorator <code>@app.route()</code> และชื่อฟังก์ชันจะกลายเป็น <strong>endpoint</strong> (ใช้กับ <code>url_for</code>)
+        หลังจากบทที่ 1 เราสามารถรันแอป Flask ได้แล้ว แต่ยังมีเพียงหน้าเดียว 
+        บทนี้จะทำให้เว็บของเรา <span class="highlight">"มีหลายหน้า"</span> และมี flow ที่เหมือนเว็บจริง
       </p>
-      <pre><code>@app.route("/")
-def home():
-    return "Home"
-
-@app.route("/about")
-def about():
-    return "About"</code></pre>
-      <ul>
-        <li><strong>URL pattern</strong>: เช่น <code>/about</code></li>
-        <li><strong>View function</strong>: เช่น <code>about()</code></li>
-        <li><strong>Endpoint</strong>: โดยปกติคือชื่อฟังก์ชัน (<code>"about"</code>)</li>
-      </ul>
-      <div class="callout tip">
-        <strong>แนวออกแบบ URL ให้เป็นระบบ</strong>
-        คิดเป็น “ทรัพยากร” (resource) ก่อน เช่น <code>/tickets</code>, <code>/users</code> แล้วค่อยเพิ่ม action เช่น <code>/new</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/edit</code>
+      
+      <div class="note">
+        <p class="note-title">🎯 เป้าหมายของบทนี้</p>
+        <ul>
+          <li>เข้าใจ <strong>Routing</strong>: ผูก URL ↔ ฟังก์ชันด้วย <code>@app.route</code></li>
+          <li>ทำ URL แบบมีตัวแปร (<strong>Variable rules</strong>) เช่น <code>/tickets/&lt;int:id&gt;</code></li>
+          <li>สร้าง URL อย่างถูกวิธีด้วย <code>url_for()</code> (ลดปัญหา link พัง)</li>
+          <li>ใช้ <code>redirect()</code> และจัดการ error ด้วย <code>abort()</code> / <code>@app.errorhandler</code></li>
+          <li>ใช้ HTTP methods อย่างถูกต้อง: <strong>GET/POST</strong></li>
+        </ul>
       </div>
-
     </section>
+
     <section>
-      <h2>กฎของเส้นทาง (Trailing Slash) ที่ทำให้ 404/308 บ่อย</h2>
+      <h2>1) Routing คืออะไร (ผูก URL กับฟังก์ชัน)</h2>
       <p>
-        ใน Flask เส้นทาง <code>/tickets</code> กับ <code>/tickets/</code> อาจเป็นคนละ route ถ้ากำหนดไว้ไม่ตรงกัน
-        และบางกรณี Flask จะ redirect อัตโนมัติ (เช่น 308) เพื่อให้ URL ถูกต้อง
-      </p>
-      <pre><code>@app.route("/tickets")
-def tickets():
-    return "list"
-
-@app.route("/tickets/")
-def tickets_slash():
-    return "list (slash)"</code></pre>
-      <ul>
-        <li>ถ้ากำหนด <code>/tickets</code> แล้วไปเปิด <code>/tickets/</code> อาจโดน redirect หรือ 404 ขึ้นกับการตั้งค่า</li>
-        <li>แนวทางง่าย: “ตกลงทีมให้ชัด” ว่าจะใช้มี slash หรือไม่มี slash สำหรับ collection</li>
-      </ul>
-      <div class="callout note">
-        <strong>ทิป</strong>
-        ถ้าเจอ route แปลก ๆ ให้ดู URL ที่ browser สุดท้าย (หลัง redirect) ว่ามี <code>/</code> ท้ายหรือไม่
-      </div>
-
-    </section>
-    <section>
-      <h2>Variable Rules (Dynamic URL) + Converters</h2>
-      <p>
-        เมื่อ URL ต้องมีค่าเปลี่ยนไปตามข้อมูล (เช่น id, username) ให้ใส่ตัวแปรใน URL ได้
-        และกำหนดชนิดด้วย converters เพื่อกันข้อมูลผิดรูปแบบ
-      </p>
-      <pre><code>@app.route("/hello/&lt;name&gt;")
-def hello(name):
-    return f"Hello {name}!"
-
-@app.route("/tickets/&lt;int:ticket_id&gt;")
-def ticket_detail(ticket_id):
-    return f"Ticket #{ticket_id}"</code></pre>
-
-      <p><strong>Converters ที่ใช้บ่อย</strong></p>
-      <ul>
-        <li><code>&lt;string:x&gt;</code> (ค่าเริ่มต้น) รับตัวอักษรทั่วไป (ไม่รวม <code>/</code>)</li>
-        <li><code>&lt;int:x&gt;</code> รับเลขจำนวนเต็ม</li>
-        <li><code>&lt;float:x&gt;</code> รับเลขทศนิยม</li>
-        <li><code>&lt;path:x&gt;</code> รับข้อความที่มี <code>/</code> ได้ (ต่อยอด)</li>
-      </ul>
-
-      <h3>ตัวอย่าง: ใช้ path converter</h3>
-      <pre><code>@app.route("/files/&lt;path:filepath&gt;")
-def files(filepath):
-    return f"open: {filepath}"</code></pre>
-
-      <div class="callout warn">
-        <strong>ระวัง</strong>
-        ถ้า route กว้างมาก (เช่น <code>&lt;path:...&gt;</code>) อาจทับกับ route อื่นได้ ควรวาง route ที่ “เฉพาะเจาะจงกว่า” ไว้ก่อน
-      </div>
-
-    </section>
-    <section>
-      <h2>Query String vs Path Variable (คนละแบบ ใช้ต่างกัน)</h2>
-      <p>
-        Flask รับค่าได้ทั้งจาก <strong>Path variable</strong> (อยู่ใน URL) และ <strong>Query string</strong> (อยู่หลัง <code>?</code>)
+        <strong>Routing</strong> คือการกำหนดว่า "ถ้ามี request เข้ามาที่ URL นี้ ให้เรียกฟังก์ชันไหน"
+        โดยใช้ decorator <code>@app.route()</code>
       </p>
 
-      <h3>1) Path variable</h3>
-      <pre><code>@app.route("/users/&lt;int:user_id&gt;")
-def user_detail(user_id):
-    return f"user_id={user_id}"</code></pre>
-
-      <h3>2) Query string</h3>
-      <pre><code>from flask import request
-
-@app.route("/search")
-def search():
-    q = request.args.get("q", "")
-    page = request.args.get("page", 1, type=int)
-    return f"q={q}, page={page}"</code></pre>
-
-      <div class="callout tip">
-        <strong>เลือกใช้แบบไหนดี?</strong>
-        ถ้าเป็น “ตัวตนของทรัพยากร” เช่น id → ใช้ path variable • ถ้าเป็น “ตัวเลือกการค้นหา/การกรอง” → ใช้ query string
-      </div>
-
-    </section>
-    <section>
-      <h2>url_for(): สร้าง URL แบบไม่ hardcode</h2>
-      <p>
-        <code>url_for()</code> สร้าง URL จาก endpoint ช่วยให้แก้ชื่อ route แล้วลิงก์ไม่พัง
-        (ดีกว่าเขียน <code>"/tickets/1"</code> กระจายทั่วโค้ด)
-      </p>
-      <pre><code>from flask import url_for
-
-@app.route("/tickets/&lt;int:ticket_id&gt;")
-def ticket_detail(ticket_id):
-    return f"Ticket #{ticket_id}"
-
-@app.route("/go-first-ticket")
-def go_first_ticket():
-    return url_for("ticket_detail", ticket_id=1)  # /tickets/1</code></pre>
-
-      <h3>ใส่ query string ผ่าน url_for</h3>
-      <pre><code>@app.route("/go-search")
-def go_search():
-    return url_for("search", q="flask", page=2)  # /search?q=flask&page=2</code></pre>
-
-      <h3>สร้างลิงก์แบบ absolute (เช่นใส่ในอีเมล)</h3>
-      <pre><code>url_for("ticket_detail", ticket_id=10, _external=True)</code></pre>
-
-      <div class="callout note">
-        <strong>ใช้กับ Template (บทถัดไป)</strong>
-        ใน Jinja2 จะเขียนลิงก์แบบนี้: <code>{{ url_for('ticket_detail', ticket_id=1) }}</code>
-      </div>
-
-    </section>
-    <section>
-      <h2>HTTP Methods: GET/POST + อ่านข้อมูลจาก request</h2>
-      <p>
-        HTTP method บอก “เจตนาของ request”:
-        <strong>GET</strong> มักใช้ดูหน้า/ข้อมูล • <strong>POST</strong> มักใช้ส่งข้อมูล (ฟอร์ม/สร้างรายการ)
-      </p>
-
-      <h3>อ่าน query string (GET)</h3>
-      <pre><code>from flask import request
-
-@app.route("/search")
-def search():
-    q = request.args.get("q", "")
-    return f"Search: {q}"</code></pre>
-
-      <h3>รับฟอร์ม (POST)</h3>
-      <pre><code>from flask import request
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        return f"Hello {username}"
-    return "แสดงฟอร์ม login"</code></pre>
-
-      <h3>รับ JSON (เช่น API แบบง่าย)</h3>
-      <pre><code>from flask import request, jsonify
-
-@app.route("/api/echo", methods=["POST"])
-def api_echo():
-    data = request.get_json(silent=True) or {}
-    return jsonify(data)</code></pre>
-
-      <div class="callout warn">
-        <strong>405 Method Not Allowed</strong>
-        ถ้า route ไม่ได้ระบุ <code>methods=["POST"]</code> แล้วส่ง POST มา จะเจอ 405 ทันที (เป็น error ที่เจอบ่อยมาก)
-      </div>
-
-    </section>
-    <section>
-      <h2>รูปแบบ Response ที่ควรรู้ (HTML/JSON/Status/Headers)</h2>
-      <p>Flask อนุญาตให้ return ได้หลายรูปแบบ:</p>
-      <ul>
-        <li><strong>ข้อความ/HTML</strong>: <code>return "OK"</code></li>
-        <li><strong>กำหนด status code</strong>: <code>return "Created", 201</code></li>
-        <li><strong>กำหนด headers</strong>: <code>return "OK", 200, {"X-Mode": "demo"}</code></li>
-        <li><strong>JSON</strong>: ใช้ <code>jsonify()</code></li>
-      </ul>
-
-      <pre><code>from flask import jsonify
-
-@app.route("/api/status")
-def api_status():
-    return jsonify({"status": "ok"})</code></pre>
-
-      <div class="callout tip">
-        <strong>ทิป</strong>
-        ถ้าเป็น JSON ให้ใช้ <code>jsonify</code> จะตั้งค่า <code>Content-Type</code> ให้ถูกต้องอัตโนมัติ
-      </div>
-
-    </section>
-    <section>
-      <h2>Redirect: ส่งผู้ใช้ไปหน้าอื่นอย่างถูกวิธี (PRG pattern)</h2>
-      <p>
-        Redirect ใช้บ่อยหลัง “ทำงานเสร็จ” เช่น บันทึกฟอร์มแล้วกลับหน้ารายการ
-        โดยใช้ <code>redirect()</code> คู่กับ <code>url_for()</code>
-      </p>
-      <pre><code>from flask import redirect, url_for
-
-@app.route("/save", methods=["POST"])
-def save():
-    # ... บันทึกข้อมูล ...
-    return redirect(url_for("home"))</code></pre>
-
-      <h3>เลือก status code ของ redirect</h3>
-      <pre><code># 302 (ค่าเริ่มต้น) ใช้ทั่วไป
-return redirect(url_for("home"), code=302)
-
-# 301 (permanent) ใช้เมื่อย้าย URL ถาวร (ระวัง browser cache)
-return redirect(url_for("home"), code=301)</code></pre>
-
-      <div class="callout note">
-        <strong>Post/Redirect/Get (PRG)</strong>
-        หลัง POST เสร็จให้ redirect ไปหน้า GET เพื่อกัน refresh แล้วส่งซ้ำ
-      </div>
-
-    </section>
-    <section>
-      <h2>Errors: abort() + errorhandler (ทำให้เว็บ “เป็นมิตร” เวลาเกิดปัญหา)</h2>
-      <p>
-        เวลา “ข้อมูลไม่พบ / สิทธิ์ไม่พอ / request ผิด” ควรตอบสถานะให้ถูกต้อง เช่น 404, 403, 400
-        Flask มี <code>abort(code)</code> ให้จบ request พร้อม error code
-      </p>
-      <pre><code>from flask import abort
-
-@app.route("/tickets/&lt;int:ticket_id&gt;")
-def ticket_detail(ticket_id):
-    ticket = None  # สมมติค้นหาแล้วไม่เจอ
-    if ticket is None:
-        abort(404)
-    return "OK"</code></pre>
-
-      <h3>ทำหน้า error สวย ๆ</h3>
-      <pre><code>@app.errorhandler(404)
-def page_not_found(e):
-    return "ไม่พบหน้าที่ต้องการ (404)", 404
-
-@app.errorhandler(500)
-def server_error(e):
-    return "เกิดข้อผิดพลาดภายในระบบ (500)", 500</code></pre>
-
-      <div class="callout tip">
-        <strong>แนวปฏิบัติ</strong>
-        ใช้ <code>abort</code> เฉพาะ “กรณีผิดจริง ๆ” และมีข้อความ/หน้า error ที่สื่อสารได้ (แทนการปล่อยให้พังเป็น traceback)
-      </div>
-
-    </section>
-    <section>
-      <h2>ตัวอย่างรวม (ไฟล์เดียว) ที่เห็นภาพทั้ง Routing + url_for + GET/POST + Redirect + Errors</h2>
-      <p>ตัวอย่างนี้ตั้งใจให้ “อ่านแล้วเห็น flow ครบ” ในไฟล์เดียว:</p>
-      <pre><code>from flask import Flask, request, redirect, url_for, abort, jsonify
+      <div class="example">
+        <p class="example-title">ตัวอย่างพื้นฐาน</p>
+        <pre><code>from flask import Flask
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Home"
+    return "Home Page"
 
-# query string: /search?q=flask&page=2
+@app.route("/about")
+def about():
+    return "About Us"
+
+@app.route("/contact")
+def contact():
+    return "Contact Page"</code></pre>
+      </div>
+
+      <h3>องค์ประกอบของ Route</h3>
+      <ul>
+        <li><strong>URL pattern</strong>: เช่น <code>/about</code></li>
+        <li><strong>View function</strong>: เช่น <code>about()</code></li>
+        <li><strong>Endpoint</strong>: โดยปกติคือชื่อฟังก์ชัน (<code>"about"</code>) ใช้กับ <code>url_for()</code></li>
+      </ul>
+
+      <div class="key-point">
+        URL pattern → View function → Response
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">💡 แนวออกแบบ URL ให้เป็นระบบ</p>
+        <ul>
+          <li>คิดเป็น "ทรัพยากร" (resource) ก่อน เช่น <code>/tickets</code>, <code>/users</code></li>
+          <li>แล้วค่อยเพิ่ม action เช่น <code>/new</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/edit</code></li>
+          <li>ใช้คำนามมากกว่าคำกริยา: <code>/tickets</code> ดีกว่า <code>/get-tickets</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>2) Trailing Slash (เส้นทาง / ท้าย URL)</h2>
+      <p>
+        ใน Flask เส้นทาง <code>/tickets</code> กับ <code>/tickets/</code> 
+        อาจเป็นคนละ route ถ้ากำหนดไว้ไม่ตรงกัน
+      </p>
+
+      <div class="example">
+        <p class="example-title">ตัวอย่างความแตกต่าง</p>
+        <pre><code>@app.route("/tickets")
+def tickets():
+    return "Tickets (no slash)"
+
+@app.route("/projects/")
+def projects():
+    return "Projects (with slash)"</code></pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Route กำหนด</th>
+            <th>เข้า URL</th>
+            <th>ผลลัพธ์</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/tickets</code></td>
+            <td><code>/tickets</code></td>
+            <td>✅ Works</td>
+          </tr>
+          <tr>
+            <td><code>/tickets</code></td>
+            <td><code>/tickets/</code></td>
+            <td>❌ 404 Not Found</td>
+          </tr>
+          <tr>
+            <td><code>/projects/</code></td>
+            <td><code>/projects/</code></td>
+            <td>✅ Works</td>
+          </tr>
+          <tr>
+            <td><code>/projects/</code></td>
+            <td><code>/projects</code></td>
+            <td>↪️ 308 Redirect to /projects/</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <p class="tip-title">🎯 Best Practice</p>
+        <p>ตกลงในทีมให้ชัดว่าจะใช้ trailing slash หรือไม่ แล้วใช้แบบเดียวกันทั้งหมด</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) Variable Rules (Dynamic URL)</h2>
+      <p>
+        เมื่อ URL ต้องมีค่าเปลี่ยนไปตามข้อมูล (เช่น id, username) 
+        ให้ใส่ตัวแปรใน URL ได้ด้วย <code>&lt;variable_name&gt;</code>
+      </p>
+
+      <div class="example">
+        <p class="example-title">ตัวอย่าง Dynamic Routes</p>
+        <pre><code>@app.route("/hello/&lt;name&gt;")
+def hello(name):
+    return f"Hello, {name}!"
+
+@app.route("/tickets/&lt;int:ticket_id&gt;")
+def ticket_detail(ticket_id):
+    return f"Ticket #{ticket_id}"
+
+@app.route("/user/&lt;username&gt;/posts/&lt;int:post_id&gt;")
+def user_post(username, post_id):
+    return f"Post {post_id} by {username}"</code></pre>
+      </div>
+
+      <h3>URL Converters (ตัวแปลงชนิดข้อมูล)</h3>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Converter</th>
+            <th>รับค่า</th>
+            <th>ตัวอย่าง</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>string</code></td>
+            <td>ข้อความทั่วไป (ไม่มี /)</td>
+            <td><code>&lt;username&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>int</code></td>
+            <td>เลขจำนวนเต็ม</td>
+            <td><code>&lt;int:id&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>float</code></td>
+            <td>เลขทศนิยม</td>
+            <td><code>&lt;float:price&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>path</code></td>
+            <td>ข้อความที่มี / ได้</td>
+            <td><code>&lt;path:filepath&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>uuid</code></td>
+            <td>UUID format</td>
+            <td><code>&lt;uuid:user_id&gt;</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="example">
+        <p class="example-title">ตัวอย่างการใช้ converters</p>
+        <pre><code># Integer converter
+@app.route("/post/&lt;int:id&gt;")
+def show_post(id):
+    return f"Post ID: {id}"
+    
+# Float converter
+@app.route("/price/&lt;float:amount&gt;")
+def show_price(amount):
+    return f"Price: ${amount:.2f}"
+    
+# Path converter (รับ / ได้)
+@app.route("/files/&lt;path:filepath&gt;")
+def show_file(filepath):
+    return f"File: {filepath}"</code></pre>
+      </div>
+
+      <div class="warning">
+        <p class="warning-title">⚠️ ระวัง</p>
+        <p>ถ้า route กว้างมาก (เช่น <code>&lt;path:...&gt;</code>) อาจทับกับ route อื่นได้ 
+        ควรวาง route ที่เฉพาะเจาะจงกว่าไว้ก่อน</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) Query String vs Path Variable</h2>
+      <p>
+        Flask รับค่าได้ทั้งจาก <strong>Path variable</strong> (อยู่ใน URL) 
+        และ <strong>Query string</strong> (อยู่หลัง <code>?</code>)
+      </p>
+
+      <h3>Path Variable (ส่วนหนึ่งของ URL)</h3>
+      <div class="example">
+        <pre><code>@app.route("/users/&lt;int:user_id&gt;")
+def user_detail(user_id):
+    return f"User ID: {user_id}"
+    
+# URL: /users/123
+# user_id = 123</code></pre>
+      </div>
+
+      <h3>Query String (พารามิเตอร์หลัง ?)</h3>
+      <div class="example">
+        <pre><code>from flask import request
+
 @app.route("/search")
 def search():
     q = request.args.get("q", "")
     page = request.args.get("page", 1, type=int)
-    return f"q={q}, page={page}"
+    return f"Search: {q}, Page: {page}"
+    
+# URL: /search?q=flask&page=2
+# q = "flask", page = 2</code></pre>
+      </div>
 
-# dynamic url: /tickets/12
+      <div class="tip">
+        <p class="tip-title">🤔 เลือกใช้แบบไหนดี?</p>
+        <ul>
+          <li><strong>Path variable</strong>: ใช้สำหรับ "ตัวตนของทรัพยากร" เช่น ID<br>
+              <span class="muted">ตัวอย่าง: <code>/tickets/123</code></span></li>
+          <li><strong>Query string</strong>: ใช้สำหรับ "ตัวเลือกการค้นหา/การกรอง"<br>
+              <span class="muted">ตัวอย่าง: <code>/tickets?status=open&page=2</code></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) url_for(): สร้าง URL แบบไม่ hardcode</h2>
+      <p>
+        การ hardcode URL เช่น <code>&lt;a href="/about"&gt;</code> มีปัญหา:
+        ถ้าเปลี่ยน route ลิงก์จะพังทั้งหมด
+      </p>
+      <p>
+        <code>url_for()</code> ช่วยสร้าง URL จากชื่อ endpoint (ชื่อฟังก์ชัน) 
+        ทำให้เปลี่ยน route ได้โดยไม่กระทบลิงก์
+      </p>
+
+      <div class="example">
+        <p class="example-title">เปรียบเทียบ Hardcode vs url_for()</p>
+        <pre><code># ❌ Hardcode (แนวทางที่ไม่ดี)
+@app.route("/")
+def home():
+    return '&lt;a href="/about"&gt;About&lt;/a&gt;'
+
+# ✅ ใช้ url_for() (แนวทางที่ดี)
+from flask import url_for
+
+@app.route("/")
+def home():
+    about_url = url_for('about')
+    return f'&lt;a href="{about_url}"&gt;About&lt;/a&gt;'
+
+@app.route("/about")
+def about():
+    return "About Page"</code></pre>
+      </div>
+
+      <h3>ใช้ url_for() กับ Dynamic Routes</h3>
+      <div class="example">
+        <pre><code>from flask import url_for
+
+@app.route("/")
+def home():
+    # สร้าง URL สำหรับ ticket_detail
+    url = url_for('ticket_detail', ticket_id=123)
+    return f'&lt;a href="{url}"&gt;View Ticket 123&lt;/a&gt;'
+    # สร้าง: /tickets/123
+
 @app.route("/tickets/&lt;int:ticket_id&gt;")
 def ticket_detail(ticket_id):
-    if ticket_id &lt;= 0:
-        abort(404)
-    return f"Ticket #{ticket_id}"
+    return f"Ticket #{ticket_id}"</code></pre>
+      </div>
 
-# GET shows form, POST processes form
-@app.route("/login", methods=["GET", "POST"])
-def login():
+      <h3>ใช้ url_for() กับ Query String</h3>
+      <div class="example">
+        <pre><code># พารามิเตอร์ที่ไม่ตรงกับ route จะกลายเป็น query string
+url = url_for('search', q='flask', page=2)
+# สร้าง: /search?q=flask&page=2
+
+url = url_for('ticket_detail', ticket_id=5, action='edit')
+# สร้าง: /tickets/5?action=edit</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">✨ ข้อดีของ url_for()</p>
+        <ul>
+          <li>✅ เปลี่ยน URL pattern ได้โดยไม่ต้องแก้ลิงก์ทั้งหมด</li>
+          <li>✅ ป้องกัน typo (ถ้าพิมพ์ชื่อฟังก์ชันผิดจะ error ทันที)</li>
+          <li>✅ สร้าง absolute URL ได้ด้วย <code>_external=True</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) HTTP Methods: GET และ POST</h2>
+      <p>
+        HTTP มี methods หลายแบบ แต่ที่ใช้บ่อยที่สุดคือ <strong>GET</strong> และ <strong>POST</strong>
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>จุดประสงค์</th>
+            <th>ใช้เมื่อไหร่</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>GET</strong></td>
+            <td>ขอข้อมูล / แสดงหน้า</td>
+            <td>คลิกลิงก์, พิมพ์ URL, แสดงฟอร์ม</td>
+          </tr>
+          <tr>
+            <td><strong>POST</strong></td>
+            <td>ส่งข้อมูล / สร้างรายการ</td>
+            <td>Submit ฟอร์ม, Upload ไฟล์</td>
+          </tr>
+          <tr>
+            <td><strong>PUT</strong></td>
+            <td>อัพเดทข้อมูล (ทั้งหมด)</td>
+            <td>API (ไม่ค่อยใช้ใน form)</td>
+          </tr>
+          <tr>
+            <td><strong>DELETE</strong></td>
+            <td>ลบข้อมูล</td>
+            <td>API (ไม่ค่อยใช้ใน form)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>กำหนด Methods ใน Route</h3>
+      <div class="example">
+        <pre><code># รับเฉพาะ GET (default)
+@app.route("/tickets")
+def tickets_list():
+    return "List of tickets"
+
+# รับทั้ง GET และ POST
+@app.route("/tickets/new", methods=["GET", "POST"])
+def create_ticket():
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        if not username:
-            abort(400)
-        return redirect(url_for("hello", name=username))  # PRG
+        # รับข้อมูลจากฟอร์ม
+        title = request.form.get("title")
+        return f"Created: {title}"
+    # แสดงฟอร์ม
     return '''
-      &lt;form method="post"&gt;
-        &lt;input name="username" placeholder="username"&gt;
-        &lt;button&gt;Login&lt;/button&gt;
-      &lt;/form&gt;
-    '''
-
-@app.route("/hello/&lt;name&gt;")
-def hello(name):
-    return f"Hello {name}!"
-
-# JSON example
-@app.route("/api/echo", methods=["POST"])
-def api_echo():
-    data = request.get_json(silent=True) or {}
-    return jsonify({"received": data})
-
-@app.errorhandler(400)
-def bad_request(e):
-    return "คำขอไม่ถูกต้อง (400)", 400
-
-@app.errorhandler(404)
-def not_found(e):
-    return "ไม่พบหน้าที่ต้องการ (404)", 404
-
-if __name__ == "__main__":
-    app.run(debug=True)</code></pre>
-
-    </section>
-    <section>
-      <h2>Debugging ที่เจอบ่อย (เช็คให้ไว)</h2>
-      <ul>
-        <li><strong>404 Not Found</strong>: พิมพ์ URL ไม่ตรง route หรือเรื่อง trailing slash (<code>/x</code> vs <code>/x/</code>)</li>
-        <li><strong>405 Method Not Allowed</strong>: ส่ง POST มา แต่ route ไม่ได้ใส่ <code>methods=["POST"]</code></li>
-        <li><strong>url_for หาไม่เจอ</strong>: พิมพ์ชื่อ endpoint ผิด (โดยปกติคือชื่อฟังก์ชัน)</li>
-        <li><strong>Redirect วนลูป</strong>: route A redirect ไป B แต่ B redirect กลับ A</li>
-      </ul>
-      <div class="callout tip">
-        <strong>ทิป</strong>
-        ถ้าหาไม่เจอว่า endpoint ชื่ออะไร ให้ print <code>app.url_map</code> ในช่วง debug เพื่อดูรายการ route ทั้งหมด
+        &lt;form method="POST"&gt;
+            &lt;input name="title" required&gt;
+            &lt;button&gt;Submit&lt;/button&gt;
+        &lt;/form&gt;
+    '''</code></pre>
       </div>
 
-    </section>
-    <section>
-      <h2>แบบฝึกหัด</h2>
-      <ol>
-        <li>ทำ route <code>/</code>, <code>/about</code>, <code>/contact</code></li>
-        <li>ทำ dynamic route <code>/users/&lt;name&gt;</code> และ <code>/users/&lt;int:id&gt;</code> (ลอง converter)</li>
-        <li>ทำ <code>/search</code> รับ <code>q</code> และ <code>page</code> ผ่าน query string</li>
-        <li>ทำฟอร์ม <code>/login</code> (GET แสดงฟอร์ม, POST ตรวจค่าว่างแล้ว redirect ไป <code>/hello/&lt;name&gt;</code>)</li>
-        <li>ทำ <code>/api/echo</code> รับ JSON แล้ว jsonify กลับ</li>
-        <li>ทำ errorhandler สำหรับ 404 และ 400</li>
-      </ol>
-
-    </section>
-    <section>
-      <h2>สรุป</h2>
-      <ul>
-        <li>Routing คือแกนของเว็บ: URL → ฟังก์ชัน</li>
-        <li>Dynamic URL + url_for ทำให้เว็บยืดหยุ่นและแก้ง่าย</li>
-        <li>GET/POST เป็นพื้นฐานที่ต้องใช้จริง พร้อมระวัง 405</li>
-        <li>Redirect (PRG) และ Error handling ทำให้เว็บมี flow ที่ถูกต้อง</li>
-      </ul>
-      <div class="callout note">
-        <strong>เชื่อมไปบทที่ 3</strong>
-        ตอนนี้ route และ flow พร้อมแล้ว → บทที่ 3 จะทำให้คืนค่าเป็น “หน้าเว็บจริง” ด้วย Jinja2 + base layout + static CSS/JS
+      <div class="key-point">
+        GET = อ่านข้อมูล | POST = เขียนข้อมูล
       </div>
 
+      <div class="warning">
+        <p class="warning-title">⚠️ 405 Method Not Allowed</p>
+        <p>ถ้า route กำหนด <code>methods=["POST"]</code> แต่เข้าด้วย GET จะได้ error 405</p>
+      </div>
     </section>
 
+    <section>
+      <h2>7) Redirect และ PRG Pattern</h2>
+      <p>
+        หลังจาก POST ข้อมูลสำเร็จ ควร <strong>redirect</strong> ไปหน้าอื่น 
+        เพื่อป้องกันการ submit ซ้ำเมื่อผู้ใช้ refresh หน้า (PRG Pattern)
+      </p>
+
+      <h3>PRG Pattern (Post-Redirect-Get)</h3>
+      <div class="example">
+        <pre><code>from flask import Flask, request, redirect, url_for
+
+@app.route("/tickets/new", methods=["GET", "POST"])
+def create_ticket():
+    if request.method == "POST":
+        title = request.form.get("title")
+        # บันทึกข้อมูล...
+        
+        # ✅ Redirect ไปหน้า list
+        return redirect(url_for("tickets_list"))
+    
+    # แสดงฟอร์ม
+    return render_template("new_ticket.html")
+
+@app.route("/tickets")
+def tickets_list():
+    return "Tickets list"</code></pre>
+      </div>
+
+      <div class="key-point">
+        POST → Process → Redirect → GET
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">💡 ทำไมต้อง Redirect?</p>
+        <ul>
+          <li>ป้องกันการ submit ซ้ำเมื่อ refresh หน้า</li>
+          <li>URL ใน browser จะเป็น GET URL (ไม่มีข้อมูล POST)</li>
+          <li>ผู้ใช้สามารถ bookmark หน้าผลลัพธ์ได้</li>
+        </ul>
+      </div>
+    </section>
 
     <section>
-      <h2>อ้างอิง (อ่านเพิ่ม)</h2>
+      <h2>8) Error Handling (จัดการ Error)</h2>
+      <p>
+        เมื่อเกิด error (เช่น หาข้อมูลไม่เจอ) ควรส่ง error code ที่เหมาะสม 
+        และแสดงหน้า error ที่เป็นมิตร
+      </p>
+
+      <h3>ใช้ abort() ส่ง Error</h3>
+      <div class="example">
+        <pre><code>from flask import abort
+
+@app.route("/tickets/&lt;int:ticket_id&gt;")
+def ticket_detail(ticket_id):
+    # สมมติหา ticket จาก database
+    ticket = find_ticket(ticket_id)
+    
+    if not ticket:
+        abort(404)  # ส่ง 404 Not Found
+    
+    return f"Ticket: {ticket['title']}"</code></pre>
+      </div>
+
+      <h3>สร้างหน้า Error แบบ Custom</h3>
+      <div class="example">
+        <pre><code>@app.errorhandler(404)
+def page_not_found(error):
+    return '''
+        &lt;h1&gt;404 - Page Not Found&lt;/h1&gt;
+        &lt;p&gt;ไม่พบหน้าที่คุณต้องการ&lt;/p&gt;
+        &lt;a href="/"&gt;กลับหน้าแรก&lt;/a&gt;
+    ''', 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return '''
+        &lt;h1&gt;500 - Internal Server Error&lt;/h1&gt;
+        &lt;p&gt;เกิดข้อผิดพลาดในระบบ&lt;/p&gt;
+    ''', 500</code></pre>
+      </div>
+
+      <h3>Status Codes ที่ควรรู้</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>ความหมาย</th>
+            <th>ใช้เมื่อไหร่</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>200</strong></td>
+            <td>OK</td>
+            <td>สำเร็จปกติ</td>
+          </tr>
+          <tr>
+            <td><strong>302</strong></td>
+            <td>Found (Redirect)</td>
+            <td>Redirect ชั่วคราว</td>
+          </tr>
+          <tr>
+            <td><strong>400</strong></td>
+            <td>Bad Request</td>
+            <td>ข้อมูลที่ส่งมาไม่ถูกต้อง</td>
+          </tr>
+          <tr>
+            <td><strong>404</strong></td>
+            <td>Not Found</td>
+            <td>ไม่พบหน้า/ข้อมูล</td>
+          </tr>
+          <tr>
+            <td><strong>405</strong></td>
+            <td>Method Not Allowed</td>
+            <td>ใช้ HTTP method ผิด</td>
+          </tr>
+          <tr>
+            <td><strong>500</strong></td>
+            <td>Internal Server Error</td>
+            <td>Error ในโค้ด</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>9) ตัวอย่างครบวงจร: CRUD Routes</h2>
+      <div class="example">
+        <p class="example-title">Routes สำหรับจัดการ Tickets</p>
+        <pre><code>from flask import Flask, render_template, request, redirect, url_for, abort
+
+app = Flask(__name__)
+
+# List - แสดงทั้งหมด
+@app.route("/tickets")
+def tickets_list():
+    # ดึงข้อมูลจาก database
+    return render_template("tickets/list.html")
+
+# Detail - แสดงรายการเดียว
+@app.route("/tickets/&lt;int:id&gt;")
+def ticket_detail(id):
+    # หา ticket จาก database
+    ticket = find_ticket(id)
+    if not ticket:
+        abort(404)
+    return render_template("tickets/detail.html", ticket=ticket)
+
+# Create - สร้างใหม่
+@app.route("/tickets/new", methods=["GET", "POST"])
+def ticket_create():
+    if request.method == "POST":
+        # บันทึกข้อมูล
+        title = request.form.get("title")
+        description = request.form.get("description")
+        # save_ticket(title, description)
+        return redirect(url_for("tickets_list"))
+    
+    return render_template("tickets/new.html")
+
+# Edit - แก้ไข
+@app.route("/tickets/&lt;int:id&gt;/edit", methods=["GET", "POST"])
+def ticket_edit(id):
+    ticket = find_ticket(id)
+    if not ticket:
+        abort(404)
+    
+    if request.method == "POST":
+        # อัพเดทข้อมูล
+        # update_ticket(id, request.form)
+        return redirect(url_for("ticket_detail", id=id))
+    
+    return render_template("tickets/edit.html", ticket=ticket)
+
+# Delete - ลบ
+@app.route("/tickets/&lt;int:id&gt;/delete", methods=["POST"])
+def ticket_delete(id):
+    # delete_ticket(id)
+    return redirect(url_for("tickets_list"))</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>10) สรุปและ Checklist</h2>
+      
+      <h3>สิ่งที่เรียนรู้ในบทนี้</h3>
       <ul>
-<li><a href="https://www.geeksforgeeks.org/python/flask-app-routing/">https://www.geeksforgeeks.org/python/flask-app-routing/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/flask-variable-rule/">https://www.geeksforgeeks.org/python/flask-variable-rule/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/redirecting-to-url-in-flask/">https://www.geeksforgeeks.org/python/redirecting-to-url-in-flask/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/python-flask-redirect-and-errors/">https://www.geeksforgeeks.org/python/python-flask-redirect-and-errors/</a></li>
-<li><a href="https://www.geeksforgeeks.org/python/flask-http-method/">https://www.geeksforgeeks.org/python/flask-http-method/</a></li>
+        <li>✅ สร้าง routes หลายหน้าด้วย <code>@app.route()</code></li>
+        <li>✅ ใช้ dynamic routes กับ converters</li>
+        <li>✅ เข้าใจ trailing slash และ best practices</li>
+        <li>✅ สร้าง URL ด้วย <code>url_for()</code></li>
+        <li>✅ แยก GET/POST และใช้ PRG pattern</li>
+        <li>✅ จัดการ errors ด้วย abort() และ errorhandler</li>
+      </ul>
+
+      <h3>Checklist ก่อนไปบทถัดไป</h3>
+      <ul>
+        <li>☐ สร้าง routes หลายหน้าได้</li>
+        <li>☐ ใช้ <code>&lt;int:id&gt;</code> ได้</li>
+        <li>☐ ใช้ <code>url_for()</code> แทน hardcode URL</li>
+        <li>☐ แยก GET/POST ในฟังก์ชันเดียวกันได้</li>
+        <li>☐ ทำ redirect หลัง POST ได้</li>
+        <li>☐ สร้างหน้า 404 custom ได้</li>
       </ul>
     </section>
 
-    <div class="no-print" style="margin-top: 36px; display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn-primary" href="../../index.html" style="text-decoration:none; padding:10px 14px; border-radius:10px; background:var(--primary-color); color:#fff;">🏠 กลับหน้าหลัก</a>
+    <section>
+      <h2>11) แหล่งเรียนรู้เพิ่มเติม</h2>
+      <ul>
+        <li><a href="https://flask.palletsprojects.com/en/latest/quickstart/#routing" target="_blank">Flask Routing Documentation</a></li>
+        <li><a href="https://www.geeksforgeeks.org/python/flask-app-routing/" target="_blank">GeeksforGeeks - Flask Routing</a></li>
+        <li><a href="https://flask.palletsprojects.com/en/latest/api/#flask.Flask.route" target="_blank">Flask API - app.route()</a></li>
+      </ul>
+    </section>
+
+    <div class="no-print" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html">🏠 กลับหน้าหลัก</a>
+      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap03/chap03-doc.html">บทถัดไป: Templates →</a>
     </div>
   </div>
 </body>

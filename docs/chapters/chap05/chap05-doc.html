@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 5: เชื่อมต่อฐานข้อมูลด้วย Flask‑SQLAlchemy + SQLite - เอกสารประกอบการสอน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+      --primary-color: #2563eb;
+      --secondary-color: #7c3aed;
+      --accent-color: #059669;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      color: var(--text-dark);
+      background-color: #fff;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .chapter-nav {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .chapter-nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    
+    .chapter-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    
+    .chapter-nav a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .doc-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .doc-header h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .doc-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .doc-meta {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    h3 {
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+    }
+    
+    h4 {
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      margin: 1.5rem 0 1rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      color: #e11d48;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    
+    .example {
+      background: var(--bg-light);
+      border-left: 4px solid var(--primary-color);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .example-title {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .tip {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .tip-title {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .key-point {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+    
+    .comparison-table th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+    
+    .comparison-table tr:nth-child(even) {
+      background: var(--bg-light);
+    }
+    
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    
+    .highlight {
+      background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 40%;
+      background-position: 0 80%;
+      padding: 0.1rem 0.3rem;
+      font-weight: 500;
+    }
+    
+    .muted {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    
+    @media print {
+      .no-print { display: none; }
+      .chapter-nav { display: none; }
+      pre { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="container">
+      <div><a href="../../index.html">🏠 หน้าหลัก</a></div>
+      <div>
+        <a href="../chap04/chap04-doc.html">← บทก่อนหน้า</a>
+        <a href="../chap06/chap06-doc.html">บทถัดไป →</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 5: เชื่อมต่อฐานข้อมูลด้วย Flask‑SQLAlchemy + SQLite</h1>
+      <p class="doc-subtitle">จากข้อมูลในหน่วยความจำ → ORM Model → Create/Read ในระบบแจ้งซ่อม (2 routes) + Jinja2 + Tailwind</p>
+      <p class="doc-meta">บทที่ 5 • เอกสารประกอบการสอน</p>
+    </header>
+
+    <section>
+      <h2>1) เป้าหมายของบทนี้</h2>
+      <p>
+        ในบทก่อนหน้า เราโฟกัสเรื่องหน้าเว็บ (HTML + Tailwind) และการทำหน้าให้ดูเป็นระบบ
+        บทนี้จะพาไปอีกขั้น: <span class="highlight">บันทึกข้อมูลลงฐานข้อมูลจริง</span> โดยใช้ <strong>ORM</strong>
+        ผ่าน <strong>Flask‑SQLAlchemy</strong> และใช้ฐานข้อมูลแบบไฟล์เดียวอย่าง <strong>SQLite</strong>
+        เพื่อให้เริ่มต้นง่ายและทดลองได้เร็ว
+      </p>
+      <div class="key-point">
+        เป้าหมาย: ทำ “Create/Read” ให้ครบวงจร — กรอกฟอร์ม → บันทึก DB → แสดงรายการจาก DB
+      </div>
+      <ul>
+        <li><strong>เข้าใจ ORM</strong>: Model ↔ Table, Object ↔ Row</li>
+        <li><strong>ตั้งค่า DB</strong>: SQLite + SQLAlchemy ใน Flask</li>
+        <li><strong>ทำ 2 routes</strong>: <code>GET /repairs</code> และ <code>GET/POST /repairs/new</code></li>
+        <li><strong>ใช้ Jinja2 + Tailwind</strong>: loop แสดงรายการ + สร้างฟอร์มแบบอ่านง่าย</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>2) ฐานข้อมูล + ORM คืออะไร (ทำไมต้องใช้)</h2>
+      <h3>2.1 ปัญหาของการเก็บข้อมูลแบบไม่ใช้ DB</h3>
+      <p>
+        ถ้าเก็บข้อมูลไว้ในตัวแปรในโปรแกรมหรือไฟล์ชั่วคราว มักเจอปัญหา เช่น ปิดโปรแกรมแล้วข้อมูลหาย,
+        ค้นหายาก, และทำงานร่วมกันหลายคนลำบาก
+      </p>
+      <div class="note">
+        <p class="note-title">สรุปสั้นๆ</p>
+        <ul>
+          <li>ข้อมูลต้อง “อยู่ได้” แม้รีสตาร์ทเครื่อง/ปิดโปรแกรม</li>
+          <li>ต้องค้นหา/เรียง/กรองข้อมูลได้ง่าย (Query)</li>
+          <li>ต้องคุมความถูกต้องของข้อมูล (constraints)</li>
+        </ul>
+      </div>
+
+      <h3>2.2 ORM (Object‑Relational Mapping)</h3>
+      <p>
+        ORM คือแนวคิดที่ช่วยให้เราเขียนโค้ดแบบ <strong>อ็อบเจ็กต์</strong> (Python class)
+        แล้ว ORM จะ “แมป” ไปเป็น <strong>ตาราง</strong> ในฐานข้อมูลให้
+      </p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>แนวคิดใน Python</th>
+            <th>แนวคิดในฐานข้อมูล</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Class (Model)</td><td>Table</td></tr>
+          <tr><td>Object (instance)</td><td>Row</td></tr>
+          <tr><td>Attribute</td><td>Column</td></tr>
+          <tr><td>db.session</td><td>Transaction / Unit of Work</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <p class="tip-title">ทำไม ORM ช่วยให้เรียนง่ายขึ้น</p>
+        <ul>
+          <li>ไม่ต้องเขียน SQL ทุกบรรทัดในช่วงเริ่มต้น</li>
+          <li>โค้ดอ่านง่าย: <code>RepairTicket.query.all()</code> สื่อความหมายชัด</li>
+          <li>รองรับการขยายระบบในอนาคต (เพิ่มตาราง/ความสัมพันธ์)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) เตรียมโปรเจกต์: ติดตั้ง Flask‑SQLAlchemy + ตั้งค่า SQLite</h2>
+
+      <h3>3.1 ติดตั้งแพ็กเกจ</h3>
+      <div class="example">
+        <p class="example-title">คำสั่งติดตั้ง (แนะนำให้ใช้ venv เสมอ)</p>
+        <pre><code>pip install Flask Flask-SQLAlchemy</code></pre>
+      </div>
+
+      <h3>3.2 เพิ่ม requirements.txt</h3>
+      <div class="example">
+        <p class="example-title">เก็บ dependency เพื่อให้เครื่องอื่นติดตั้งตามได้</p>
+        <pre><code>Flask&gt;=3.0
+Flask-SQLAlchemy&gt;=3.1</code></pre>
+      </div>
+
+      <h3>3.3 ตั้งค่า Database URI สำหรับ SQLite</h3>
+      <p>
+        จุดสำคัญคือ <code>SQLALCHEMY_DATABASE_URI</code> ซึ่งเป็นสตริงที่บอก SQLAlchemy ว่าจะต่อฐานข้อมูลที่ไหน
+        สำหรับ SQLite แบบไฟล์เดียว เราจะใช้รูปแบบ <code>sqlite:///app.db</code> (สร้างไฟล์ <code>app.db</code> ในโฟลเดอร์โปรเจกต์)
+      </p>
+
+      <div class="example">
+        <p class="example-title">ตัวอย่างการตั้งค่าใน Flask</p>
+        <pre><code>app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">ข้อสังเกต: sqlite:/// vs sqlite:////</p>
+        <ul>
+          <li><code>sqlite:///app.db</code> = ไฟล์ในโฟลเดอร์โปรเจกต์ (relative path)</li>
+          <li><code>sqlite:////absolute/path/app.db</code> = ระบุ path แบบเต็ม (absolute path)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) ออกแบบ Model: ตาราง “แจ้งซ่อม” (RepairTicket)</h2>
+      <p>
+        ก่อนเขียนโค้ดให้เริ่มจาก “ออกแบบข้อมูล” ว่าแต่ละรายการแจ้งซ่อมควรเก็บอะไรบ้าง
+        ตัวอย่างที่พอใช้งานจริงและต่อยอดได้:
+      </p>
+      <ul>
+        <li><strong>id</strong>: รหัสรายการ (Primary Key)</li>
+        <li><strong>title</strong>: หัวข้อแจ้งซ่อม (ต้องมี)</li>
+        <li><strong>description</strong>: รายละเอียด (เลือกมีได้)</li>
+        <li><strong>location</strong>: สถานที่ (เลือกมีได้)</li>
+        <li><strong>status</strong>: สถานะ (เช่น OPEN / IN_PROGRESS / DONE)</li>
+        <li><strong>created_at</strong>: เวลาที่สร้างรายการ (ช่วยเรียงข้อมูล)</li>
+      </ul>
+
+      <div class="example">
+        <p class="example-title">Model ด้วย Flask‑SQLAlchemy</p>
+        <pre><code>from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy(app)
+
+class RepairTicket(db.Model):
+    __tablename__ = "repair_tickets"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    location = db.Column(db.String(120), nullable=True)
+    status = db.Column(db.String(20), nullable=False, default="OPEN")
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">อ่านโค้ดให้เป็น (จุดสำคัญ)</p>
+        <ul>
+          <li><code>nullable=False</code> = ห้ามว่าง (บังคับต้องมีค่า)</li>
+          <li><code>default=...</code> = ถ้าไม่ส่งค่ามา จะเติมค่าเริ่มต้นให้</li>
+          <li><code>db.String(120)</code> เหมาะกับข้อความสั้น, <code>db.Text</code> เหมาะกับข้อความยาว</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) สร้างตาราง (Create Tables) และหลักการของ db.session</h2>
+
+      <h3>5.1 สร้างตารางครั้งแรก</h3>
+      <p>
+        ในงานเดโม่/การสอน เรามักใช้ <code>db.create_all()</code> เพื่อสร้างตารางตาม Model
+        (ถ้าตารางมีอยู่แล้ว จะไม่สร้างซ้ำ)
+      </p>
+
+      <div class="example">
+        <p class="example-title">ต้องรันภายใน app context</p>
+        <pre><code>with app.app_context():
+    db.create_all()</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">ทำไมต้องมี app_context()</p>
+        <p>
+          เพราะ SQLAlchemy ต้องรู้ว่า “กำลังทำงานภายใต้แอปไหน” (config อยู่ใน app)
+          ถ้าไม่อยู่ใน context จะเจอ error ว่า working outside of application context
+        </p>
+      </div>
+
+      <h3>5.2 วงจรพื้นฐานของ db.session</h3>
+      <div class="key-point">
+        add → commit = “บันทึกจริงลงฐานข้อมูล”
+      </div>
+      <div class="example">
+        <p class="example-title">ตัวอย่างบันทึกรายการแจ้งซ่อม</p>
+        <pre><code>ticket = RepairTicket(title="พัดลมเสีย", location="ห้อง 301")
+db.session.add(ticket)
+db.session.commit()</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">ทำไมต้อง commit</p>
+        <p>ถ้า add แล้วไม่ commit ข้อมูลจะยังไม่ถูกเขียนลง DB (ยังไม่ “ยืนยันธุรกรรม”)</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) Workshop Core: 2 Routes (Create/Read) สำหรับระบบแจ้งซ่อม</h2>
+      <p>
+        เราจะทำแอปเล็กๆ ให้ครบวงจร โดยใช้ 2 routes เท่านั้น:
+      </p>
+      <ol>
+        <li><code>GET /repairs</code> — แสดงรายการแจ้งซ่อมทั้งหมด (Read)</li>
+        <li><code>GET/POST /repairs/new</code> — หน้าแบบฟอร์ม + บันทึกข้อมูล (Create)</li>
+      </ol>
+
+      <h3>6.1 ไฟล์ app.py (ตัวอย่างรวม)</h3>
+      <div class="example">
+        <p class="example-title">โค้ดตัวอย่าง (ตัดให้เหลือเฉพาะแกนสำคัญ)</p>
+        <pre><code>from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "dev"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+class RepairTicket(db.Model):
+    __tablename__ = "repair_tickets"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text)
+    location = db.Column(db.String(120))
+    status = db.Column(db.String(20), nullable=False, default="OPEN")
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+with app.app_context():
+    db.create_all()
+
+@app.get("/repairs")
+def repairs_list():
+    tickets = RepairTicket.query.order_by(RepairTicket.created_at.desc()).all()
+    return render_template("repairs/list.html", tickets=tickets)
+
+@app.route("/repairs/new", methods=["GET", "POST"])
+def repairs_new():
+    if request.method == "POST":
+        title = (request.form.get("title") or "").strip()
+        description = (request.form.get("description") or "").strip()
+        location = (request.form.get("location") or "").strip()
+
+        if not title:
+            flash("กรุณากรอกหัวข้อ (title) ก่อนบันทึก", "error")
+            return render_template("repairs/new.html", form=request.form)
+
+        ticket = RepairTicket(
+            title=title,
+            description=description or None,
+            location=location or None,
+        )
+        db.session.add(ticket)
+        db.session.commit()
+
+        flash("บันทึกการแจ้งซ่อมเรียบร้อย", "success")
+        return redirect(url_for("repairs_list"))
+
+    return render_template("repairs/new.html", form={})</code></pre>
+      </div>
+
+      <h3>6.2 อธิบายเส้นทางข้อมูล (Data Flow)</h3>
+      <div class="key-point">
+        ผู้ใช้กรอกฟอร์ม → POST /repairs/new → สร้าง object → db.session.add → commit → redirect ไป /repairs → query → render_template
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">แนวคิดที่ควรจำ</p>
+        <ul>
+          <li><code>request.form</code> = ข้อมูลที่มาจากฟอร์ม (เฉพาะตอน POST)</li>
+          <li><code>redirect(url_for(...))</code> = ส่งผู้ใช้ไปหน้าอื่นหลังบันทึกสำเร็จ (กันปัญหา refresh แล้วโพสต์ซ้ำ)</li>
+          <li><code>query.order_by(...).all()</code> = ดึงข้อมูลจาก DB มาเป็นรายการเพื่อแสดงผล</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>7) Templates + Tailwind (ให้ UI อ่านง่าย)</h2>
+      <p>
+        เราจะใช้ Tailwind แบบ CDN เพื่อจัดหน้าให้ดูดีและเขียนเร็ว โดยแบ่ง template เป็น 3 ไฟล์:
+        <code>base.html</code>, <code>repairs/list.html</code>, <code>repairs/new.html</code>
+      </p>
+
+      <h3>7.1 base.html: โครงหลักของทุกหน้า</h3>
+      <div class="example">
+        <p class="example-title">base.html (ตัดให้เหลือแกนสำคัญ)</p>
+        <pre><code>&lt;!doctype html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;{{ title or "Repair App" }}&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-slate-50 text-slate-800"&gt;
+
+  &lt;header class="bg-white border-b"&gt;
+    &lt;div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between"&gt;
+      &lt;a class="font-semibold text-lg" href="{{ url_for('repairs_list') }}"&gt;🛠️ Repair Tickets&lt;/a&gt;
+      &lt;nav class="flex gap-3"&gt;
+        &lt;a class="text-sm hover:underline" href="{{ url_for('repairs_list') }}"&gt;รายการ&lt;/a&gt;
+        &lt;a class="text-sm hover:underline" href="{{ url_for('repairs_new') }}"&gt;แจ้งซ่อมใหม่&lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;main class="max-w-5xl mx-auto px-4 py-6"&gt;
+    {{% block content %}}{{% endblock %}}
+  &lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <h3>7.2 list.html: แสดงรายการจากฐานข้อมูล</h3>
+      <p>
+        จุดสำคัญคือการใช้ Jinja2 loop เพื่อวนรายการ <code>tickets</code> ที่ส่งมาจาก route
+      </p>
+      <div class="example">
+        <p class="example-title">วนลูปแสดงรายการ (แนวคิดหลัก)</p>
+        <pre><code>{{% for t in tickets %}}
+  &lt;div class="bg-white border rounded-2xl p-4"&gt;
+    &lt;div class="font-semibold"&gt;{{ t.title }}&lt;/div&gt;
+    &lt;div class="text-sm text-slate-500"&gt;#{{ t.id }} • {{ t.created_at.strftime("%Y-%m-%d %H:%M") }}&lt;/div&gt;
+    {{% if t.description %}}
+      &lt;p class="mt-2 text-sm"&gt;{{ t.description }}&lt;/p&gt;
+    {{% endif %}}
+  &lt;/div&gt;
+{{% endfor %}}</code></pre>
+      </div>
+
+      <h3>7.3 new.html: ฟอร์มสร้างรายการใหม่</h3>
+      <p>
+        ฝั่ง HTML ต้องกำหนด <code>method="post"</code> และตั้งชื่อ input ให้ตรงกับที่อ่านใน <code>request.form</code>
+      </p>
+      <div class="example">
+        <p class="example-title">ฟอร์มขั้นต่ำ (แนวคิดหลัก)</p>
+        <pre><code>&lt;form method="post" class="space-y-4"&gt;
+  &lt;input name="title" class="w-full rounded-xl border px-3 py-2" placeholder="หัวข้อแจ้งซ่อม" /&gt;
+  &lt;input name="location" class="w-full rounded-xl border px-3 py-2" placeholder="สถานที่" /&gt;
+  &lt;textarea name="description" rows="4" class="w-full rounded-xl border px-3 py-2"&gt;&lt;/textarea&gt;
+  &lt;button class="rounded-xl bg-slate-900 text-white px-4 py-2 text-sm"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">เชื่อมโยงกับบทที่ 2–4</p>
+        <ul>
+          <li>บทที่ 2: เข้าใจ route + method (GET/POST)</li>
+          <li>บทที่ 3: เข้าใจ template + ส่งตัวแปร + loop/if</li>
+          <li>บทที่ 4: ทำ UI ให้เป็นระบบด้วย Tailwind</li>
+          <li>บทที่ 5: เพิ่ม DB เพื่อให้ข้อมูล “อยู่จริง” และแสดงจากฐานข้อมูล</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>8) วิธีรันและตรวจสอบว่าฐานข้อมูลทำงานจริง</h2>
+      <h3>8.1 รันแอป</h3>
+      <div class="example">
+        <p class="example-title">รันแบบง่าย</p>
+        <pre><code>python app.py</code></pre>
+      </div>
+      <p>
+        จากนั้นเปิดเบราว์เซอร์:
+        <code>/repairs</code> เพื่อดูรายการ และ <code>/repairs/new</code> เพื่อสร้างรายการใหม่
+      </p>
+
+      <h3>8.2 ตรวจว่าไฟล์ app.db ถูกสร้าง</h3>
+      <p>
+        ถ้าตั้งค่าเป็น <code>sqlite:///app.db</code> เมื่อรันครั้งแรกควรเห็นไฟล์ <code>app.db</code> ปรากฏในโฟลเดอร์โปรเจกต์
+      </p>
+
+      <div class="note">
+        <p class="note-title">แนะนำเครื่องมือดูไฟล์ SQLite</p>
+        <ul>
+          <li>DB Browser for SQLite (ดูตารางและข้อมูลได้แบบ GUI)</li>
+          <li>หรือใช้คำสั่ง <code>sqlite3</code> (ถ้ามีในเครื่อง)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>9) ข้อผิดพลาดที่พบบ่อย (และวิธีแก้)</h2>
+      <h3>9.1 ทำไมข้อมูลไม่เข้า DB</h3>
+      <ul>
+        <li>ลืม <code>db.session.commit()</code> → add แล้วไม่ถูกเขียนจริง</li>
+        <li>ไม่ได้อยู่ใน app context ตอน create_all → สร้างตารางไม่สำเร็จ</li>
+      </ul>
+
+      <h3>9.2 Refresh แล้วบันทึกซ้ำ</h3>
+      <p>
+        ถ้าบันทึกเสร็จแล้ว return HTML ตรงๆ ผู้ใช้กด refresh อาจทำให้ POST ซ้ำ
+        แนวทางที่ถูกต้องคือ <span class="highlight">Post/Redirect/Get</span>:
+        หลังบันทึกให้ <code>redirect(url_for("repairs_list"))</code>
+      </p>
+
+      <h3>9.3 Path ของ SQLite อยู่คนละที่</h3>
+      <p>
+        ถ้าใช้ relative path (<code>sqlite:///app.db</code>) ที่เก็บไฟล์จะขึ้นกับ “โฟลเดอร์ที่สั่งรัน”
+        แนะนำ: รันจากโฟลเดอร์โปรเจกต์เสมอ หรือกำหนด path แบบชัดเจน
+      </p>
+    </section>
+
+    <section>
+      <h2>10) สรุป และต่อไปเรียนอะไร</h2>
+      <div class="key-point">
+        บทที่ 5 ทำให้ระบบ “บันทึกข้อมูลจริง” ได้แล้ว (Create/Read) ด้วย Flask‑SQLAlchemy + SQLite
+      </div>
+      <p>
+        บทถัดไป (บทที่ 6) เราจะทำให้โครงสร้างโปรเจกต์ “โตได้” โดยใช้ <strong>Blueprints</strong> และ <strong>App Factory</strong>
+        แยกไฟล์เป็นโมดูล (routes / models / extensions) เพื่อให้ง่ายต่อการขยายเป็นระบบเต็มรูปแบบ
+      </p>
+
+      <h3>แหล่งอ้างอิง/อ่านเพิ่มเติม</h3>
+      <ul>
+        <li><a href="https://www.geeksforgeeks.org/python/connect-flask-to-a-database-with-flask-sqlalchemy/" target="_blank">GeeksforGeeks: Connect Flask to a database with Flask‑SQLAlchemy</a></li>
+        <li><a href="https://flask-sqlalchemy.readthedocs.io/" target="_blank">Flask‑SQLAlchemy Documentation</a></li>
+        <li><a href="https://www.sqlite.org/" target="_blank">SQLite Official</a></li>
+      </ul>
+    </section>
+
+    <div class="no-print" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html">🏠 กลับหน้าหลัก</a>
+      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap04/chap04-doc.html">← บทก่อนหน้า: HTML + Tailwind</a>
+      <a class="btn-primary" style="background: var(--accent-color);" href="../chap06/chap06-doc.html">บทถัดไป: Blueprints + App Factory →</a>
+    </div>
+  </div>
+</body>
+</html>

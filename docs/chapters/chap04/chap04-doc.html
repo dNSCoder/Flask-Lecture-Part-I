@@ -3,681 +3,1157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>บทที่ 4: JSON Schema → Database Mapping + Blueprints | Flask Workshop</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>บทที่ 4: HTML พื้นฐาน + Tailwind CSS - เอกสารประกอบการสอน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Sarabun', sans-serif; }
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #7c3aed;
+      --accent-color: #059669;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      line-height: 1.7;
+      color: var(--text-dark);
+      background-color: #fff;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .chapter-nav {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .chapter-nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    
+    .chapter-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    
+    .chapter-nav a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .doc-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .doc-header h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .doc-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .doc-meta {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    h3 {
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+    }
+    
+    h4 {
+      color: var(--text-dark);
+      font-size: 1.2rem;
+      margin: 1.5rem 0 1rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      color: #e11d48;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    
+    .example {
+      background: var(--bg-light);
+      border-left: 4px solid var(--primary-color);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .example-title {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .tip {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .tip-title {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .key-point {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+    
+    .comparison-table th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+    
+    .comparison-table tr:nth-child(even) {
+      background: var(--bg-light);
+    }
+    
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    
+    .highlight {
+      background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 40%;
+      background-position: 0 80%;
+      padding: 0.1rem 0.3rem;
+      font-weight: 500;
+    }
+    
+    .muted {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    
+    @media print {
+      .no-print { display: none; }
+      .chapter-nav { display: none; }
+      pre { page-break-inside: avoid; }
+    }
   </style>
 </head>
-<body class="bg-gray-50">
-  
-  <!-- Navigation -->
-  <nav class="bg-white shadow-sm border-b border-gray-200 print:hidden">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-      <div class="flex justify-between items-center">
-        <a href="../../index.html" class="text-blue-600 hover:text-blue-800 font-medium">
-          🏠 หน้าหลัก
-        </a>
-        <div class="flex gap-4">
-          <a href="../chap03/chap03-doc.html" class="text-gray-600 hover:text-gray-800">
-            ← บทที่ 3
-          </a>
-          <span class="text-gray-300">บทที่ 5 →</span>
-        </div>
+<body>
+  <nav class="chapter-nav no-print">
+    <div class="container">
+      <div><a href="../../index.html">🏠 หน้าหลัก</a></div>
+      <div>
+        <a href="../chap03/chap03-doc.html">← บทก่อนหน้า</a>
+        <a href="../chap05/chap05-doc.html">บทถัดไป →</a>
       </div>
     </div>
   </nav>
 
-  <!-- Header -->
-  <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="bg-white/20 px-3 py-1 rounded-full text-sm">บทที่ 4</span>
-        <span class="text-blue-100">Workshop Ready</span>
-      </div>
-      <h1 class="text-4xl font-bold mb-3">JSON Schema → Database Mapping + Blueprints</h1>
-      <p class="text-xl text-blue-100 mb-2">กำหนดข้อมูลให้ชัด แปลงเป็น Database แล้วสร้างระบบจริง</p>
-      <p class="text-blue-200">เหมาะสำหรับโปรเจกต์ปี 1 และ Workshop ระบบแจ้งซ่อม</p>
-    </div>
-  </header>
+  <div class="container">
+    <header class="doc-header">
+      <h1>บทที่ 4: HTML พื้นฐาน + Tailwind CSS</h1>
+      <p class="doc-subtitle">สร้างหน้าเว็บสวยงามด้วย HTML โครงสร้างที่ดี + Tailwind CSS แบบ CDN</p>
+      <p class="doc-meta">บทที่ 4 • เอกสารประกอบการสอน (Workshop ปี 1)</p>
+    </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
-    
-    <!-- Overview -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 ภาพรวมบทเรียน</h2>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <div class="text-blue-600 font-semibold mb-2">🎯 เป้าหมาย</div>
-          <p class="text-sm text-gray-700">เริ่มจากข้อมูล ไม่ใช่หน้าเว็บ เพื่อให้ระบบมีโครงสร้างชัดเจน</p>
-        </div>
-        <div class="bg-green-50 p-4 rounded-lg">
-          <div class="text-green-600 font-semibold mb-2">🛠️ เครื่องมือ</div>
-          <p class="text-sm text-gray-700">JSON Schema, SQLAlchemy, Blueprints</p>
-        </div>
-        <div class="bg-purple-50 p-4 rounded-lg">
-          <div class="text-purple-600 font-semibold mb-2">💡 ผลลัพธ์</div>
-          <p class="text-sm text-gray-700">สร้างระบบ CRUD ที่มีโครงสร้างดี ขยายง่าย</p>
-        </div>
+    <section>
+      <h2>1) ทำไมต้องเรียน HTML + CSS ก่อนทำ Flask Workshop</h2>
+      <p>
+        Flask สร้าง <strong>backend</strong> ส่ง HTML กลับไปให้เบราว์เซอร์ แต่ถ้าเราไม่รู้จัก HTML/CSS 
+        หน้าเว็บที่ได้จะดูไม่สวย ไม่เป็นระบบ และใช้งานยาก
+      </p>
+      <div class="key-point">
+        HTML = โครงสร้าง | CSS = การตกแต่ง | JavaScript = พฤติกรรม
+      </div>
+      <p>
+        ในบทนี้เราจะเน้น <span class="highlight">HTML พื้นฐาน + Tailwind CSS</span> 
+        เพื่อให้สามารถสร้างหน้าเว็บที่ดูดีได้ทันที โดยไม่ต้องเขียน CSS เอง
+      </p>
+    </section>
+
+    <section>
+      <h2>2) HTML พื้นฐานที่ต้องรู้</h2>
+      
+      <h3>2.1 โครงสร้าง HTML พื้นฐาน</h3>
+      <div class="example">
+        <p class="example-title">Template HTML เบื้องต้น</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;ชื่อหน้าเว็บ&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- เนื้อหาของหน้าเว็บ --&gt;
+  &lt;h1&gt;หัวข้อหลัก&lt;/h1&gt;
+  &lt;p&gt;ย่อหน้าข้อความ&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <h3>2.2 HTML Tags ที่ใช้บ่อยในระบบแจ้งซ่อม</h3>
+      
+      <h4>📝 Headings (หัวข้อ)</h4>
+      <div class="example">
+        <pre><code>&lt;h1&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
+&lt;h2&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h2&gt;
+&lt;h3&gt;รายละเอียด&lt;/h3&gt;</code></pre>
+      </div>
+      <p class="muted">h1 ใหญ่ที่สุด (ใช้แค่ครั้งเดียวต่อหน้า) → h6 เล็กที่สุด</p>
+
+      <h4>📄 Text Content</h4>
+      <div class="example">
+        <pre><code>&lt;p&gt;ย่อหน้าข้อความปกติ&lt;/p&gt;
+&lt;strong&gt;ข้อความตัวหนา&lt;/strong&gt;
+&lt;em&gt;ข้อความตัวเอียง&lt;/em&gt;
+&lt;br&gt; &lt;!-- ขึ้นบรรทัดใหม่ --&gt;</code></pre>
+      </div>
+
+      <h4>📋 Lists (รายการ)</h4>
+      <div class="example">
+        <pre><code>&lt;!-- Unordered List --&gt;
+&lt;ul&gt;
+  &lt;li&gt;รายการที่ 1&lt;/li&gt;
+  &lt;li&gt;รายการที่ 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Ordered List --&gt;
+&lt;ol&gt;
+  &lt;li&gt;ขั้นตอนที่ 1&lt;/li&gt;
+  &lt;li&gt;ขั้นตอนที่ 2&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+      </div>
+
+      <h4>🔗 Links & Images</h4>
+      <div class="example">
+        <pre><code>&lt;!-- ลิงก์ --&gt;
+&lt;a href="/repairs"&gt;ดูรายการแจ้งซ่อม&lt;/a&gt;
+&lt;a href="https://google.com" target="_blank"&gt;เปิดในแท็บใหม่&lt;/a&gt;
+
+&lt;!-- รูปภาพ --&gt;
+&lt;img src="logo.png" alt="โลโก้"&gt;</code></pre>
+      </div>
+
+      <h4>📊 Tables (ตาราง)</h4>
+      <div class="example">
+        <pre><code>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;รหัส&lt;/th&gt;
+      &lt;th&gt;หัวข้อ&lt;/th&gt;
+      &lt;th&gt;สถานะ&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;001&lt;/td&gt;
+      &lt;td&gt;แจ้งซ่อมพัดลม&lt;/td&gt;
+      &lt;td&gt;รอดำเนินการ&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+      </div>
+
+      <h4>📝 Forms (ฟอร์ม)</h4>
+      <div class="example">
+        <pre><code>&lt;form action="/repairs/create" method="POST"&gt;
+  &lt;!-- Text Input --&gt;
+  &lt;label&gt;หัวข้อ:&lt;/label&gt;
+  &lt;input type="text" name="title" required&gt;
+  
+  &lt;!-- Textarea --&gt;
+  &lt;label&gt;รายละเอียด:&lt;/label&gt;
+  &lt;textarea name="description" rows="5"&gt;&lt;/textarea&gt;
+  
+  &lt;!-- Select Dropdown --&gt;
+  &lt;label&gt;สถานที่:&lt;/label&gt;
+  &lt;select name="location"&gt;
+    &lt;option value="ห้อง301"&gt;ห้อง 301&lt;/option&gt;
+    &lt;option value="ห้อง302"&gt;ห้อง 302&lt;/option&gt;
+  &lt;/select&gt;
+  
+  &lt;!-- Submit Button --&gt;
+  &lt;button type="submit"&gt;ส่งแบบฟอร์ม&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+
+      <h4>📦 Semantic HTML (HTML ที่มีความหมาย)</h4>
+      <div class="example">
+        <pre><code>&lt;header&gt;ส่วนหัว/เมนู&lt;/header&gt;
+&lt;nav&gt;เมนูนำทาง&lt;/nav&gt;
+&lt;main&gt;เนื้อหาหลัก&lt;/main&gt;
+&lt;section&gt;ส่วนของเนื้อหา&lt;/section&gt;
+&lt;article&gt;บทความ/โพสต์&lt;/article&gt;
+&lt;aside&gt;ข้อมูลเสริมข้างๆ&lt;/aside&gt;
+&lt;footer&gt;ส่วนท้าย&lt;/footer&gt;</code></pre>
       </div>
     </section>
 
-    <!-- Section 1: Why Start with Data -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">1️⃣ ทำไมต้องเริ่มจาก "ข้อมูล" ก่อน</h2>
-      
-      <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-        <p class="font-semibold text-red-800 mb-2">❌ ปัญหาที่พบบ่อย</p>
-        <p class="text-gray-700">โปรเจกต์ปี 1 มักเริ่มจาก "ทำหน้าเว็บก่อน" แล้วค่อยคิดว่าเก็บข้อมูลยังไง → สุดท้ายต้องแก้หลายรอบ</p>
-      </div>
-
-      <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
-        <p class="font-semibold text-green-800 mb-2">✅ วิธีที่ดีกว่า</p>
-        <p class="text-gray-700">เริ่มจาก <strong>กำหนดข้อมูล (Data Model)</strong> ก่อน → UI, Routing, DB จะต่อกันได้ง่ายขึ้น</p>
-      </div>
-
-      <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-lg">
-        <p class="text-xl font-bold mb-2">💎 หลักคิดสำคัญ</p>
-        <p class="text-lg">ข้อมูลชัด → ทุกอย่างชัด → ทีมทำงานร่วมกันได้ดี</p>
-      </div>
-    </section>
-
-    <!-- Section 2: JSON Schema -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">2️⃣ JSON Schema (ระบบแจ้งซ่อม)</h2>
-      
-      <p class="text-gray-700 mb-4">
-        ใช้ JSON เพื่ออธิบายว่า "หนึ่งรายการแจ้งซ่อม" มี field อะไรบ้าง ชนิดข้อมูลคืออะไร บังคับหรือไม่
+    <section>
+      <h2>3) Tailwind CSS คืออะไร</h2>
+      <p>
+        <strong>Tailwind CSS</strong> เป็น CSS Framework แบบ <span class="highlight">Utility-First</span> 
+        หมายความว่าเราจะใช้ class สำเร็จรูปมาตกแต่ง HTML โดยไม่ต้องเขียน CSS เอง
       </p>
 
-      <div class="bg-gray-50 rounded-lg p-6 mb-6">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm font-semibold text-gray-600">repair.schema.json</span>
-          <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">JSON Schema</span>
-        </div>
-        <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{
-  "title": "RepairTicket",
-  "type": "object",
-  "required": ["title", "reporter_name", "location", "status"],
-  "properties": {
-    "id": {
-      "type": "integer",
-      "description": "รหัสอัตโนมัติ"
-    },
-    "title": {
-      "type": "string",
-      "minLength": 3,
-      "maxLength": 200,
-      "description": "หัวข้อการแจ้งซ่อม"
-    },
-    "description": {
-      "type": "string",
-      "description": "รายละเอียด (ไม่บังคับ)"
-    },
-    "reporter_name": {
-      "type": "string",
-      "description": "ชื่อผู้แจ้ง"
-    },
-    "location": {
-      "type": "string",
-      "description": "สถานที่"
-    },
-    "status": {
-      "type": "string",
-      "enum": ["new", "in_progress", "done"],
-      "default": "new",
-      "description": "สถานะ"
-    },
-    "created_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "วันที่สร้าง"
-    }
-  }
-}</code></pre>
-      </div>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>CSS แบบเดิม</th>
+            <th>Tailwind CSS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <pre><code>&lt;style&gt;
+.button {
+  background: blue;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+&lt;/style&gt;
 
-      <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
-        <p class="font-semibold text-blue-800 mb-2">📝 ประโยชน์ของ JSON Schema</p>
-        <ul class="space-y-2 text-gray-700">
-          <li class="flex items-start">
-            <span class="text-blue-500 mr-2">✓</span>
-            <span>ทีมเห็นตรงกันว่าข้อมูลหน้าตาเป็นแบบไหน</span>
-          </li>
-          <li class="flex items-start">
-            <span class="text-blue-500 mr-2">✓</span>
-            <span>นำไปทำฟอร์ม/validation ได้ง่าย</span>
-          </li>
-          <li class="flex items-start">
-            <span class="text-blue-500 mr-2">✓</span>
-            <span>นำไปแมปเป็น Database ได้ตรงไปตรงมา</span>
-          </li>
-          <li class="flex items-start">
-            <span class="text-blue-500 mr-2">✓</span>
-            <span>เป็นเอกสารให้ developer คนอื่นเข้าใจได้เร็ว</span>
-          </li>
+&lt;button class="button"&gt;คลิก&lt;/button&gt;</code></pre>
+            </td>
+            <td>
+              <pre><code>&lt;button class="bg-blue-500 text-white px-5 py-2 rounded"&gt;
+  คลิก
+&lt;/button&gt;</code></pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <p class="note-title">ข้อดีของ Tailwind CSS</p>
+        <ul>
+          <li>✅ เขียนได้เร็ว ไม่ต้องสลับไฟล์ HTML/CSS</li>
+          <li>✅ Responsive ได้ง่ายด้วย prefix เช่น <code>md:</code>, <code>lg:</code></li>
+          <li>✅ ไม่ต้องคิดชื่อ class</li>
+          <li>✅ ขนาดไฟล์เล็ก (ใช้แค่ class ที่เราใช้จริง)</li>
         </ul>
       </div>
     </section>
 
-    <!-- Section 3: Database Mapping -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">3️⃣ Database Mapping ด้วย SQLAlchemy</h2>
+    <section>
+      <h2>4) เพิ่ม Tailwind CSS ด้วย CDN</h2>
+      <p>วิธีที่ง่ายและเร็วที่สุดสำหรับเริ่มต้น คือใช้ <strong>CDN</strong></p>
+
+      <div class="example">
+        <p class="example-title">เพิ่ม Tailwind CSS CDN ใน &lt;head&gt;</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;ระบบแจ้งซ่อม&lt;/title&gt;
+  
+  &lt;!-- Tailwind CSS CDN --&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1 class="text-3xl font-bold text-blue-600"&gt;
+    ระบบแจ้งซ่อม
+  &lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">💡 สำหรับ Workshop</p>
+        <p>ใช้ CDN เพราะติดตั้งง่าย ไม่ต้อง npm/build process</p>
+        <p>สำหรับโปรเจกต์จริง ควรใช้ npm install แบบปกติ</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>5) Tailwind Classes ที่ใช้บ่อย</h2>
+
+      <h3>5.1 ขนาดและสี (Size & Colors)</h3>
+      <div class="example">
+        <pre><code>&lt;!-- Text Size --&gt;
+&lt;p class="text-sm"&gt;ข้อความเล็ก&lt;/p&gt;
+&lt;p class="text-base"&gt;ข้อความปกติ&lt;/p&gt;
+&lt;p class="text-lg"&gt;ข้อความใหญ่&lt;/p&gt;
+&lt;p class="text-xl"&gt;ข้อความใหญ่มาก&lt;/p&gt;
+&lt;p class="text-2xl"&gt;ข้อความใหญ่พิเศษ&lt;/p&gt;
+
+&lt;!-- Text Color --&gt;
+&lt;p class="text-gray-500"&gt;สีเทา&lt;/p&gt;
+&lt;p class="text-blue-600"&gt;สีน้ำเงิน&lt;/p&gt;
+&lt;p class="text-red-500"&gt;สีแดง&lt;/p&gt;
+&lt;p class="text-green-600"&gt;สีเขียว&lt;/p&gt;
+
+&lt;!-- Background Color --&gt;
+&lt;div class="bg-blue-100"&gt;พื้นหลังสีน้ำเงินอ่อน&lt;/div&gt;
+&lt;div class="bg-gray-800"&gt;พื้นหลังสีเทาเข้ม&lt;/div&gt;</code></pre>
+      </div>
+
+      <h3>5.2 Spacing (ระยะห่าง)</h3>
+      <div class="example">
+        <pre><code>&lt;!-- Padding (ระยะห่างด้านใน) --&gt;
+&lt;div class="p-4"&gt;padding ทุกด้าน 1rem&lt;/div&gt;
+&lt;div class="px-6"&gt;padding ซ้าย-ขวา 1.5rem&lt;/div&gt;
+&lt;div class="py-2"&gt;padding บน-ล่าง 0.5rem&lt;/div&gt;
+&lt;div class="pt-8"&gt;padding บน 2rem&lt;/div&gt;
+
+&lt;!-- Margin (ระยะห่างด้านนอก) --&gt;
+&lt;div class="m-4"&gt;margin ทุกด้าน&lt;/div&gt;
+&lt;div class="mx-auto"&gt;margin ซ้าย-ขวา auto (จัดกลาง)&lt;/div&gt;
+&lt;div class="mb-6"&gt;margin ล่าง&lt;/div&gt;</code></pre>
+      </div>
+      <p class="muted">หน่วย: 1 = 0.25rem, 2 = 0.5rem, 4 = 1rem, 6 = 1.5rem, 8 = 2rem</p>
+
+      <h3>5.3 Layout (การจัดวาง)</h3>
+      <div class="example">
+        <pre><code>&lt;!-- Flexbox --&gt;
+&lt;div class="flex"&gt;แสดงแบบ flex&lt;/div&gt;
+&lt;div class="flex items-center"&gt;จัดกลางแนวตั้ง&lt;/div&gt;
+&lt;div class="flex justify-between"&gt;แยกขอบซ้าย-ขวา&lt;/div&gt;
+&lt;div class="flex gap-4"&gt;ช่องว่างระหว่างไอเทม&lt;/div&gt;
+
+&lt;!-- Width & Height --&gt;
+&lt;div class="w-full"&gt;กว้างเต็ม 100%&lt;/div&gt;
+&lt;div class="w-1/2"&gt;กว้าง 50%&lt;/div&gt;
+&lt;div class="h-screen"&gt;สูงเต็มหน้าจอ&lt;/div&gt;
+
+&lt;!-- Container --&gt;
+&lt;div class="max-w-4xl mx-auto"&gt;จำกัดความกว้างและจัดกลาง&lt;/div&gt;</code></pre>
+      </div>
+
+      <h3>5.4 Borders & Shadows</h3>
+      <div class="example">
+        <pre><code>&lt;!-- Border --&gt;
+&lt;div class="border"&gt;เส้นขอบ&lt;/div&gt;
+&lt;div class="border-2 border-blue-500"&gt;เส้นขอบสีน้ำเงิน&lt;/div&gt;
+&lt;div class="rounded"&gt;มุมโค้ง&lt;/div&gt;
+&lt;div class="rounded-lg"&gt;มุมโค้งใหญ่&lt;/div&gt;
+
+&lt;!-- Shadow --&gt;
+&lt;div class="shadow"&gt;เงาบาง&lt;/div&gt;
+&lt;div class="shadow-md"&gt;เงากลาง&lt;/div&gt;
+&lt;div class="shadow-lg"&gt;เงาหนา&lt;/div&gt;</code></pre>
+      </div>
+
+      <h3>5.5 Typography (ตัวอักษร)</h3>
+      <div class="example">
+        <pre><code>&lt;!-- Font Weight --&gt;
+&lt;p class="font-light"&gt;บาง&lt;/p&gt;
+&lt;p class="font-normal"&gt;ปกติ&lt;/p&gt;
+&lt;p class="font-bold"&gt;หนา&lt;/p&gt;
+
+&lt;!-- Text Align --&gt;
+&lt;p class="text-left"&gt;ชิดซ้าย&lt;/p&gt;
+&lt;p class="text-center"&gt;กลาง&lt;/p&gt;
+&lt;p class="text-right"&gt;ชิดขวา&lt;/p&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>6) ตัวอย่างการใช้งานจริง: หน้ารายการแจ้งซ่อม</h2>
+
+      <div class="example">
+        <p class="example-title">รายการแจ้งซ่อม (Repair List)</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;รายการแจ้งซ่อม&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-50"&gt;
+  
+  &lt;!-- Header --&gt;
+  &lt;header class="bg-blue-600 text-white p-4 shadow-md"&gt;
+    &lt;div class="max-w-6xl mx-auto flex justify-between items-center"&gt;
+      &lt;h1 class="text-2xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
+      &lt;nav class="flex gap-4"&gt;
+        &lt;a href="/" class="hover:underline"&gt;หน้าแรก&lt;/a&gt;
+        &lt;a href="/repairs" class="hover:underline"&gt;รายการแจ้งซ่อม&lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;!-- Main Content --&gt;
+  &lt;main class="max-w-6xl mx-auto p-6"&gt;
+    
+    &lt;!-- Page Title --&gt;
+    &lt;div class="mb-6"&gt;
+      &lt;h2 class="text-3xl font-bold text-gray-800"&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h2&gt;
+      &lt;p class="text-gray-600 mt-2"&gt;ดูและจัดการรายการแจ้งซ่อม&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Action Button --&gt;
+    &lt;div class="mb-6"&gt;
+      &lt;a href="/repairs/create" 
+         class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-block"&gt;
+        + สร้างรายการใหม่
+      &lt;/a&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Repair Cards --&gt;
+    &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
       
-      <p class="text-gray-700 mb-4">
-        Flask ไม่มี ORM ติดมาให้ แต่เรานิยมใช้ <strong>Flask-SQLAlchemy</strong> 
-        เพราะสร้างตารางและทำ CRUD ได้ง่ายกว่าเขียน SQL เอง
+      &lt;!-- Card 1 --&gt;
+      &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"&gt;
+        &lt;div class="flex justify-between items-start mb-4"&gt;
+          &lt;h3 class="text-xl font-bold text-gray-800"&gt;พัดลมเสีย&lt;/h3&gt;
+          &lt;span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"&gt;
+            รอดำเนินการ
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class="text-gray-600 mb-4"&gt;พัดลมในห้อง 301 ไม่ทำงาน&lt;/p&gt;
+        &lt;div class="text-sm text-gray-500 mb-4"&gt;
+          &lt;p&gt;📍 สถานที่: ห้อง 301&lt;/p&gt;
+          &lt;p&gt;👤 ผู้แจ้ง: นายสมชาย ใจดี&lt;/p&gt;
+          &lt;p&gt;📅 วันที่: 2024-12-25&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="flex gap-2"&gt;
+          &lt;a href="/repairs/1" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
+            ดูรายละเอียด
+          &lt;/a&gt;
+          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
+            แก้ไข
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Card 2 --&gt;
+      &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+        &lt;div class="flex justify-between items-start mb-4"&gt;
+          &lt;h3 class="text-xl font-bold text-gray-800"&gt;แอร์รั่ว&lt;/h3&gt;
+          &lt;span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"&gt;
+            กำลังดำเนินการ
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class="text-gray-600 mb-4"&gt;แอร์ห้อง 302 มีน้ำรั่ว&lt;/p&gt;
+        &lt;div class="text-sm text-gray-500 mb-4"&gt;
+          &lt;p&gt;📍 สถานที่: ห้อง 302&lt;/p&gt;
+          &lt;p&gt;👤 ผู้แจ้ง: นางสาวมานี เรียนดี&lt;/p&gt;
+          &lt;p&gt;📅 วันที่: 2024-12-24&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="flex gap-2"&gt;
+          &lt;a href="/repairs/2" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
+            ดูรายละเอียด
+          &lt;/a&gt;
+          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
+            แก้ไข
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Card 3 --&gt;
+      &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+        &lt;div class="flex justify-between items-start mb-4"&gt;
+          &lt;h3 class="text-xl font-bold text-gray-800"&gt;ประตูชำรุด&lt;/h3&gt;
+          &lt;span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"&gt;
+            เสร็จสิ้น
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class="text-gray-600 mb-4"&gt;ประตูห้อง 303 ปิดไม่สนิท&lt;/p&gt;
+        &lt;div class="text-sm text-gray-500 mb-4"&gt;
+          &lt;p&gt;📍 สถานที่: ห้อง 303&lt;/p&gt;
+          &lt;p&gt;👤 ผู้แจ้ง: นายดีมาก ขยันเรียน&lt;/p&gt;
+          &lt;p&gt;📅 วันที่: 2024-12-23&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="flex gap-2"&gt;
+          &lt;a href="/repairs/3" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
+            ดูรายละเอียด
+          &lt;/a&gt;
+          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
+            แก้ไข
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/main&gt;
+
+  &lt;!-- Footer --&gt;
+  &lt;footer class="bg-gray-800 text-white p-6 mt-12"&gt;
+    &lt;div class="max-w-6xl mx-auto text-center"&gt;
+      &lt;p&gt;ระบบแจ้งซ่อม © 2024&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>7) ตัวอย่างฟอร์มสร้างรายการแจ้งซ่อม</h2>
+
+      <div class="example">
+        <p class="example-title">ฟอร์มแจ้งซ่อม (Create Form)</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;สร้างรายการแจ้งซ่อม&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-50"&gt;
+
+  &lt;main class="max-w-2xl mx-auto p-6"&gt;
+    
+    &lt;!-- Form Header --&gt;
+    &lt;div class="mb-8"&gt;
+      &lt;h1 class="text-3xl font-bold text-gray-800 mb-2"&gt;สร้างรายการแจ้งซ่อม&lt;/h1&gt;
+      &lt;p class="text-gray-600"&gt;กรอกข้อมูลเพื่อแจ้งซ่อม&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Form --&gt;
+    &lt;form action="/repairs/create" method="POST" class="bg-white rounded-lg shadow-md p-8"&gt;
+      
+      &lt;!-- Title --&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+          หัวข้อ &lt;span class="text-red-500"&gt;*&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;input type="text" 
+               name="title" 
+               required
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+               placeholder="เช่น พัดลมเสีย"&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Description --&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+          รายละเอียด
+        &lt;/label&gt;
+        &lt;textarea name="description" 
+                  rows="5"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="อธิบายปัญหาโดยละเอียด"&gt;&lt;/textarea&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Reporter Name --&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+          ชื่อผู้แจ้ง &lt;span class="text-red-500"&gt;*&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;input type="text" 
+               name="reporter_name" 
+               required
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+               placeholder="นายสมชาย ใจดี"&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Location --&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+          สถานที่ &lt;span class="text-red-500"&gt;*&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;select name="location" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"&gt;
+          &lt;option value=""&gt;-- เลือกสถานที่ --&lt;/option&gt;
+          &lt;option value="ห้อง301"&gt;ห้อง 301&lt;/option&gt;
+          &lt;option value="ห้อง302"&gt;ห้อง 302&lt;/option&gt;
+          &lt;option value="ห้อง303"&gt;ห้อง 303&lt;/option&gt;
+          &lt;option value="ห้องน้ำชั้น3"&gt;ห้องน้ำชั้น 3&lt;/option&gt;
+        &lt;/select&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Buttons --&gt;
+      &lt;div class="flex gap-4"&gt;
+        &lt;button type="submit" 
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold flex-1"&gt;
+          ส่งแบบฟอร์ม
+        &lt;/button&gt;
+        &lt;a href="/repairs" 
+           class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 font-bold text-center"&gt;
+          ยกเลิก
+        &lt;/a&gt;
+      &lt;/div&gt;
+
+    &lt;/form&gt;
+
+  &lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>8) Responsive Design (หน้าจอต่างขนาด)</h2>
+      <p>
+        Tailwind มี <strong>Breakpoints</strong> สำหรับทำหน้าจอต่างขนาด
       </p>
 
-      <!-- Installation -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">📦 ติดตั้ง</h3>
-        <div class="bg-gray-900 text-gray-100 p-4 rounded-lg">
-          <code>pip install flask flask-sqlalchemy</code>
-        </div>
-      </div>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Prefix</th>
+            <th>ขนาดหน้าจอ</th>
+            <th>ตัวอย่างการใช้</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sm:</code></td>
+            <td>≥ 640px</td>
+            <td><code>sm:text-lg</code></td>
+          </tr>
+          <tr>
+            <td><code>md:</code></td>
+            <td>≥ 768px</td>
+            <td><code>md:grid-cols-2</code></td>
+          </tr>
+          <tr>
+            <td><code>lg:</code></td>
+            <td>≥ 1024px</td>
+            <td><code>lg:grid-cols-3</code></td>
+          </tr>
+          <tr>
+            <td><code>xl:</code></td>
+            <td>≥ 1280px</td>
+            <td><code>xl:px-8</code></td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- Configuration -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">⚙️ ตั้งค่าเริ่มต้น</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-gray-600">app.py</span>
-          </div>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-
-# กำหนด Database URI (ใช้ SQLite สำหรับเรียนรู้)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///repairs.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# สร้าง database instance
-db = SQLAlchemy(app)</code></pre>
-        </div>
-      </div>
-
-      <!-- Model Mapping -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">🗺️ แมป JSON → ตาราง (Model)</h3>
-        
-        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
-          <p class="font-semibold text-yellow-800 mb-2">💡 กฎการแปลง</p>
-          <ul class="text-sm text-gray-700 space-y-1">
-            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">required</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">nullable=False</code></li>
-            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">type: "string"</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">db.String()</code></li>
-            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">type: "integer"</code> → <code class="bg-yellow-100 px-2 py-0.5 rounded">db.Integer</code></li>
-            <li><code class="bg-yellow-100 px-2 py-0.5 rounded">enum</code> → เช็คใน validation หรือใช้ db.Enum</li>
-          </ul>
-        </div>
-
-        <div class="bg-gray-50 rounded-lg p-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-gray-600">models.py</span>
-          </div>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from datetime import datetime
-from app import db
-
-class RepairTicket(db.Model):
-    """โมเดลสำหรับเก็บข้อมูลการแจ้งซ่อม"""
-    
-    __tablename__ = 'repair_tickets'
-    
-    # Primary Key
-    id = db.Column(db.Integer, primary_key=True)
-    
-    # Required Fields
-    title = db.Column(db.String(200), nullable=False)
-    reporter_name = db.Column(db.String(120), nullable=False)
-    location = db.Column(db.String(120), nullable=False)
-    status = db.Column(db.String(30), nullable=False, default="new")
-    
-    # Optional Fields
-    description = db.Column(db.Text)
-    
-    # Auto Timestamp
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    
-    def __repr__(self):
-        return f'&lt;RepairTicket {self.id}: {self.title}&gt;'
-    
-    def to_dict(self):
-        """แปลงเป็น dict สำหรับส่ง JSON"""
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'reporter_name': self.reporter_name,
-            'location': self.location,
-            'status': self.status,
-            'created_at': self.created_at.isoformat() if self.created_at else None
-        }</code></pre>
-        </div>
-      </div>
-
-      <!-- Create Tables -->
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">🏗️ สร้างตาราง</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>if __name__ == "__main__":
-    # สร้างตารางทั้งหมด (ครั้งแรก)
-    with app.app_context():
-        db.create_all()
-        print("✅ Database tables created!")
-    
-    app.run(debug=True)</code></pre>
-        </div>
-        <p class="text-sm text-gray-600 mt-2">
-          💾 ไฟล์ <code class="bg-gray-200 px-2 py-0.5 rounded">repairs.db</code> จะถูกสร้างในโฟลเดอร์โปรเจกต์
-        </p>
+      <div class="example">
+        <p class="example-title">ตัวอย่าง Responsive Grid</p>
+        <pre><code>&lt;!-- หน้าจอเล็ก: 1 คอลัมน์ --&gt;
+&lt;!-- หน้าจอกลาง: 2 คอลัมน์ --&gt;
+&lt;!-- หน้าจอใหญ่: 3 คอลัมน์ --&gt;
+&lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"&gt;
+  &lt;div&gt;การ์ด 1&lt;/div&gt;
+  &lt;div&gt;การ์ด 2&lt;/div&gt;
+  &lt;div&gt;การ์ด 3&lt;/div&gt;
+&lt;/div&gt;</code></pre>
       </div>
     </section>
 
-    <!-- Section 4: CRUD Operations -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">4️⃣ CRUD Operations (พื้นฐาน)</h2>
-      
-      <!-- Create -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">Create</span>
-          สร้างข้อมูล
-        </h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import request, redirect, url_for, render_template, flash
-
-@app.route("/repairs/create", methods=["GET", "POST"])
-def repairs_create():
-    if request.method == "POST":
-        # รับข้อมูลจากฟอร์ม
-        ticket = RepairTicket(
-            title=request.form.get("title"),
-            description=request.form.get("description"),
-            reporter_name=request.form.get("reporter_name"),
-            location=request.form.get("location"),
-            status="new"
-        )
-        
-        # บันทึกลง database
-        db.session.add(ticket)
-        db.session.commit()
-        
-        flash("✅ สร้างรายการแจ้งซ่อมสำเร็จ!", "success")
-        return redirect(url_for("repairs_list"))
-    
-    # แสดงฟอร์ม
-    return render_template("repairs/create.html")</code></pre>
-        </div>
-      </div>
-
-      <!-- Read -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">Read</span>
-          อ่านข้อมูล
-        </h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code># แสดงรายการทั้งหมด
-@app.route("/repairs")
-def repairs_list():
-    tickets = RepairTicket.query.order_by(
-        RepairTicket.created_at.desc()
-    ).all()
-    return render_template("repairs/list.html", tickets=tickets)
-
-# แสดงรายละเอียด 1 รายการ
-@app.route("/repairs/&lt;int:id&gt;")
-def repairs_detail(id):
-    ticket = RepairTicket.query.get_or_404(id)
-    return render_template("repairs/detail.html", ticket=ticket)</code></pre>
-        </div>
-      </div>
-
-      <!-- Update -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mr-2">Update</span>
-          แก้ไขข้อมูล
-        </h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/repairs/&lt;int:id&gt;/edit", methods=["GET", "POST"])
-def repairs_edit(id):
-    ticket = RepairTicket.query.get_or_404(id)
-    
-    if request.method == "POST":
-        # อัปเดตข้อมูล
-        ticket.title = request.form.get("title")
-        ticket.description = request.form.get("description")
-        ticket.location = request.form.get("location")
-        ticket.status = request.form.get("status")
-        
-        db.session.commit()
-        flash("✅ อัปเดตข้อมูลสำเร็จ!", "success")
-        return redirect(url_for("repairs_detail", id=id))
-    
-    return render_template("repairs/edit.html", ticket=ticket)</code></pre>
-        </div>
-      </div>
-
-      <!-- Delete -->
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm mr-2">Delete</span>
-          ลบข้อมูล
-        </h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/repairs/&lt;int:id&gt;/delete", methods=["POST"])
-def repairs_delete(id):
-    ticket = RepairTicket.query.get_or_404(id)
-    
-    db.session.delete(ticket)
-    db.session.commit()
-    
-    flash("✅ ลบรายการสำเร็จ!", "success")
-    return redirect(url_for("repairs_list"))</code></pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 5: JSON API -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">5️⃣ JSON API (เบื้องต้น)</h2>
-      
-      <p class="text-gray-700 mb-4">
-        นอกจากส่ง HTML แล้ว Flask ยังส่ง/รับ JSON ได้ เพื่อทำเป็น API สำหรับ Frontend แยกต่างหาก
+    <section>
+      <h2>9) Google Fonts - เพิ่มฟอนต์สวยๆ ให้หน้าเว็บ</h2>
+      <p>
+        Google Fonts เป็นบริการฟอนต์ฟรีจาก Google ที่ทำให้เราใช้ฟอนต์สวยๆ 
+        โดยไม่ต้องติดตั้งในเครื่อง เพียงแค่เพิ่ม link ใน HTML
       </p>
 
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- GET JSON -->
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-md font-semibold text-gray-800 mb-3">📤 ส่ง JSON (GET)</h3>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import jsonify
-
-@app.route("/api/repairs")
-def api_repairs():
-    tickets = RepairTicket.query.all()
-    
-    data = [ticket.to_dict() 
-            for ticket in tickets]
-    
-    return jsonify(data)</code></pre>
-        </div>
-
-        <!-- POST JSON -->
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-md font-semibold text-gray-800 mb-3">📥 รับ JSON (POST)</h3>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>@app.route("/api/repairs", 
-           methods=["POST"])
-def api_create_repair():
-    data = request.get_json()
-    
-    ticket = RepairTicket(
-        title=data.get("title"),
-        reporter_name=data.get("reporter_name"),
-        location=data.get("location"),
-        status="new"
-    )
-    db.session.add(ticket)
-    db.session.commit()
-    
-    return jsonify(ticket.to_dict()), 201</code></pre>
-        </div>
-      </div>
-
-      <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mt-4">
-        <p class="font-semibold text-purple-800 mb-2">💡 สำหรับปี 1</p>
-        <p class="text-gray-700">ยังไม่ต้องทำ authentication/authorization ซับซ้อน แต่ควรรู้ว่า HTML routes กับ API routes อยู่ร่วมกันได้</p>
-      </div>
-    </section>
-
-    <!-- Section 6: Blueprints -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">6️⃣ Blueprints (จัดระเบียบโค้ด)</h2>
+      <h3>9.1 วิธีเพิ่ม Google Fonts</h3>
       
-      <p class="text-gray-700 mb-6">
-        เมื่อแอปมีหลายโมดูล การเขียนทุก route ในไฟล์เดียวจะรกมาก 
-        <strong>Blueprints</strong> ช่วยแยกโค้ดเป็นโมดูล เช่น repairs, auth, admin
-      </p>
+      <h4>ขั้นตอนที่ 1: เลือกฟอนต์</h4>
+      <p>ไปที่ <a href="https://fonts.google.com" target="_blank" class="highlight">fonts.google.com</a></p>
 
-      <!-- Project Structure -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">📁 โครงสร้างแนะนำ</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <pre class="text-sm text-gray-800"><code>my-repair-system/
-├── app/
-│   ├── __init__.py          # Application factory
-│   ├── repairs/
-│   │   ├── __init__.py
-│   │   ├── routes.py        # Repair routes
-│   │   └── models.py        # Repair models
-│   ├── auth/
-│   │   ├── __init__.py
-│   │   └── routes.py        # Auth routes
-│   ├── templates/
-│   │   ├── base.html
-│   │   └── repairs/
-│   │       ├── list.html
-│   │       ├── create.html
-│   │       └── detail.html
-│   └── static/
-│       └── css/
-├── config.py
-└── run.py                   # Entry point</code></pre>
-        </div>
+      <h4>ขั้นตอนที่ 2: คัดลอก Link Code</h4>
+      <div class="example">
+        <p class="example-title">เพิ่มใน &lt;head&gt;</p>
+        <pre><code>&lt;!-- Google Fonts - Sarabun (ฟอนต์ไทย) --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;</code></pre>
       </div>
 
-      <!-- Create Blueprint -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">🔷 สร้าง Blueprint</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-gray-600">app/repairs/routes.py</span>
-          </div>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Blueprint, render_template
-from app.repairs.models import RepairTicket
-
-# สร้าง Blueprint
-repairs_bp = Blueprint(
-    'repairs',
-    __name__,
-    url_prefix='/repairs'
-)
-
-@repairs_bp.route('/')
-def list():
-    """แสดงรายการแจ้งซ่อมทั้งหมด"""
-    tickets = RepairTicket.query.all()
-    return render_template('repairs/list.html', tickets=tickets)
-
-@repairs_bp.route('/create', methods=['GET', 'POST'])
-def create():
-    """สร้างรายการแจ้งซ่อมใหม่"""
-    # ... code here
-    pass</code></pre>
-        </div>
+      <h4>ขั้นตอนที่ 3: ใช้งานใน Tailwind Config</h4>
+      <div class="example">
+        <p class="example-title">กำหนด Custom Font Family</p>
+        <pre><code>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;script&gt;
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          'sarabun': ['Sarabun', 'sans-serif'],
+          'kanit': ['Kanit', 'sans-serif'],
+          'prompt': ['Prompt', 'sans-serif'],
+        }
+      }
+    }
+  }
+&lt;/script&gt;</code></pre>
       </div>
 
-      <!-- Register Blueprint -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">📝 Register Blueprint</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-gray-600">app/__init__.py</span>
-          </div>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+      <h4>ขั้นตอนที่ 4: ใช้งานในหน้าเว็บ</h4>
+      <div class="example">
+        <pre><code>&lt;!-- ใช้กับ body ทั้งหน้า --&gt;
+&lt;body class="font-sarabun"&gt;
 
-db = SQLAlchemy()
-
-def create_app():
-    app = Flask(__name__)
-    
-    # Config
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///repairs.db'
-    app.config['SECRET_KEY'] = 'your-secret-key'
-    
-    # Initialize extensions
-    db.init_app(app)
-    
-    # Register blueprints
-    from app.repairs.routes import repairs_bp
-    app.register_blueprint(repairs_bp)
-    
-    # เพิ่ม blueprint อื่นๆ
-    # from app.auth.routes import auth_bp
-    # app.register_blueprint(auth_bp)
-    
-    return app</code></pre>
-        </div>
+&lt;!-- หรือใช้เฉพาะส่วน --&gt;
+&lt;h1 class="font-sarabun text-3xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
+&lt;p class="font-prompt"&gt;เนื้อหาในย่อหน้า&lt;/p&gt;</code></pre>
       </div>
 
-      <!-- Run App -->
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">▶️ รันแอพพลิเคชัน</h3>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-gray-600">run.py</span>
-          </div>
-          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>from app import create_app, db
-
-app = create_app()
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)</code></pre>
-        </div>
-      </div>
-
-      <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mt-6">
-        <p class="font-semibold text-yellow-800 mb-2">⚠️ สำหรับโปรเจกต์ปี 1</p>
-        <p class="text-gray-700">ถ้าโปรเจกต์ยังเล็ก เริ่มแบบไฟล์เดียวก่อนก็ได้ แต่<strong>ต้องรู้แนวคิด</strong> เพราะตอนท้ายเทอมระบบจะโต ต้องแยกเป็นโมดูล</p>
-      </div>
-    </section>
-
-    <!-- Workshop Checklist -->
-    <section class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg p-6 mb-8">
-      <h2 class="text-2xl font-bold mb-4">✅ Checklist: พร้อมทำ Workshop</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>มี JSON schema กำหนด field หลักครบ</span>
-          </label>
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>มี SQLAlchemy model อย่างน้อย 1 ตาราง</span>
-          </label>
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>ทำ Create + List ได้</span>
-          </label>
-        </div>
-        <div class="space-y-2">
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>ทำ Update + Delete ได้</span>
-          </label>
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>เข้าใจการใช้ Blueprints</span>
-          </label>
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" class="w-5 h-5 rounded">
-            <span>ทดสอบ app ในเครื่องตัวเองได้แล้ว</span>
-          </label>
-        </div>
-      </div>
-    </section>
-
-    <!-- Workshop Activity -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">🎯 กิจกรรม Workshop</h2>
+      <h3>9.2 ฟอนต์ไทยแนะนำสำหรับ Workshop</h3>
       
-      <div class="space-y-4">
-        <div class="border-l-4 border-blue-500 pl-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Phase 1: ออกแบบข้อมูล (30 นาที)</h3>
-          <ul class="text-gray-700 space-y-1 text-sm">
-            <li>• ทำ JSON schema สำหรับระบบแจ้งซ่อมของทีม</li>
-            <li>• กำหนด required fields, data types</li>
-            <li>• ตกลงกันในทีมว่าจะมี field อะไรบ้าง</li>
-          </ul>
-        </div>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>ชื่อฟอนต์</th>
+            <th>ลักษณะ</th>
+            <th>เหมาะกับ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sarabun</strong></td>
+            <td>อ่านง่าย สบายตา</td>
+            <td>เนื้อหาทั่วไป, ระบบงาน</td>
+          </tr>
+          <tr>
+            <td><strong>Prompt</strong></td>
+            <td>ทันสมัย เรียบหรู</td>
+            <td>หัวข้อ, UI สมัยใหม่</td>
+          </tr>
+          <tr>
+            <td><strong>Kanit</strong></td>
+            <td>สไตล์โมเดิร์น</td>
+            <td>หัวข้อ, โปสเตอร์</td>
+          </tr>
+          <tr>
+            <td><strong>Noto Sans Thai</strong></td>
+            <td>มาตรฐาน อ่านง่าย</td>
+            <td>ทุกประเภท</td>
+          </tr>
+          <tr>
+            <td><strong>IBM Plex Sans Thai</strong></td>
+            <td>เป็นทางการ</td>
+            <td>เอกสาร รายงาน</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div class="border-l-4 border-green-500 pl-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Phase 2: สร้าง Database (45 นาที)</h3>
-          <ul class="text-gray-700 space-y-1 text-sm">
-            <li>• แปลง JSON schema เป็น SQLAlchemy model</li>
-            <li>• สร้างตาราง (db.create_all)</li>
-            <li>• ทดสอบเพิ่มข้อมูลด้วย Python shell</li>
-          </ul>
-        </div>
+      <h3>9.3 ตัวอย่างการใช้งานจริง</h3>
+      
+      <div class="example">
+        <p class="example-title">หน้าเว็บที่ใช้ Google Fonts</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;ระบบแจ้งซ่อม&lt;/title&gt;
+  
+  &lt;!-- Google Fonts - Sarabun --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+  &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+  &lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
+  
+  &lt;!-- Tailwind CSS --&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'sarabun': ['Sarabun', 'sans-serif'],
+          }
+        }
+      }
+    }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="font-sarabun bg-gray-50"&gt;
+  
+  &lt;header class="bg-blue-600 text-white p-4"&gt;
+    &lt;h1 class="text-2xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
+  &lt;/header&gt;
+  
+  &lt;main class="max-w-6xl mx-auto p-6"&gt;
+    &lt;h2 class="text-3xl font-bold text-gray-800 mb-4"&gt;
+      รายการแจ้งซ่อมทั้งหมด
+    &lt;/h2&gt;
+    
+    &lt;p class="text-gray-600 font-light"&gt;
+      ข้อความนี้จะแสดงด้วยฟอนต์ Sarabun แบบบางเบา
+    &lt;/p&gt;
+    
+    &lt;p class="text-gray-800 font-normal"&gt;
+      ข้อความนี้แสดงด้วยน้ำหนักปกติ
+    &lt;/p&gt;
+    
+    &lt;p class="text-gray-900 font-semibold"&gt;
+      ข้อความนี้แสดงด้วยตัวกึ่งหนา
+    &lt;/p&gt;
+  &lt;/main&gt;
+  
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
 
-        <div class="border-l-4 border-purple-500 pl-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Phase 3: CRUD Routes (60 นาที)</h3>
-          <ul class="text-gray-700 space-y-1 text-sm">
-            <li>• สร้าง route สำหรับ Create (ฟอร์ม + บันทึก)</li>
-            <li>• สร้าง route สำหรับ List (แสดงรายการ)</li>
-            <li>• สร้าง route สำหรับ Detail</li>
-            <li>• (ถ้ามีเวลา) Update + Delete</li>
-          </ul>
-        </div>
+      <h3>9.4 น้ำหนักฟอนต์ (Font Weights)</h3>
+      
+      <div class="example">
+        <p class="example-title">Tailwind Font Weight Classes</p>
+        <pre><code>&lt;!-- Extra Light: 200 --&gt;
+&lt;p class="font-extralight"&gt;ข้อความบางพิเศษ&lt;/p&gt;
 
-        <div class="border-l-4 border-orange-500 pl-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Phase 4: Blueprints (30 นาที)</h3>
-          <ul class="text-gray-700 space-y-1 text-sm">
-            <li>• แยก routes ไปอยู่ใน blueprint</li>
-            <li>• จัดโครงสร้างโปรเจกต์ใหม่</li>
-            <li>• ทดสอบว่ายังทำงานได้ปกติ</li>
-          </ul>
-        </div>
+&lt;!-- Light: 300 --&gt;
+&lt;p class="font-light"&gt;ข้อความบาง&lt;/p&gt;
+
+&lt;!-- Normal: 400 --&gt;
+&lt;p class="font-normal"&gt;ข้อความปกติ&lt;/p&gt;
+
+&lt;!-- Medium: 500 --&gt;
+&lt;p class="font-medium"&gt;ข้อความกลาง&lt;/p&gt;
+
+&lt;!-- Semibold: 600 --&gt;
+&lt;p class="font-semibold"&gt;ข้อความกึ่งหนา&lt;/p&gt;
+
+&lt;!-- Bold: 700 --&gt;
+&lt;p class="font-bold"&gt;ข้อความหนา&lt;/p&gt;
+
+&lt;!-- Extra Bold: 800 --&gt;
+&lt;p class="font-extrabold"&gt;ข้อความหนาพิเศษ&lt;/p&gt;</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">💡 Tips การเลือกฟอนต์</p>
+        <ul>
+          <li>เลือกฟอนต์ที่รองรับภาษาไทย (ดูใน Google Fonts ว่ามี Thai Script)</li>
+          <li>ไม่ควรใช้มากกว่า 2-3 ฟอนต์ในหน้าเดียว</li>
+          <li>เลือกน้ำหนักที่จำเป็นเท่านั้น (เช่น 300, 400, 600, 700)</li>
+          <li>ใช้ <code>preconnect</code> เพื่อให้โหลดเร็วขึ้น</li>
+        </ul>
+      </div>
+
+      <h3>9.5 ฟอนต์อังกฤษยอดนิยม</h3>
+      
+      <div class="example">
+        <p class="example-title">Google Fonts สำหรับเนื้อหาภาษาอังกฤษ</p>
+        <pre><code>&lt;!-- Roboto - ฟอนต์ยอดนิยม --&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"&gt;
+
+&lt;!-- Inter - Modern UI Font --&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;
+
+&lt;!-- Poppins - สำหรับหัวข้อ --&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
+
+&lt;!-- Open Sans - อ่านง่าย --&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;</code></pre>
+      </div>
+
+      <h3>9.6 ตัวอย่างการผสมฟอนต์ไทย-อังกฤษ</h3>
+      
+      <div class="example">
+        <p class="example-title">ใช้ฟอนต์ต่างกันสำหรับไทยและอังกฤษ</p>
+        <pre><code>&lt;head&gt;
+  &lt;!-- ฟอนต์ไทย --&gt;
+  &lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
+  
+  &lt;!-- ฟอนต์อังกฤษ --&gt;
+  &lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
+  
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'thai': ['Sarabun', 'sans-serif'],
+            'en': ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  &lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;h1 class="font-thai text-3xl font-bold"&gt;
+    ระบบแจ้งซ่อม
+  &lt;/h1&gt;
+  
+  &lt;p class="font-en text-gray-600"&gt;
+    Repair Management System
+  &lt;/p&gt;
+&lt;/body&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">🎨 Best Practice: Font Pairing</p>
+        <ul>
+          <li><strong>Heading:</strong> Kanit (หนา, โดดเด่น)</li>
+          <li><strong>Body:</strong> Sarabun (อ่านง่าย)</li>
+          <li><strong>Code/Numbers:</strong> Roboto Mono</li>
+        </ul>
       </div>
     </section>
 
-    <!-- Resources -->
-    <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">📚 แหล่งข้อมูลเพิ่มเติม</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <h3 class="font-semibold text-gray-800 mb-2">Official Docs</h3>
-          <ul class="space-y-1 text-sm">
-            <li><a href="https://flask-sqlalchemy.palletsprojects.com/" class="text-blue-600 hover:underline">Flask-SQLAlchemy Documentation</a></li>
-            <li><a href="https://flask.palletsprojects.com/en/latest/blueprints/" class="text-blue-600 hover:underline">Flask Blueprints</a></li>
-            <li><a href="https://json-schema.org/" class="text-blue-600 hover:underline">JSON Schema</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-semibold text-gray-800 mb-2">Tutorials</h3>
-          <ul class="space-y-1 text-sm">
-            <li><a href="https://www.geeksforgeeks.org/python/flask-tutorial/" class="text-blue-600 hover:underline">GeeksforGeeks Flask Tutorial</a></li>
-            <li><a href="https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database" class="text-blue-600 hover:underline">Flask Mega Tutorial - Database</a></li>
-          </ul>
-        </div>
-      </div>
+    <section>
+      <h2>10) Best Practices สำหรับ Workshop</h2>
+
+      <h3>✅ ควรทำ</h3>
+      <ul>
+        <li>ใช้ Semantic HTML (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>)</li>
+        <li>จัด Layout ด้วย Flexbox/Grid</li>
+        <li>ใส่ <code>alt</code> ในรูปภาพเสมอ</li>
+        <li>ใช้ <code>max-w-*</code> + <code>mx-auto</code> เพื่อจำกัดความกว้าง</li>
+        <li>ทำ Responsive ด้วย <code>md:</code>, <code>lg:</code></li>
+      </ul>
+
+      <h3>❌ ไม่ควรทำ</h3>
+      <ul>
+        <li>ใช้ <code>&lt;div&gt;</code> ทุกอย่าง (ควรใช้ semantic tags)</li>
+        <li>Class ยาวเกินไป ในบรรทัดเดียว (แบ่งบรรทัดได้)</li>
+        <li>Hardcode สีโดยไม่ใช้ Tailwind colors</li>
+        <li>ลืมทำ mobile-first (เริ่มจากหน้าจอเล็กก่อน)</li>
+      </ul>
     </section>
 
-    <!-- Navigation -->
-    <div class="flex justify-between items-center print:hidden">
-      <a href="../../index.html" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
-        🏠 กลับหน้าหลัก
-      </a>
-      <a href="../chap03/chap03-doc.html" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition">
-        ← บทที่ 3
-      </a>
+    <section>
+      <h2>11) Checklist ก่อนเข้า Workshop</h2>
+      <ul>
+        <li>✅ รู้โครงสร้าง HTML พื้นฐาน (head, body, tags หลักๆ)</li>
+        <li>✅ เข้าใจ Forms (input, textarea, select, button)</li>
+        <li>✅ เพิ่ม Tailwind CSS ด้วย CDN ได้</li>
+        <li>✅ ใช้ Tailwind classes พื้นฐาน (colors, spacing, layout)</li>
+        <li>✅ เพิ่ม Google Fonts ให้หน้าเว็บได้</li>
+        <li>✅ สร้างหน้ารายการ + ฟอร์มง่ายๆ ได้</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>12) แหล่งเรียนรู้เพิ่มเติม</h2>
+      <ul>
+        <li><strong>HTML:</strong> <a href="https://www.w3schools.com/html/" target="_blank">W3Schools HTML Tutorial</a></li>
+        <li><strong>Tailwind CSS:</strong> <a href="https://tailwindcss.com/docs" target="_blank">Official Documentation</a></li>
+        <li><strong>Google Fonts:</strong> <a href="https://fonts.google.com" target="_blank">Google Fonts</a></li>
+        <li><strong>Tailwind Cheat Sheet:</strong> <a href="https://nerdcave.com/tailwind-cheat-sheet" target="_blank">Tailwind Cheat Sheet</a></li>
+        <li><strong>Components:</strong> <a href="https://tailwindui.com/components" target="_blank">Tailwind UI Components</a></li>
+      </ul>
+    </section>
+
+    <div class="no-print" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn-primary" href="../../index.html">🏠 กลับหน้าหลัก</a>
+      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap05/chap05-doc.html">บทถัดไป: Flask + HTML →</a>
     </div>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-300 py-8 mt-12 print:hidden">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-      <p class="mb-2">Flask Workshop - Year 1 Project Series</p>
-      <p class="text-sm text-gray-400">Created for educational purposes</p>
-    </div>
-  </footer>
-
+  </div>
 </body>
 </html>

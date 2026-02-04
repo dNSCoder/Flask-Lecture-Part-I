@@ -21,7 +21,7 @@
     <header class="doc-header">
       <h1>บทที่ 3: Templates (Jinja2) + Template Inheritance + Static Files</h1>
       <p class="doc-subtitle">ทำหน้าเว็บให้เป็นระบบ: render_template → Jinja2 → base.html/extends/block → static (CSS/JS/รูป)</p>
-      <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน (Project ปี 1)</p>
+      <p class="doc-meta">บทที่ 3 • เอกสารประกอบการสอน</p>
     </header>
 
     <section>
@@ -154,6 +154,79 @@ def home():
       <pre><code>body { font-family: system-ui; margin: 0; }
 nav { padding: 12px 16px; background: #111827; color: white; }
 main { padding: 16px; }</code></pre>
+      <h3>รูปภาพ (Images): จัดเก็บและเรียกใช้อย่างถูกวิธี</h3>
+      <p>
+        นอกจาก CSS/JS แล้ว <strong>รูปภาพ</strong> (เช่น โลโก้, ไอคอน, รูปประกอบหน้า) ก็ควรเก็บไว้ใน <code>static/</code>
+        โดยแนะนำให้แยกโฟลเดอร์ย่อย เช่น <code>static/images/</code> เพื่อให้จัดระเบียบง่าย
+      </p>
+
+      <pre><code>my-flask-app/
+├─ app.py
+├─ templates/
+│  ├─ base.html
+│  └─ home.html
+└─ static/
+   ├─ style.css
+   ├─ app.js
+   └─ images/
+      ├─ logo.png
+      ├─ banner.jpg
+      └─ icon.svg</code></pre>
+
+      <h4>1) แสดงรูปใน Template (แนะนำให้ใช้ url_for)</h4>
+      <p>
+        การอ้าง path แบบตรง ๆ เช่น <code>/static/images/logo.png</code> ใช้ได้ แต่แนวทางที่ยืดหยุ่นกว่า
+        คือใช้ <code>url_for('static', filename='...')</code> เพื่อให้ Flask สร้าง URL ให้ถูกต้อง
+      </p>
+      <pre><code>&lt;!-- templates/home.html --&gt;
+
+&lt;img
+  src="{{ url_for('static', filename='images/logo.png') }}"
+  alt="โลโก้ระบบ"
+  width="160"
+  height="160"
+  loading="lazy"
+/&gt;</code></pre>
+
+      <h4>2) ใช้รูปเป็นพื้นหลังใน CSS</h4>
+      <p>
+        ถ้าต้องการทำ banner/hero สามารถใช้รูปเป็น background ได้ โดยอ้าง path แบบ relative จากไฟล์ CSS
+        (เพราะเบราว์เซอร์โหลดไฟล์ CSS แล้วค่อยไปโหลดรูปต่อ)
+      </p>
+      <pre><code>/* static/style.css */
+.hero {
+  background-image: url("./images/banner.jpg");
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+}</code></pre>
+
+      <h4>3) ทำให้รูป responsive และคมชัด</h4>
+      <ul>
+        <li>ใส่ <code>alt</code> เพื่อการเข้าถึง (accessibility) และ SEO</li>
+        <li>ทำให้รูปไม่ล้นคอนเทนเนอร์ด้วย <code>max-width: 100%</code> และ <code>height: auto</code></li>
+        <li>ใช้ <code>loading="lazy"</code> สำหรับรูปที่ไม่อยู่ส่วนบนของหน้า เพื่อให้โหลดเร็วขึ้น</li>
+      </ul>
+      <pre><code>/* static/style.css */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}</code></pre>
+
+      <h4>ตัวอย่างการแสดงผล (ตัวอย่างรูปแบบฝังในเอกสาร)</h4>
+      <p class="doc-subtitle" style="margin-top:6px">
+        ตัวอย่างด้านล่างเป็นรูปแบบฝังเพื่อสาธิตหน้าตา (ในโปรเจกต์จริงให้เก็บไฟล์ไว้ที่ <code>static/images/</code>)
+      </p>
+      <figure style="margin: 14px 0 6px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow:hidden;">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgOTAwIDI2MCI+CjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY0NmU1IiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDZiNmQ0IiBzdG9wLW9wYWNpdHk9IjAuODUiLz4KICA8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjYwIiByeD0iMjIiIGZpbGw9InVybCgjZykiLz4KPGNpcmNsZSBjeD0iMTI1IiBjeT0iMTMwIiByPSI2NCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjE4KSIvPgo8Y2lyY2xlIGN4PSIxODgiIGN5PSIxMTAiIHI9IjE4IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMjIpIi8+CjxjaXJjbGUgY3g9IjIxMCIgY3k9IjE1MCIgcj0iMTAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4yMikiLz4KPHRleHQgeD0iMjcwIiB5PSIxMTgiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMzQiIGZpbGw9IndoaXRlIiBmb250LXdlaWdodD0iNzAwIj7guJXguLHguKfguK3guKLguYjguLLguIfguKPguLnguJvguKDguLLguJ4gKEltYWdlKTwvdGV4dD4KPHRleHQgeD0iMjcwIiB5PSIxNjAiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC45MikiPuC4quC4suC4mOC4tOC4leC4geC4suC4o+C5geC4quC4lOC4h+C4nOC4peC4o+C4ueC4m+C5g+C4meC4q+C4meC5ieC4suC5gOC4p+C5h+C4miArIOC5geC4meC4p+C4l+C4suC4h+C5gOC4geC5h+C4muC5hOC4n+C4peC5jOC5hOC4p+C5ieC5g+C4mSBzdGF0aWMvaW1hZ2VzLzwvdGV4dD4KPHRleHQgeD0iMjcwIiB5PSIxOTgiIGZvbnQtZmFtaWx5PSJTYXJhYnVuLCBzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC44OCkiPkZsYXNrICsgdXJsX2Zvcignc3RhdGljJywgZmlsZW5hbWU9J2ltYWdlcy8uLi4nKTwvdGV4dD4KPC9zdmc+" alt="ตัวอย่างรูปภาพ" style="width:100%; height:auto;">
+      </figure>
+      <div class="callout tip">
+        <strong>แนวปฏิบัติที่แนะนำ</strong>
+        โครงสร้าง <code>static/images/</code> + การเรียกผ่าน <code>url_for('static', filename='images/...')</code>
+        จะช่วยให้ย้าย/ปรับโครงสร้างโปรเจกต์ได้ง่าย และลดปัญหา path พังในหลายหน้า
+      </div>
+
 
       <div class="callout note">
         <strong>จุดเชื่อมกับโปรเจกต์ปี 1</strong>

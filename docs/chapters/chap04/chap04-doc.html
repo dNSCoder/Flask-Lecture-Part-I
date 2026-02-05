@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>บทที่ 4: HTML พื้นฐาน + Tailwind CSS - เอกสารประกอบการสอน</title>
+  <title>บทที่ 4: HTML พื้นฐาน + Tailwind CSS (Step-by-Step) - เอกสารประกอบการสอน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary-color: #2563eb;
       --secondary-color: #7c3aed;
       --accent-color: #059669;
+      --success-color: #10b981;
       --text-dark: #1e293b;
       --text-light: #64748b;
       --bg-light: #f8fafc;
@@ -137,12 +138,40 @@
       overflow-x: auto;
       margin: 1.5rem 0;
       line-height: 1.6;
+      font-size: 0.95rem;
     }
     
     pre code {
       background: none;
       color: inherit;
       padding: 0;
+    }
+    
+    .step-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .step-number {
+      background: white;
+      color: var(--primary-color);
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      flex-shrink: 0;
     }
     
     .example {
@@ -161,21 +190,6 @@
     }
     
     .note {
-      background: #fef3c7;
-      border-left: 4px solid #f59e0b;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-      border-radius: 0.5rem;
-    }
-    
-    .note-title {
-      font-weight: 600;
-      color: #92400e;
-      margin-bottom: 0.75rem;
-      font-size: 1.1rem;
-    }
-    
-    .tip {
       background: #dbeafe;
       border-left: 4px solid #3b82f6;
       padding: 1.5rem;
@@ -183,9 +197,39 @@
       border-radius: 0.5rem;
     }
     
-    .tip-title {
+    .note-title {
       font-weight: 600;
       color: #1e40af;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .tip {
+      background: #d1fae5;
+      border-left: 4px solid #059669;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .tip-title {
+      font-weight: 600;
+      color: #065f46;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0.5rem;
+    }
+    
+    .warning-title {
+      font-weight: 600;
+      color: #92400e;
       margin-bottom: 0.75rem;
       font-size: 1.1rem;
     }
@@ -201,7 +245,7 @@
       text-align: center;
     }
     
-    .comparison-table {
+    table {
       width: 100%;
       border-collapse: collapse;
       margin: 1.5rem 0;
@@ -209,20 +253,19 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
-    .comparison-table th,
-    .comparison-table td {
+    th, td {
       padding: 1rem;
       text-align: left;
       border: 1px solid var(--border-color);
     }
     
-    .comparison-table th {
+    th {
       background: var(--primary-color);
       color: white;
       font-weight: 600;
     }
     
-    .comparison-table tr:nth-child(even) {
+    tr:nth-child(even) {
       background: var(--bg-light);
     }
     
@@ -256,6 +299,20 @@
       font-style: italic;
     }
     
+    .progress-bar {
+      background: #e2e8f0;
+      height: 0.5rem;
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    
+    .progress-fill {
+      background: var(--success-color);
+      height: 100%;
+      transition: width 0.3s;
+    }
+    
     @media print {
       .no-print { display: none; }
       .chapter-nav { display: none; }
@@ -277,882 +334,698 @@
   <div class="container">
     <header class="doc-header">
       <h1>บทที่ 4: HTML พื้นฐาน + Tailwind CSS</h1>
-      <p class="doc-subtitle">สร้างหน้าเว็บสวยงามด้วย HTML โครงสร้างที่ดี + Tailwind CSS แบบ CDN</p>
+      <p class="doc-subtitle">เรียนรู้ทีละขั้น สร้างหน้าเว็บระบบแจ้งซ่อมแบบ step-by-step</p>
       <p class="doc-meta">บทที่ 4 • เอกสารประกอบการสอน (Workshop ปี 1)</p>
     </header>
 
     <section>
-      <h2>1) ทำไมต้องเรียน HTML + CSS ก่อนทำ Flask Workshop</h2>
+      <h2>ภาพรวมบทเรียน</h2>
       <p>
-        Flask สร้าง <strong>backend</strong> ส่ง HTML กลับไปให้เบราว์เซอร์ แต่ถ้าเราไม่รู้จัก HTML/CSS 
-        หน้าเว็บที่ได้จะดูไม่สวย ไม่เป็นระบบ และใช้งานยาก
+        บทนี้เราจะ<span class="highlight">สร้างหน้าเว็บทีละขั้นตอน</span> 
+        จากพื้นฐาน HTML ไปจนถึงหน้าระบบแจ้งซ่อมที่สวยงามด้วย Tailwind CSS
       </p>
+      
       <div class="key-point">
-        HTML = โครงสร้าง | CSS = การตกแต่ง | JavaScript = พฤติกรรม
+        เป้าหมาย: สร้างหน้ารายการแจ้งซ่อม + ฟอร์มเพิ่มข้อมูลได้ด้วยตัวเอง
       </div>
-      <p>
-        ในบทนี้เราจะเน้น <span class="highlight">HTML พื้นฐาน + Tailwind CSS</span> 
-        เพื่อให้สามารถสร้างหน้าเว็บที่ดูดีได้ทันที โดยไม่ต้องเขียน CSS เอง
-      </p>
+
+      <h3>ขั้นตอนการเรียน (8 ขั้น)</h3>
+      <ol>
+        <li><strong>Step 1:</strong> HTML โครงสร้างพื้นฐาน</li>
+        <li><strong>Step 2:</strong> เพิ่ม Tailwind CSS</li>
+        <li><strong>Step 3:</strong> สร้างหัวข้อและเนื้อหา</li>
+        <li><strong>Step 4:</strong> สร้างการ์ดรายการแจ้งซ่อม</li>
+        <li><strong>Step 5:</strong> สร้างฟอร์มเพิ่มข้อมูล</li>
+        <li><strong>Step 6:</strong> ทำให้ Responsive</li>
+        <li><strong>Step 7:</strong> ปรับแต่งให้สวยงาม</li>
+              <li><strong>Step 8:</strong> เพิ่ม Navbar + Sidebar (โครงหน้าแบบแอป)</li>
+</ol>
     </section>
 
     <section>
-      <h2>2) HTML พื้นฐานที่ต้องรู้</h2>
-      
-      <h3>2.1 โครงสร้าง HTML พื้นฐาน</h3>
-      <div class="example">
-        <p class="example-title">Template HTML เบื้องต้น</p>
-        <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="th"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;ชื่อหน้าเว็บ&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;!-- เนื้อหาของหน้าเว็บ --&gt;
-  &lt;h1&gt;หัวข้อหลัก&lt;/h1&gt;
-  &lt;p&gt;ย่อหน้าข้อความ&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+      <div class="step-box">
+        <div class="step-number">1</div>
+        <div>HTML โครงสร้างพื้นฐาน</div>
       </div>
 
-      <h3>2.2 HTML Tags ที่ใช้บ่อยในระบบแจ้งซ่อม</h3>
-      
-      <h4>📝 Headings (หัวข้อ)</h4>
-      <div class="example">
-        <pre><code>&lt;h1&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
-&lt;h2&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h2&gt;
-&lt;h3&gt;รายละเอียด&lt;/h3&gt;</code></pre>
-      </div>
-      <p class="muted">h1 ใหญ่ที่สุด (ใช้แค่ครั้งเดียวต่อหน้า) → h6 เล็กที่สุด</p>
-
-      <h4>📄 Text Content</h4>
-      <div class="example">
-        <pre><code>&lt;p&gt;ย่อหน้าข้อความปกติ&lt;/p&gt;
-&lt;strong&gt;ข้อความตัวหนา&lt;/strong&gt;
-&lt;em&gt;ข้อความตัวเอียง&lt;/em&gt;
-&lt;br&gt; &lt;!-- ขึ้นบรรทัดใหม่ --&gt;</code></pre>
-      </div>
-
-      <h4>📋 Lists (รายการ)</h4>
-      <div class="example">
-        <pre><code>&lt;!-- Unordered List --&gt;
-&lt;ul&gt;
-  &lt;li&gt;รายการที่ 1&lt;/li&gt;
-  &lt;li&gt;รายการที่ 2&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;!-- Ordered List --&gt;
-&lt;ol&gt;
-  &lt;li&gt;ขั้นตอนที่ 1&lt;/li&gt;
-  &lt;li&gt;ขั้นตอนที่ 2&lt;/li&gt;
-&lt;/ol&gt;</code></pre>
-      </div>
-
-      <h4>🔗 Links & Images</h4>
-      <div class="example">
-        <pre><code>&lt;!-- ลิงก์ --&gt;
-&lt;a href="/repairs"&gt;ดูรายการแจ้งซ่อม&lt;/a&gt;
-&lt;a href="https://google.com" target="_blank"&gt;เปิดในแท็บใหม่&lt;/a&gt;
-
-&lt;!-- รูปภาพ --&gt;
-&lt;img src="logo.png" alt="โลโก้"&gt;</code></pre>
-      </div>
-
-      <h4>📊 Tables (ตาราง)</h4>
-      <div class="example">
-        <pre><code>&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;รหัส&lt;/th&gt;
-      &lt;th&gt;หัวข้อ&lt;/th&gt;
-      &lt;th&gt;สถานะ&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;001&lt;/td&gt;
-      &lt;td&gt;แจ้งซ่อมพัดลม&lt;/td&gt;
-      &lt;td&gt;รอดำเนินการ&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
-      </div>
-
-      <h4>📝 Forms (ฟอร์ม)</h4>
-      <div class="example">
-        <pre><code>&lt;form action="/repairs/create" method="POST"&gt;
-  &lt;!-- Text Input --&gt;
-  &lt;label&gt;หัวข้อ:&lt;/label&gt;
-  &lt;input type="text" name="title" required&gt;
-  
-  &lt;!-- Textarea --&gt;
-  &lt;label&gt;รายละเอียด:&lt;/label&gt;
-  &lt;textarea name="description" rows="5"&gt;&lt;/textarea&gt;
-  
-  &lt;!-- Select Dropdown --&gt;
-  &lt;label&gt;สถานที่:&lt;/label&gt;
-  &lt;select name="location"&gt;
-    &lt;option value="ห้อง301"&gt;ห้อง 301&lt;/option&gt;
-    &lt;option value="ห้อง302"&gt;ห้อง 302&lt;/option&gt;
-  &lt;/select&gt;
-  
-  &lt;!-- Submit Button --&gt;
-  &lt;button type="submit"&gt;ส่งแบบฟอร์ม&lt;/button&gt;
-&lt;/form&gt;</code></pre>
-      </div>
-
-      <h4>📦 Semantic HTML (HTML ที่มีความหมาย)</h4>
-      <div class="example">
-        <pre><code>&lt;header&gt;ส่วนหัว/เมนู&lt;/header&gt;
-&lt;nav&gt;เมนูนำทาง&lt;/nav&gt;
-&lt;main&gt;เนื้อหาหลัก&lt;/main&gt;
-&lt;section&gt;ส่วนของเนื้อหา&lt;/section&gt;
-&lt;article&gt;บทความ/โพสต์&lt;/article&gt;
-&lt;aside&gt;ข้อมูลเสริมข้างๆ&lt;/aside&gt;
-&lt;footer&gt;ส่วนท้าย&lt;/footer&gt;</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>3) Tailwind CSS คืออะไร</h2>
-      <p>
-        <strong>Tailwind CSS</strong> เป็น CSS Framework แบบ <span class="highlight">Utility-First</span> 
-        หมายความว่าเราจะใช้ class สำเร็จรูปมาตกแต่ง HTML โดยไม่ต้องเขียน CSS เอง
-      </p>
-
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>CSS แบบเดิม</th>
-            <th>Tailwind CSS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <pre><code>&lt;style&gt;
-.button {
-  background: blue;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-}
-&lt;/style&gt;
-
-&lt;button class="button"&gt;คลิก&lt;/button&gt;</code></pre>
-            </td>
-            <td>
-              <pre><code>&lt;button class="bg-blue-500 text-white px-5 py-2 rounded"&gt;
-  คลิก
-&lt;/button&gt;</code></pre>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="note">
-        <p class="note-title">ข้อดีของ Tailwind CSS</p>
-        <ul>
-          <li>✅ เขียนได้เร็ว ไม่ต้องสลับไฟล์ HTML/CSS</li>
-          <li>✅ Responsive ได้ง่ายด้วย prefix เช่น <code>md:</code>, <code>lg:</code></li>
-          <li>✅ ไม่ต้องคิดชื่อ class</li>
-          <li>✅ ขนาดไฟล์เล็ก (ใช้แค่ class ที่เราใช้จริง)</li>
-        </ul>
-      </div>
-    </section>
-
-    <section>
-      <h2>4) เพิ่ม Tailwind CSS ด้วย CDN</h2>
-      <p>วิธีที่ง่ายและเร็วที่สุดสำหรับเริ่มต้น คือใช้ <strong>CDN</strong></p>
+      <p>เริ่มจากสร้างไฟล์ <code>index.html</code> แล้วใส่โครงสร้างพื้นฐาน</p>
 
       <div class="example">
-        <p class="example-title">เพิ่ม Tailwind CSS CDN ใน &lt;head&gt;</p>
+        <p class="example-title">📄 ไฟล์: index.html (ขั้นที่ 1)</p>
         <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="th"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
   &lt;title&gt;ระบบแจ้งซ่อม&lt;/title&gt;
-  
-  &lt;!-- Tailwind CSS CDN --&gt;
-  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;h1 class="text-3xl font-bold text-blue-600"&gt;
-    ระบบแจ้งซ่อม
-  &lt;/h1&gt;
+  &lt;h1&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
+  &lt;p&gt;รายการแจ้งซ่อมทั้งหมด&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
       </div>
 
       <div class="tip">
-        <p class="tip-title">💡 สำหรับ Workshop</p>
-        <p>ใช้ CDN เพราะติดตั้งง่าย ไม่ต้อง npm/build process</p>
-        <p>สำหรับโปรเจกต์จริง ควรใช้ npm install แบบปกติ</p>
+        <p class="tip-title">✅ ทดสอบ</p>
+        <p>เปิดไฟล์ด้วยเบราว์เซอร์ ควรเห็นข้อความ "ระบบแจ้งซ่อม"</p>
       </div>
     </section>
 
     <section>
-      <h2>5) Tailwind Classes ที่ใช้บ่อย</h2>
-
-      <h3>5.1 ขนาดและสี (Size & Colors)</h3>
-      <div class="example">
-        <pre><code>&lt;!-- Text Size --&gt;
-&lt;p class="text-sm"&gt;ข้อความเล็ก&lt;/p&gt;
-&lt;p class="text-base"&gt;ข้อความปกติ&lt;/p&gt;
-&lt;p class="text-lg"&gt;ข้อความใหญ่&lt;/p&gt;
-&lt;p class="text-xl"&gt;ข้อความใหญ่มาก&lt;/p&gt;
-&lt;p class="text-2xl"&gt;ข้อความใหญ่พิเศษ&lt;/p&gt;
-
-&lt;!-- Text Color --&gt;
-&lt;p class="text-gray-500"&gt;สีเทา&lt;/p&gt;
-&lt;p class="text-blue-600"&gt;สีน้ำเงิน&lt;/p&gt;
-&lt;p class="text-red-500"&gt;สีแดง&lt;/p&gt;
-&lt;p class="text-green-600"&gt;สีเขียว&lt;/p&gt;
-
-&lt;!-- Background Color --&gt;
-&lt;div class="bg-blue-100"&gt;พื้นหลังสีน้ำเงินอ่อน&lt;/div&gt;
-&lt;div class="bg-gray-800"&gt;พื้นหลังสีเทาเข้ม&lt;/div&gt;</code></pre>
+      <div class="step-box">
+        <div class="step-number">2</div>
+        <div>เพิ่ม Tailwind CSS</div>
       </div>
 
-      <h3>5.2 Spacing (ระยะห่าง)</h3>
-      <div class="example">
-        <pre><code>&lt;!-- Padding (ระยะห่างด้านใน) --&gt;
-&lt;div class="p-4"&gt;padding ทุกด้าน 1rem&lt;/div&gt;
-&lt;div class="px-6"&gt;padding ซ้าย-ขวา 1.5rem&lt;/div&gt;
-&lt;div class="py-2"&gt;padding บน-ล่าง 0.5rem&lt;/div&gt;
-&lt;div class="pt-8"&gt;padding บน 2rem&lt;/div&gt;
-
-&lt;!-- Margin (ระยะห่างด้านนอก) --&gt;
-&lt;div class="m-4"&gt;margin ทุกด้าน&lt;/div&gt;
-&lt;div class="mx-auto"&gt;margin ซ้าย-ขวา auto (จัดกลาง)&lt;/div&gt;
-&lt;div class="mb-6"&gt;margin ล่าง&lt;/div&gt;</code></pre>
-      </div>
-      <p class="muted">หน่วย: 1 = 0.25rem, 2 = 0.5rem, 4 = 1rem, 6 = 1.5rem, 8 = 2rem</p>
-
-      <h3>5.3 Layout (การจัดวาง)</h3>
-      <div class="example">
-        <pre><code>&lt;!-- Flexbox --&gt;
-&lt;div class="flex"&gt;แสดงแบบ flex&lt;/div&gt;
-&lt;div class="flex items-center"&gt;จัดกลางแนวตั้ง&lt;/div&gt;
-&lt;div class="flex justify-between"&gt;แยกขอบซ้าย-ขวา&lt;/div&gt;
-&lt;div class="flex gap-4"&gt;ช่องว่างระหว่างไอเทม&lt;/div&gt;
-
-&lt;!-- Width & Height --&gt;
-&lt;div class="w-full"&gt;กว้างเต็ม 100%&lt;/div&gt;
-&lt;div class="w-1/2"&gt;กว้าง 50%&lt;/div&gt;
-&lt;div class="h-screen"&gt;สูงเต็มหน้าจอ&lt;/div&gt;
-
-&lt;!-- Container --&gt;
-&lt;div class="max-w-4xl mx-auto"&gt;จำกัดความกว้างและจัดกลาง&lt;/div&gt;</code></pre>
-      </div>
-
-      <h3>5.4 Borders & Shadows</h3>
-      <div class="example">
-        <pre><code>&lt;!-- Border --&gt;
-&lt;div class="border"&gt;เส้นขอบ&lt;/div&gt;
-&lt;div class="border-2 border-blue-500"&gt;เส้นขอบสีน้ำเงิน&lt;/div&gt;
-&lt;div class="rounded"&gt;มุมโค้ง&lt;/div&gt;
-&lt;div class="rounded-lg"&gt;มุมโค้งใหญ่&lt;/div&gt;
-
-&lt;!-- Shadow --&gt;
-&lt;div class="shadow"&gt;เงาบาง&lt;/div&gt;
-&lt;div class="shadow-md"&gt;เงากลาง&lt;/div&gt;
-&lt;div class="shadow-lg"&gt;เงาหนา&lt;/div&gt;</code></pre>
-      </div>
-
-      <h3>5.5 Typography (ตัวอักษร)</h3>
-      <div class="example">
-        <pre><code>&lt;!-- Font Weight --&gt;
-&lt;p class="font-light"&gt;บาง&lt;/p&gt;
-&lt;p class="font-normal"&gt;ปกติ&lt;/p&gt;
-&lt;p class="font-bold"&gt;หนา&lt;/p&gt;
-
-&lt;!-- Text Align --&gt;
-&lt;p class="text-left"&gt;ชิดซ้าย&lt;/p&gt;
-&lt;p class="text-center"&gt;กลาง&lt;/p&gt;
-&lt;p class="text-right"&gt;ชิดขวา&lt;/p&gt;</code></pre>
-      </div>
-    </section>
-
-    <section>
-      <h2>6) ตัวอย่างการใช้งานจริง: หน้ารายการแจ้งซ่อม</h2>
+      <p>เพิ่ม Tailwind CSS ด้วย CDN ใน <code>&lt;head&gt;</code></p>
 
       <div class="example">
-        <p class="example-title">รายการแจ้งซ่อม (Repair List)</p>
-        <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="th"&gt;
-&lt;head&gt;
+        <p class="example-title">📄 เพิ่ม Tailwind CDN (ขั้นที่ 2)</p>
+        <pre><code>&lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;รายการแจ้งซ่อม&lt;/title&gt;
-  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body class="bg-gray-50"&gt;
+  &lt;title&gt;ระบบแจ้งซ่อม&lt;/title&gt;
   
+  &lt;!-- เพิ่มบรรทัดนี้ --&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">💡 Tailwind คืออะไร?</p>
+        <p>CSS Framework ที่ใช้ class สำเร็จรูปตกแต่ง HTML โดยไม่ต้องเขียน CSS เอง</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="step-box">
+        <div class="step-number">3</div>
+        <div>สร้างหัวข้อและเนื้อหา</div>
+      </div>
+
+      <p>เพิ่ม Tailwind classes เพื่อตกแต่งหัวข้อ</p>
+
+      <div class="example">
+        <p class="example-title">📄 ปรับ &lt;body&gt; (ขั้นที่ 3)</p>
+        <pre><code>&lt;body class="bg-gray-50"&gt;
   &lt;!-- Header --&gt;
-  &lt;header class="bg-blue-600 text-white p-4 shadow-md"&gt;
-    &lt;div class="max-w-6xl mx-auto flex justify-between items-center"&gt;
-      &lt;h1 class="text-2xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
-      &lt;nav class="flex gap-4"&gt;
-        &lt;a href="/" class="hover:underline"&gt;หน้าแรก&lt;/a&gt;
-        &lt;a href="/repairs" class="hover:underline"&gt;รายการแจ้งซ่อม&lt;/a&gt;
-      &lt;/nav&gt;
-    &lt;/div&gt;
+  &lt;header class="bg-blue-600 text-white p-6"&gt;
+    &lt;h1 class="text-3xl font-bold"&gt;🛠️ ระบบแจ้งซ่อม&lt;/h1&gt;
   &lt;/header&gt;
 
   &lt;!-- Main Content --&gt;
   &lt;main class="max-w-6xl mx-auto p-6"&gt;
-    
-    &lt;!-- Page Title --&gt;
-    &lt;div class="mb-6"&gt;
-      &lt;h2 class="text-3xl font-bold text-gray-800"&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h2&gt;
-      &lt;p class="text-gray-600 mt-2"&gt;ดูและจัดการรายการแจ้งซ่อม&lt;/p&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Action Button --&gt;
-    &lt;div class="mb-6"&gt;
-      &lt;a href="/repairs/create" 
-         class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-block"&gt;
-        + สร้างรายการใหม่
-      &lt;/a&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Repair Cards --&gt;
-    &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-      
-      &lt;!-- Card 1 --&gt;
-      &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"&gt;
-        &lt;div class="flex justify-between items-start mb-4"&gt;
-          &lt;h3 class="text-xl font-bold text-gray-800"&gt;พัดลมเสีย&lt;/h3&gt;
-          &lt;span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"&gt;
-            รอดำเนินการ
-          &lt;/span&gt;
-        &lt;/div&gt;
-        &lt;p class="text-gray-600 mb-4"&gt;พัดลมในห้อง 301 ไม่ทำงาน&lt;/p&gt;
-        &lt;div class="text-sm text-gray-500 mb-4"&gt;
-          &lt;p&gt;📍 สถานที่: ห้อง 301&lt;/p&gt;
-          &lt;p&gt;👤 ผู้แจ้ง: นายสมชาย ใจดี&lt;/p&gt;
-          &lt;p&gt;📅 วันที่: 2024-12-25&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div class="flex gap-2"&gt;
-          &lt;a href="/repairs/1" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
-            ดูรายละเอียด
-          &lt;/a&gt;
-          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
-            แก้ไข
-          &lt;/button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Card 2 --&gt;
-      &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
-        &lt;div class="flex justify-between items-start mb-4"&gt;
-          &lt;h3 class="text-xl font-bold text-gray-800"&gt;แอร์รั่ว&lt;/h3&gt;
-          &lt;span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"&gt;
-            กำลังดำเนินการ
-          &lt;/span&gt;
-        &lt;/div&gt;
-        &lt;p class="text-gray-600 mb-4"&gt;แอร์ห้อง 302 มีน้ำรั่ว&lt;/p&gt;
-        &lt;div class="text-sm text-gray-500 mb-4"&gt;
-          &lt;p&gt;📍 สถานที่: ห้อง 302&lt;/p&gt;
-          &lt;p&gt;👤 ผู้แจ้ง: นางสาวมานี เรียนดี&lt;/p&gt;
-          &lt;p&gt;📅 วันที่: 2024-12-24&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div class="flex gap-2"&gt;
-          &lt;a href="/repairs/2" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
-            ดูรายละเอียด
-          &lt;/a&gt;
-          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
-            แก้ไข
-          &lt;/button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Card 3 --&gt;
-      &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
-        &lt;div class="flex justify-between items-start mb-4"&gt;
-          &lt;h3 class="text-xl font-bold text-gray-800"&gt;ประตูชำรุด&lt;/h3&gt;
-          &lt;span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"&gt;
-            เสร็จสิ้น
-          &lt;/span&gt;
-        &lt;/div&gt;
-        &lt;p class="text-gray-600 mb-4"&gt;ประตูห้อง 303 ปิดไม่สนิท&lt;/p&gt;
-        &lt;div class="text-sm text-gray-500 mb-4"&gt;
-          &lt;p&gt;📍 สถานที่: ห้อง 303&lt;/p&gt;
-          &lt;p&gt;👤 ผู้แจ้ง: นายดีมาก ขยันเรียน&lt;/p&gt;
-          &lt;p&gt;📅 วันที่: 2024-12-23&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div class="flex gap-2"&gt;
-          &lt;a href="/repairs/3" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center"&gt;
-            ดูรายละเอียด
-          &lt;/a&gt;
-          &lt;button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"&gt;
-            แก้ไข
-          &lt;/button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-
-    &lt;/div&gt;
+    &lt;h2 class="text-2xl font-bold text-gray-800 mb-4"&gt;
+      รายการแจ้งซ่อมทั้งหมด
+    &lt;/h2&gt;
   &lt;/main&gt;
+&lt;/body&gt;</code></pre>
+      </div>
 
-  &lt;!-- Footer --&gt;
-  &lt;footer class="bg-gray-800 text-white p-6 mt-12"&gt;
-    &lt;div class="max-w-6xl mx-auto text-center"&gt;
-      &lt;p&gt;ระบบแจ้งซ่อม © 2024&lt;/p&gt;
-    &lt;/div&gt;
-  &lt;/footer&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+      <div class="tip">
+        <p class="tip-title">🎨 Tailwind Classes ที่ใช้</p>
+        <ul>
+          <li><code>bg-blue-600</code> = พื้นหลังสีน้ำเงิน</li>
+          <li><code>text-white</code> = ตัวอักษรสีขาว</li>
+          <li><code>p-6</code> = padding ทุกด้าน</li>
+          <li><code>text-3xl</code> = ขนาดตัวอักษรใหญ่</li>
+          <li><code>font-bold</code> = ตัวหนา</li>
+        </ul>
       </div>
     </section>
 
     <section>
-      <h2>7) ตัวอย่างฟอร์มสร้างรายการแจ้งซ่อม</h2>
-
-      <div class="example">
-        <p class="example-title">ฟอร์มแจ้งซ่อม (Create Form)</p>
-        <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="th"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;สร้างรายการแจ้งซ่อม&lt;/title&gt;
-  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body class="bg-gray-50"&gt;
-
-  &lt;main class="max-w-2xl mx-auto p-6"&gt;
-    
-    &lt;!-- Form Header --&gt;
-    &lt;div class="mb-8"&gt;
-      &lt;h1 class="text-3xl font-bold text-gray-800 mb-2"&gt;สร้างรายการแจ้งซ่อม&lt;/h1&gt;
-      &lt;p class="text-gray-600"&gt;กรอกข้อมูลเพื่อแจ้งซ่อม&lt;/p&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Form --&gt;
-    &lt;form action="/repairs/create" method="POST" class="bg-white rounded-lg shadow-md p-8"&gt;
-      
-      &lt;!-- Title --&gt;
-      &lt;div class="mb-6"&gt;
-        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
-          หัวข้อ &lt;span class="text-red-500"&gt;*&lt;/span&gt;
-        &lt;/label&gt;
-        &lt;input type="text" 
-               name="title" 
-               required
-               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-               placeholder="เช่น พัดลมเสีย"&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Description --&gt;
-      &lt;div class="mb-6"&gt;
-        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
-          รายละเอียด
-        &lt;/label&gt;
-        &lt;textarea name="description" 
-                  rows="5"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="อธิบายปัญหาโดยละเอียด"&gt;&lt;/textarea&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Reporter Name --&gt;
-      &lt;div class="mb-6"&gt;
-        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
-          ชื่อผู้แจ้ง &lt;span class="text-red-500"&gt;*&lt;/span&gt;
-        &lt;/label&gt;
-        &lt;input type="text" 
-               name="reporter_name" 
-               required
-               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-               placeholder="นายสมชาย ใจดี"&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Location --&gt;
-      &lt;div class="mb-6"&gt;
-        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
-          สถานที่ &lt;span class="text-red-500"&gt;*&lt;/span&gt;
-        &lt;/label&gt;
-        &lt;select name="location" 
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"&gt;
-          &lt;option value=""&gt;-- เลือกสถานที่ --&lt;/option&gt;
-          &lt;option value="ห้อง301"&gt;ห้อง 301&lt;/option&gt;
-          &lt;option value="ห้อง302"&gt;ห้อง 302&lt;/option&gt;
-          &lt;option value="ห้อง303"&gt;ห้อง 303&lt;/option&gt;
-          &lt;option value="ห้องน้ำชั้น3"&gt;ห้องน้ำชั้น 3&lt;/option&gt;
-        &lt;/select&gt;
-      &lt;/div&gt;
-
-      &lt;!-- Buttons --&gt;
-      &lt;div class="flex gap-4"&gt;
-        &lt;button type="submit" 
-                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold flex-1"&gt;
-          ส่งแบบฟอร์ม
-        &lt;/button&gt;
-        &lt;a href="/repairs" 
-           class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 font-bold text-center"&gt;
-          ยกเลิก
-        &lt;/a&gt;
-      &lt;/div&gt;
-
-    &lt;/form&gt;
-
-  &lt;/main&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+      <div class="step-box">
+        <div class="step-number">4</div>
+        <div>สร้างการ์ดรายการแจ้งซ่อม (ทีละการ์ด)</div>
       </div>
-    </section>
 
-    <section>
-      <h2>8) Responsive Design (หน้าจอต่างขนาด)</h2>
-      <p>
-        Tailwind มี <strong>Breakpoints</strong> สำหรับทำหน้าจอต่างขนาด
-      </p>
-
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Prefix</th>
-            <th>ขนาดหน้าจอ</th>
-            <th>ตัวอย่างการใช้</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>sm:</code></td>
-            <td>≥ 640px</td>
-            <td><code>sm:text-lg</code></td>
-          </tr>
-          <tr>
-            <td><code>md:</code></td>
-            <td>≥ 768px</td>
-            <td><code>md:grid-cols-2</code></td>
-          </tr>
-          <tr>
-            <td><code>lg:</code></td>
-            <td>≥ 1024px</td>
-            <td><code>lg:grid-cols-3</code></td>
-          </tr>
-          <tr>
-            <td><code>xl:</code></td>
-            <td>≥ 1280px</td>
-            <td><code>xl:px-8</code></td>
-          </tr>
-        </tbody>
-      </table>
+      <h3>4.1 เริ่มจากการ์ดเดียว</h3>
 
       <div class="example">
-        <p class="example-title">ตัวอย่าง Responsive Grid</p>
-        <pre><code>&lt;!-- หน้าจอเล็ก: 1 คอลัมน์ --&gt;
-&lt;!-- หน้าจอกลาง: 2 คอลัมน์ --&gt;
-&lt;!-- หน้าจอใหญ่: 3 คอลัมน์ --&gt;
-&lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"&gt;
-  &lt;div&gt;การ์ด 1&lt;/div&gt;
-  &lt;div&gt;การ์ด 2&lt;/div&gt;
-  &lt;div&gt;การ์ด 3&lt;/div&gt;
+        <p class="example-title">📄 เพิ่มการ์ดแรก (ในส่วน main)</p>
+        <pre><code>&lt;main class="max-w-6xl mx-auto p-6"&gt;
+  &lt;h2 class="text-2xl font-bold text-gray-800 mb-4"&gt;
+    รายการแจ้งซ่อมทั้งหมด
+  &lt;/h2&gt;
+
+  &lt;!-- การ์ดรายการที่ 1 --&gt;
+  &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+    &lt;h3 class="text-xl font-bold text-gray-800"&gt;พัดลมเสีย&lt;/h3&gt;
+    &lt;p class="text-gray-600 mt-2"&gt;พัดลมในห้อง 301 ไม่ทำงาน&lt;/p&gt;
+    &lt;div class="mt-4"&gt;
+      &lt;span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"&gt;
+        รอดำเนินการ
+      &lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/main&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">✅ ทดสอบ</p>
+        <p>Refresh หน้าเว็บ ควรเห็นการ์ดสีขาวปรากฏขึ้น</p>
+      </div>
+
+      <h3>4.2 เพิ่มการ์ดที่ 2 และ 3</h3>
+
+      <div class="example">
+        <p class="example-title">📄 เพิ่มการ์ดเพิ่มเติม</p>
+        <pre><code>&lt;!-- การ์ดรายการที่ 2 --&gt;
+&lt;div class="bg-white rounded-lg shadow-md p-6 mt-4"&gt;
+  &lt;h3 class="text-xl font-bold text-gray-800"&gt;แอร์รั่ว&lt;/h3&gt;
+  &lt;p class="text-gray-600 mt-2"&gt;แอร์ห้อง 302 มีน้ำรั่ว&lt;/p&gt;
+  &lt;div class="mt-4"&gt;
+    &lt;span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"&gt;
+      กำลังดำเนินการ
+    &lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- การ์ดรายการที่ 3 --&gt;
+&lt;div class="bg-white rounded-lg shadow-md p-6 mt-4"&gt;
+  &lt;h3 class="text-xl font-bold text-gray-800"&gt;ประตูชำรุด&lt;/h3&gt;
+  &lt;p class="text-gray-600 mt-2"&gt;ประตูห้อง 303 ปิดไม่สนิท&lt;/p&gt;
+  &lt;div class="mt-4"&gt;
+    &lt;span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"&gt;
+      เสร็จสิ้น
+    &lt;/span&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
       </div>
     </section>
 
     <section>
-      <h2>9) Google Fonts - เพิ่มฟอนต์สวยๆ ให้หน้าเว็บ</h2>
-      <p>
-        Google Fonts เป็นบริการฟอนต์ฟรีจาก Google ที่ทำให้เราใช้ฟอนต์สวยๆ 
-        โดยไม่ต้องติดตั้งในเครื่อง เพียงแค่เพิ่ม link ใน HTML
-      </p>
-
-      <h3>9.1 วิธีเพิ่ม Google Fonts</h3>
-      
-      <h4>ขั้นตอนที่ 1: เลือกฟอนต์</h4>
-      <p>ไปที่ <a href="https://fonts.google.com" target="_blank" class="highlight">fonts.google.com</a></p>
-
-      <h4>ขั้นตอนที่ 2: คัดลอก Link Code</h4>
-      <div class="example">
-        <p class="example-title">เพิ่มใน &lt;head&gt;</p>
-        <pre><code>&lt;!-- Google Fonts - Sarabun (ฟอนต์ไทย) --&gt;
-&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
-&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
-&lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;</code></pre>
+      <div class="step-box">
+        <div class="step-number">5</div>
+        <div>สร้างฟอร์มเพิ่มข้อมูล</div>
       </div>
 
-      <h4>ขั้นตอนที่ 3: ใช้งานใน Tailwind Config</h4>
+      <p>สร้างไฟล์ใหม่ชื่อ <code>new.html</code> สำหรับหน้าเพิ่มข้อมูล</p>
+
+      <h3>5.1 เริ่มจาก Input เดียว</h3>
+
       <div class="example">
-        <p class="example-title">กำหนด Custom Font Family</p>
-        <pre><code>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+        <p class="example-title">📄 ไฟล์: new.html (เริ่มง่ายๆ)</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;เพิ่มรายการแจ้งซ่อม&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-50"&gt;
+
+  &lt;header class="bg-blue-600 text-white p-6"&gt;
+    &lt;h1 class="text-3xl font-bold"&gt;🛠️ เพิ่มรายการแจ้งซ่อม&lt;/h1&gt;
+  &lt;/header&gt;
+
+  &lt;main class="max-w-2xl mx-auto p-6"&gt;
+    &lt;form class="bg-white rounded-lg shadow-md p-8"&gt;
+      
+      &lt;!-- Input หัวข้อ --&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+          หัวข้อ
+        &lt;/label&gt;
+        &lt;input 
+          type="text" 
+          name="title"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg"
+          placeholder="เช่น พัดลมเสีย"
+        &gt;
+      &lt;/div&gt;
+
+      &lt;button 
+        type="submit"
+        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"&gt;
+        บันทึก
+      &lt;/button&gt;
+
+    &lt;/form&gt;
+  &lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">✅ ทดสอบ</p>
+        <p>เปิดไฟล์ new.html ควรเห็นฟอร์มที่มี input ช่องเดียว</p>
+      </div>
+
+      <h3>5.2 เพิ่ม Input อื่นๆ ทีละอัน</h3>
+
+      <div class="example">
+        <p class="example-title">📄 เพิ่ม Textarea และ Select</p>
+        <pre><code>&lt;!-- เพิ่มหลัง Input หัวข้อ --&gt;
+
+&lt;!-- Textarea รายละเอียด --&gt;
+&lt;div class="mb-6"&gt;
+  &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+    รายละเอียด
+  &lt;/label&gt;
+  &lt;textarea 
+    name="description"
+    rows="4"
+    class="w-full px-4 py-3 border border-gray-300 rounded-lg"
+    placeholder="อธิบายปัญหา..."
+  &gt;&lt;/textarea&gt;
+&lt;/div&gt;
+
+&lt;!-- Select สถานที่ --&gt;
+&lt;div class="mb-6"&gt;
+  &lt;label class="block text-gray-700 font-bold mb-2"&gt;
+    สถานที่
+  &lt;/label&gt;
+  &lt;select 
+    name="location"
+    class="w-full px-4 py-3 border border-gray-300 rounded-lg"
+  &gt;
+    &lt;option value=""&gt;-- เลือกสถานที่ --&lt;/option&gt;
+    &lt;option value="ห้อง301"&gt;ห้อง 301&lt;/option&gt;
+    &lt;option value="ห้อง302"&gt;ห้อง 302&lt;/option&gt;
+    &lt;option value="ห้อง303"&gt;ห้อง 303&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <div class="step-box">
+        <div class="step-number">6</div>
+        <div>ทำให้ Responsive (หน้าจอมือถือ)</div>
+      </div>
+
+      <p>ปรับการ์ดให้แสดงหลายคอลัมน์บนจอใหญ่</p>
+
+      <div class="example">
+        <p class="example-title">📄 ปรับเป็น Grid Layout</p>
+        <pre><code>&lt;main class="max-w-6xl mx-auto p-6"&gt;
+  &lt;h2 class="text-2xl font-bold text-gray-800 mb-6"&gt;
+    รายการแจ้งซ่อมทั้งหมด
+  &lt;/h2&gt;
+
+  &lt;!-- Grid Container --&gt;
+  &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+    
+    &lt;!-- การ์ดรายการที่ 1 --&gt;
+    &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+      ...
+    &lt;/div&gt;
+
+    &lt;!-- การ์ดรายการที่ 2 --&gt;
+    &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+      ...
+    &lt;/div&gt;
+
+    &lt;!-- การ์ดรายการที่ 3 --&gt;
+    &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+      ...
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/main&gt;</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">💡 Responsive Classes</p>
+        <ul>
+          <li><code>grid-cols-1</code> = มือถือ: 1 คอลัมน์</li>
+          <li><code>md:grid-cols-2</code> = แท็บเล็ต: 2 คอลัมน์</li>
+          <li><code>lg:grid-cols-3</code> = PC: 3 คอลัมน์</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="step-box">
+        <div class="step-number">7</div>
+        <div>ปรับแต่งให้สวยงาม (Final Touch)</div>
+      </div>
+
+      <h3>7.1 เพิ่มปุ่มดูรายละเอียด</h3>
+
+      <div class="example">
+        <p class="example-title">📄 เพิ่มในการ์ด</p>
+        <pre><code>&lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+  &lt;h3 class="text-xl font-bold text-gray-800"&gt;พัดลมเสีย&lt;/h3&gt;
+  &lt;p class="text-gray-600 mt-2"&gt;พัดลมในห้อง 301 ไม่ทำงาน&lt;/p&gt;
+  
+  &lt;div class="mt-4 flex justify-between items-center"&gt;
+    &lt;span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"&gt;
+      รอดำเนินการ
+    &lt;/span&gt;
+    
+    &lt;!-- เพิ่มปุ่ม --&gt;
+    &lt;button class="text-blue-600 hover:text-blue-800 font-semibold"&gt;
+      ดูรายละเอียด →
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+
+      <h3>7.2 เพิ่ม Hover Effects</h3>
+
+      <div class="example">
+        <p class="example-title">📄 ปรับการ์ดให้มีเอฟเฟกต์</p>
+        <pre><code>&lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition"&gt;
+  ...
+&lt;/div&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">🎨 ผลลัพธ์</p>
+        <p>เมื่อชี้เมาส์ที่การ์ด เงาจะเข้มขึ้น (smooth transition)</p>
+      </div>
+    </section>
+
+    
+    <section>
+      <div class="step-box">
+        <div class="step-number">8</div>
+        <div>เพิ่ม Navbar + Sidebar (โครงหน้าแบบแอป)</div>
+      </div>
+
+      <p>
+        ตอนนี้เรามี “เนื้อหา” (cards + form) แล้ว ขั้นต่อไปคือทำให้หน้าเว็บดูเป็น “ระบบ” มากขึ้น
+        ด้วย <span class="highlight">Navigation Bar</span> (เมนูด้านบน) และ <span class="highlight">Sidebar</span> (เมนูด้านข้าง)
+        ซึ่งเป็นรูปแบบที่เจอบ่อยในเว็บแอปจริง ๆ
+      </p>
+
+      <div class="key-point">
+        แนวคิด: แยก “โครงหน้า (layout)” ออกจาก “เนื้อหาหลัก (content)” เพื่อขยายหน้าอื่น ๆ ได้ง่าย
+      </div>
+
+      <h3>8.1 สร้าง Navbar (เมนูด้านบน)</h3>
+      <p>
+        เราจะทำ Navbar แบบเรียบ ๆ: โลโก้/ชื่อระบบ + เมนู 2 ลิงก์ + ปุ่ม “เพิ่มรายการ”
+        (ตอนนี้ลิงก์ใช้ไฟล์ <code>index.html</code> และ <code>new.html</code> ก่อน)
+      </p>
+
+      <div class="example">
+        <p class="example-title">📄 Navbar (ใส่แทน header เดิมใน index.html)</p>
+        <pre><code>&lt;header class="bg-blue-600 text-white"&gt;
+  &lt;nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between"&gt;
+
+    &lt;!-- Brand --&gt;
+    &lt;a href="index.html" class="flex items-center gap-2 font-bold text-xl"&gt;
+      &lt;span&gt;🛠️&lt;/span&gt;
+      &lt;span&gt;ระบบแจ้งซ่อม&lt;/span&gt;
+    &lt;/a&gt;
+
+    &lt;!-- Links --&gt;
+    &lt;div class="hidden md:flex items-center gap-4"&gt;
+      &lt;a href="index.html" class="hover:underline"&gt;รายการแจ้งซ่อม&lt;/a&gt;
+      &lt;a href="new.html" class="hover:underline"&gt;แจ้งซ่อมใหม่&lt;/a&gt;
+
+      &lt;a href="new.html"
+         class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"&gt;
+        + เพิ่มรายการ
+      &lt;/a&gt;
+    &lt;/div&gt;
+
+  &lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+      </div>
+
+      <div class="tip">
+        <p class="tip-title">🎨 Tailwind ที่ควรรู้จาก Navbar</p>
+        <ul>
+          <li><code>flex justify-between</code> = แยกซ้าย/ขวาในแถบเมนู</li>
+          <li><code>hidden md:flex</code> = มือถือซ่อนเมนู, จอ md ขึ้นไปค่อยแสดง</li>
+          <li><code>hover:underline</code> = ทำให้ลิงก์ดู “คลิกได้”</li>
+        </ul>
+      </div>
+
+      <h3>8.2 สร้าง Sidebar (เมนูด้านข้างสำหรับจอใหญ่)</h3>
+      <p>
+        Sidebar เหมาะกับเว็บที่มีหลายหน้า เช่น รายการ / เพิ่มรายการ / สถานะงาน / ตั้งค่า ฯลฯ
+        เราจะทำแบบง่ายก่อน: แสดงเฉพาะจอ <code>md</code> ขึ้นไป และจัด layout ด้วย <code>flex</code>
+      </p>
+
+      <div class="example">
+        <p class="example-title">📄 โครงหน้าแบบมี Sidebar (ใส่ใน &lt;body&gt; ของ index.html)</p>
+        <pre><code>&lt;body class="bg-gray-50"&gt;
+
+  &lt;div class="min-h-screen flex"&gt;
+
+    &lt;!-- Sidebar (ซ่อนบนมือถือ) --&gt;
+    &lt;aside class="hidden md:block w-64 bg-white border-r"&gt;
+      &lt;div class="p-5 border-b"&gt;
+        &lt;div class="font-bold text-gray-800"&gt;เมนู&lt;/div&gt;
+        &lt;div class="text-sm text-gray-500"&gt;Repair System&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;nav class="p-3"&gt;
+        &lt;a href="index.html"
+           class="block px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-semibold"&gt;
+          📋 รายการแจ้งซ่อม
+        &lt;/a&gt;
+
+        &lt;a href="new.html"
+           class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-2"&gt;
+          ➕ แจ้งซ่อมใหม่
+        &lt;/a&gt;
+
+        &lt;a href="#"
+           class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-2"&gt;
+          ⚙️ ตั้งค่า (ตัวอย่าง)
+        &lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/aside&gt;
+
+    &lt;!-- Main (พื้นที่เนื้อหา) --&gt;
+    &lt;div class="flex-1"&gt;
+
+      &lt;!-- Navbar ด้านบน (ใช้ของข้อ 8.1) --&gt;
+      ... วาง &lt;header&gt;...&lt;/header&gt; ตรงนี้ ...
+
+      &lt;main class="max-w-6xl mx-auto p-6"&gt;
+        ... (ส่วนการ์ด/เนื้อหาหลักเดิมของเรา) ...
+      &lt;/main&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/body&gt;</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note-title">💡 Active Menu คืออะไร</p>
+        <p>
+          เมนูที่ “อยู่หน้าเดียวกับปัจจุบัน” ควรมีสไตล์ต่างจากเมนูอื่น (เช่น พื้นหลังฟ้าอ่อน)
+          เพื่อให้ผู้ใช้รู้ว่าตอนนี้อยู่หน้าไหน
+        </p>
+      </div>
+
+      <h3>8.3 (Optional) Sidebar แบบเปิด–ปิดบนมือถือ</h3>
+      <p>
+        ถ้าต้องการให้มือถือมี Sidebar แบบ “drawer” สามารถเพิ่มปุ่มเมนู (☰) และใช้ JavaScript นิดเดียวในการ toggle
+        ส่วนนี้เป็นตัวเลือก—ถ้ายังไม่อยากใช้ JS ข้ามได้
+      </p>
+
+      <div class="example">
+        <p class="example-title">📄 Drawer Sidebar แบบสั้น (แนวคิด)</p>
+        <pre><code>&lt;!-- ปุ่มเมนู (วางใน Navbar) --&gt;
+&lt;button id="btnMenu" class="md:hidden bg-white/20 px-3 py-2 rounded-lg"&gt;☰&lt;/button&gt;
+
+&lt;!-- Backdrop --&gt;
+&lt;div id="backdrop" class="hidden fixed inset-0 bg-black/40"&gt;&lt;/div&gt;
+
+&lt;!-- Drawer --&gt;
+&lt;aside id="drawer"
+  class="fixed top-0 left-0 h-full w-64 bg-white border-r
+         -translate-x-full transition-transform md:hidden"&gt;
+  ...
+&lt;/aside&gt;
+
 &lt;script&gt;
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: {
-          'sarabun': ['Sarabun', 'sans-serif'],
-          'kanit': ['Kanit', 'sans-serif'],
-          'prompt': ['Prompt', 'sans-serif'],
-        }
-      }
-    }
+  const btn = document.getElementById('btnMenu');
+  const drawer = document.getElementById('drawer');
+  const backdrop = document.getElementById('backdrop');
+
+  function openDrawer() {
+    drawer.classList.remove('-translate-x-full');
+    backdrop.classList.remove('hidden');
   }
+  function closeDrawer() {
+    drawer.classList.add('-translate-x-full');
+    backdrop.classList.add('hidden');
+  }
+
+  btn?.addEventListener('click', openDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
 &lt;/script&gt;</code></pre>
       </div>
 
-      <h4>ขั้นตอนที่ 4: ใช้งานในหน้าเว็บ</h4>
-      <div class="example">
-        <pre><code>&lt;!-- ใช้กับ body ทั้งหน้า --&gt;
-&lt;body class="font-sarabun"&gt;
-
-&lt;!-- หรือใช้เฉพาะส่วน --&gt;
-&lt;h1 class="font-sarabun text-3xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
-&lt;p class="font-prompt"&gt;เนื้อหาในย่อหน้า&lt;/p&gt;</code></pre>
+      <div class="tip">
+        <p class="tip-title">เชื่อมไป Flask (บทถัดไป)</p>
+        <ul>
+          <li>เมื่อย้ายไป Flask/Jinja2 เราจะเอา Navbar + Sidebar ไปอยู่ใน <code>base.html</code></li>
+          <li>ลิงก์จะเปลี่ยนจาก <code>href="index.html"</code> เป็น <code>{{ url_for('route_name') }}</code></li>
+          <li>ทำให้ “หน้าทุกหน้า” ใช้ layout เดียวกัน และแก้ครั้งเดียวก็อัปเดตทั้งระบบ</li>
+        </ul>
       </div>
+    </section>
+<section>
+      <h2>🎉 สรุปและโค้ดเต็ม</h2>
 
-      <h3>9.2 ฟอนต์ไทยแนะนำสำหรับ Workshop</h3>
-      
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>ชื่อฟอนต์</th>
-            <th>ลักษณะ</th>
-            <th>เหมาะกับ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Sarabun</strong></td>
-            <td>อ่านง่าย สบายตา</td>
-            <td>เนื้อหาทั่วไป, ระบบงาน</td>
-          </tr>
-          <tr>
-            <td><strong>Prompt</strong></td>
-            <td>ทันสมัย เรียบหรู</td>
-            <td>หัวข้อ, UI สมัยใหม่</td>
-          </tr>
-          <tr>
-            <td><strong>Kanit</strong></td>
-            <td>สไตล์โมเดิร์น</td>
-            <td>หัวข้อ, โปสเตอร์</td>
-          </tr>
-          <tr>
-            <td><strong>Noto Sans Thai</strong></td>
-            <td>มาตรฐาน อ่านง่าย</td>
-            <td>ทุกประเภท</td>
-          </tr>
-          <tr>
-            <td><strong>IBM Plex Sans Thai</strong></td>
-            <td>เป็นทางการ</td>
-            <td>เอกสาร รายงาน</td>
-          </tr>
-        </tbody>
-      </table>
+      <p>ตอนนี้เรามีหน้าเว็บ 2 หน้าแล้ว:</p>
+      <ol>
+        <li><code>index.html</code> - หน้ารายการแจ้งซ่อม</li>
+        <li><code>new.html</code> - หน้าเพิ่มข้อมูล</li>
+      </ol>
 
-      <h3>9.3 ตัวอย่างการใช้งานจริง</h3>
-      
       <div class="example">
-        <p class="example-title">หน้าเว็บที่ใช้ Google Fonts</p>
+        <p class="example-title">📄 index.html (โค้ดเต็ม)</p>
         <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="th"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
   &lt;title&gt;ระบบแจ้งซ่อม&lt;/title&gt;
-  
-  &lt;!-- Google Fonts - Sarabun --&gt;
-  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
-  &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
-  &lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
-  
-  &lt;!-- Tailwind CSS --&gt;
   &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-  &lt;script&gt;
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'sarabun': ['Sarabun', 'sans-serif'],
-          }
-        }
-      }
-    }
-  &lt;/script&gt;
 &lt;/head&gt;
-&lt;body class="font-sarabun bg-gray-50"&gt;
-  
-  &lt;header class="bg-blue-600 text-white p-4"&gt;
-    &lt;h1 class="text-2xl font-bold"&gt;ระบบแจ้งซ่อม&lt;/h1&gt;
-  &lt;/header&gt;
-  
-  &lt;main class="max-w-6xl mx-auto p-6"&gt;
-    &lt;h2 class="text-3xl font-bold text-gray-800 mb-4"&gt;
-      รายการแจ้งซ่อมทั้งหมด
-    &lt;/h2&gt;
-    
-    &lt;p class="text-gray-600 font-light"&gt;
-      ข้อความนี้จะแสดงด้วยฟอนต์ Sarabun แบบบางเบา
-    &lt;/p&gt;
-    
-    &lt;p class="text-gray-800 font-normal"&gt;
-      ข้อความนี้แสดงด้วยน้ำหนักปกติ
-    &lt;/p&gt;
-    
-    &lt;p class="text-gray-900 font-semibold"&gt;
-      ข้อความนี้แสดงด้วยตัวกึ่งหนา
-    &lt;/p&gt;
-  &lt;/main&gt;
-  
+
+&lt;body class="bg-gray-50"&gt;
+
+  &lt;div class="min-h-screen flex"&gt;
+
+    &lt;!-- Sidebar (ซ่อนบนมือถือ) --&gt;
+    &lt;aside class="hidden md:block w-64 bg-white border-r"&gt;
+      &lt;div class="p-5 border-b"&gt;
+        &lt;div class="font-bold text-gray-800"&gt;เมนู&lt;/div&gt;
+        &lt;div class="text-sm text-gray-500"&gt;Repair System&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;nav class="p-3"&gt;
+        &lt;a href="index.html"
+           class="block px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-semibold"&gt;
+          📋 รายการแจ้งซ่อม
+        &lt;/a&gt;
+
+        &lt;a href="new.html"
+           class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-2"&gt;
+          ➕ แจ้งซ่อมใหม่
+        &lt;/a&gt;
+
+        &lt;a href="#"
+           class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-2"&gt;
+          ⚙️ ตั้งค่า (ตัวอย่าง)
+        &lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/aside&gt;
+
+    &lt;!-- Main --&gt;
+    &lt;div class="flex-1"&gt;
+
+      &lt;!-- Navbar --&gt;
+      &lt;header class="bg-blue-600 text-white"&gt;
+        &lt;nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between"&gt;
+          &lt;a href="index.html" class="flex items-center gap-2 font-bold text-xl"&gt;
+            &lt;span&gt;🛠️&lt;/span&gt;
+            &lt;span&gt;ระบบแจ้งซ่อม&lt;/span&gt;
+          &lt;/a&gt;
+
+          &lt;div class="hidden md:flex items-center gap-4"&gt;
+            &lt;a href="index.html" class="hover:underline"&gt;รายการแจ้งซ่อม&lt;/a&gt;
+            &lt;a href="new.html" class="hover:underline"&gt;แจ้งซ่อมใหม่&lt;/a&gt;
+            &lt;a href="new.html"
+               class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"&gt;
+              + เพิ่มรายการ
+            &lt;/a&gt;
+          &lt;/div&gt;
+        &lt;/nav&gt;
+      &lt;/header&gt;
+
+      &lt;main class="max-w-6xl mx-auto p-6"&gt;
+        &lt;h2 class="text-2xl font-bold text-gray-800 mb-6"&gt;รายการแจ้งซ่อมทั้งหมด&lt;/h2&gt;
+
+        &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+
+          &lt;!-- การ์ด 1 --&gt;
+          &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition"&gt;
+            &lt;h3 class="text-xl font-bold text-gray-800"&gt;พัดลมเสีย&lt;/h3&gt;
+            &lt;p class="text-gray-600 mt-2"&gt;พัดลมในห้อง 301 ไม่ทำงาน&lt;/p&gt;
+            &lt;div class="mt-4 flex justify-between items-center"&gt;
+              &lt;span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"&gt;
+                รอดำเนินการ
+              &lt;/span&gt;
+              &lt;button class="text-blue-600 hover:text-blue-800 font-semibold"&gt;
+                ดูรายละเอียด →
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- การ์ด 2 --&gt;
+          &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition"&gt;
+            &lt;h3 class="text-xl font-bold text-gray-800"&gt;แอร์รั่ว&lt;/h3&gt;
+            &lt;p class="text-gray-600 mt-2"&gt;แอร์ห้อง 302 มีน้ำรั่ว&lt;/p&gt;
+            &lt;div class="mt-4 flex justify-between items-center"&gt;
+              &lt;span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"&gt;
+                กำลังดำเนินการ
+              &lt;/span&gt;
+              &lt;button class="text-blue-600 hover:text-blue-800 font-semibold"&gt;
+                ดูรายละเอียด →
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- การ์ด 3 --&gt;
+          &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition"&gt;
+            &lt;h3 class="text-xl font-bold text-gray-800"&gt;ประตูชำรุด&lt;/h3&gt;
+            &lt;p class="text-gray-600 mt-2"&gt;ประตูห้อง 303 ปิดไม่สนิท&lt;/p&gt;
+            &lt;div class="mt-4 flex justify-between items-center"&gt;
+              &lt;span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"&gt;
+                เสร็จสิ้น
+              &lt;/span&gt;
+              &lt;button class="text-blue-600 hover:text-blue-800 font-semibold"&gt;
+                ดูรายละเอียด →
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+      &lt;/main&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
 &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-      </div>
-
-      <h3>9.4 น้ำหนักฟอนต์ (Font Weights)</h3>
-      
-      <div class="example">
-        <p class="example-title">Tailwind Font Weight Classes</p>
-        <pre><code>&lt;!-- Extra Light: 200 --&gt;
-&lt;p class="font-extralight"&gt;ข้อความบางพิเศษ&lt;/p&gt;
-
-&lt;!-- Light: 300 --&gt;
-&lt;p class="font-light"&gt;ข้อความบาง&lt;/p&gt;
-
-&lt;!-- Normal: 400 --&gt;
-&lt;p class="font-normal"&gt;ข้อความปกติ&lt;/p&gt;
-
-&lt;!-- Medium: 500 --&gt;
-&lt;p class="font-medium"&gt;ข้อความกลาง&lt;/p&gt;
-
-&lt;!-- Semibold: 600 --&gt;
-&lt;p class="font-semibold"&gt;ข้อความกึ่งหนา&lt;/p&gt;
-
-&lt;!-- Bold: 700 --&gt;
-&lt;p class="font-bold"&gt;ข้อความหนา&lt;/p&gt;
-
-&lt;!-- Extra Bold: 800 --&gt;
-&lt;p class="font-extrabold"&gt;ข้อความหนาพิเศษ&lt;/p&gt;</code></pre>
-      </div>
-
-      <div class="note">
-        <p class="note-title">💡 Tips การเลือกฟอนต์</p>
-        <ul>
-          <li>เลือกฟอนต์ที่รองรับภาษาไทย (ดูใน Google Fonts ว่ามี Thai Script)</li>
-          <li>ไม่ควรใช้มากกว่า 2-3 ฟอนต์ในหน้าเดียว</li>
-          <li>เลือกน้ำหนักที่จำเป็นเท่านั้น (เช่น 300, 400, 600, 700)</li>
-          <li>ใช้ <code>preconnect</code> เพื่อให้โหลดเร็วขึ้น</li>
-        </ul>
-      </div>
-
-      <h3>9.5 ฟอนต์อังกฤษยอดนิยม</h3>
-      
-      <div class="example">
-        <p class="example-title">Google Fonts สำหรับเนื้อหาภาษาอังกฤษ</p>
-        <pre><code>&lt;!-- Roboto - ฟอนต์ยอดนิยม --&gt;
-&lt;link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"&gt;
-
-&lt;!-- Inter - Modern UI Font --&gt;
-&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;
-
-&lt;!-- Poppins - สำหรับหัวข้อ --&gt;
-&lt;link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
-
-&lt;!-- Open Sans - อ่านง่าย --&gt;
-&lt;link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;</code></pre>
-      </div>
-
-      <h3>9.6 ตัวอย่างการผสมฟอนต์ไทย-อังกฤษ</h3>
-      
-      <div class="example">
-        <p class="example-title">ใช้ฟอนต์ต่างกันสำหรับไทยและอังกฤษ</p>
-        <pre><code>&lt;head&gt;
-  &lt;!-- ฟอนต์ไทย --&gt;
-  &lt;link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
-  
-  &lt;!-- ฟอนต์อังกฤษ --&gt;
-  &lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet"&gt;
-  
-  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-  &lt;script&gt;
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'thai': ['Sarabun', 'sans-serif'],
-            'en': ['Inter', 'sans-serif'],
-          }
-        }
-      }
-    }
-  &lt;/script&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-  &lt;h1 class="font-thai text-3xl font-bold"&gt;
-    ระบบแจ้งซ่อม
-  &lt;/h1&gt;
-  
-  &lt;p class="font-en text-gray-600"&gt;
-    Repair Management System
-  &lt;/p&gt;
-&lt;/body&gt;</code></pre>
-      </div>
-
-      <div class="tip">
-        <p class="tip-title">🎨 Best Practice: Font Pairing</p>
-        <ul>
-          <li><strong>Heading:</strong> Kanit (หนา, โดดเด่น)</li>
-          <li><strong>Body:</strong> Sarabun (อ่านง่าย)</li>
-          <li><strong>Code/Numbers:</strong> Roboto Mono</li>
-        </ul>
+&lt;/html&gt;
+</code></pre>
       </div>
     </section>
 
     <section>
-      <h2>10) Best Practices สำหรับ Workshop</h2>
-
-      <h3>✅ ควรทำ</h3>
+      <h2>Checklist ก่อนไปบทถัดไป</h2>
       <ul>
-        <li>ใช้ Semantic HTML (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>)</li>
-        <li>จัด Layout ด้วย Flexbox/Grid</li>
-        <li>ใส่ <code>alt</code> ในรูปภาพเสมอ</li>
-        <li>ใช้ <code>max-w-*</code> + <code>mx-auto</code> เพื่อจำกัดความกว้าง</li>
-        <li>ทำ Responsive ด้วย <code>md:</code>, <code>lg:</code></li>
-      </ul>
-
-      <h3>❌ ไม่ควรทำ</h3>
-      <ul>
-        <li>ใช้ <code>&lt;div&gt;</code> ทุกอย่าง (ควรใช้ semantic tags)</li>
-        <li>Class ยาวเกินไป ในบรรทัดเดียว (แบ่งบรรทัดได้)</li>
-        <li>Hardcode สีโดยไม่ใช้ Tailwind colors</li>
-        <li>ลืมทำ mobile-first (เริ่มจากหน้าจอเล็กก่อน)</li>
+        <li>☐ สร้างหน้า index.html ได้</li>
+        <li>☐ เพิ่ม Tailwind CSS CDN ได้</li>
+        <li>☐ สร้างการ์ดแสดงข้อมูลได้</li>
+        <li>☐ สร้างฟอร์มเพิ่มข้อมูลได้</li>
+        <li>☐ ทำให้ Responsive ได้</li>
+        <li>☐ เข้าใจ Tailwind classes พื้นฐาน</li>
+        <li>☐ พร้อมเชื่อมต่อ Flask ในบทถัดไป!</li>
       </ul>
     </section>
 
     <section>
-      <h2>11) Checklist ก่อนเข้า Workshop</h2>
+      <h2>แหล่งเรียนรู้เพิ่มเติม</h2>
       <ul>
-        <li>✅ รู้โครงสร้าง HTML พื้นฐาน (head, body, tags หลักๆ)</li>
-        <li>✅ เข้าใจ Forms (input, textarea, select, button)</li>
-        <li>✅ เพิ่ม Tailwind CSS ด้วย CDN ได้</li>
-        <li>✅ ใช้ Tailwind classes พื้นฐาน (colors, spacing, layout)</li>
-        <li>✅ เพิ่ม Google Fonts ให้หน้าเว็บได้</li>
-        <li>✅ สร้างหน้ารายการ + ฟอร์มง่ายๆ ได้</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>12) แหล่งเรียนรู้เพิ่มเติม</h2>
-      <ul>
-        <li><strong>HTML:</strong> <a href="https://www.w3schools.com/html/" target="_blank">W3Schools HTML Tutorial</a></li>
-        <li><strong>Tailwind CSS:</strong> <a href="https://tailwindcss.com/docs" target="_blank">Official Documentation</a></li>
-        <li><strong>Google Fonts:</strong> <a href="https://fonts.google.com" target="_blank">Google Fonts</a></li>
-        <li><strong>Tailwind Cheat Sheet:</strong> <a href="https://nerdcave.com/tailwind-cheat-sheet" target="_blank">Tailwind Cheat Sheet</a></li>
-        <li><strong>Components:</strong> <a href="https://tailwindui.com/components" target="_blank">Tailwind UI Components</a></li>
+        <li><a href="https://www.w3schools.com/html/" target="_blank">W3Schools - HTML Tutorial</a></li>
+        <li><a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS Documentation</a></li>
+        <li><a href="https://www.geeksforgeeks.org/html/" target="_blank">GeeksforGeeks - HTML</a></li>
       </ul>
     </section>
 
     <div class="no-print" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display:flex; gap:10px; flex-wrap:wrap;">
       <a class="btn-primary" href="../../index.html">🏠 กลับหน้าหลัก</a>
-      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap05/chap05-doc.html">บทถัดไป: Flask + HTML →</a>
+      <a class="btn-primary" style="background: var(--secondary-color);" href="../chap05/chap05-doc.html">บทถัดไป: Flask + Database →</a>
     </div>
   </div>
 </body>
